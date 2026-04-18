@@ -127,16 +127,36 @@ const config: Partial<Config> = {
   scrollZoom: false,
 }
 
-/**
- * From-centroid view direction: stronger z = camera starts higher (more
- * overview from above); x/y slightly reduced for a natural tilt.
- */
-const CAMERA_VIEW_DIR = { x: 1.12, y: 1.22, z: 1.38 } as const
-const CAMERA_VIEW_DIR_INV =
-  1 / Math.hypot(CAMERA_VIEW_DIR.x, CAMERA_VIEW_DIR.y, CAMERA_VIEW_DIR.z)
-
 /** Eye distance from the data centroid (larger = more zoomed out). */
-const CAMERA_START_DISTANCE = 1.58
+const CAMERA_START_DISTANCE = 1.42
+
+/**
+ * Small yaw around +Z after choosing an elevated direction — keeps a slight
+ * diagonal instead of a pure “top-down” line through the centroid.
+ */
+const CAMERA_PREORBIT_YAW_Z_RAD = 0.38
+
+function rotateAroundZ(
+  v: { x: number; y: number; z: number },
+  rad: number
+): { x: number; y: number; z: number } {
+  const c = Math.cos(rad)
+  const s = Math.sin(rad)
+  return {
+    x: v.x * c - v.y * s,
+    y: v.x * s + v.y * c,
+    z: v.z,
+  }
+}
+
+/**
+ * Start clearly above the cloud (large z vs x,y) so you do not need to orbit
+ * upward first; then a modest yaw for framing.
+ */
+function initialCameraViewDir(): { x: number; y: number; z: number } {
+  const elevated = { x: 0.68, y: 0.78, z: 1.82 }
+  return rotateAroundZ(elevated, CAMERA_PREORBIT_YAW_Z_RAD)
+}
 
 function meanUmapCenter(pts: readonly SimilarityPoint[]): {
   x: number
@@ -158,7 +178,9 @@ function meanUmapCenter(pts: readonly SimilarityPoint[]): {
 
 function buildPlotLayout(points: readonly SimilarityPoint[]): Partial<Layout> {
   const c = meanUmapCenter(points)
-  const step = CAMERA_START_DISTANCE * CAMERA_VIEW_DIR_INV
+  const dir = initialCameraViewDir()
+  const inv = 1 / Math.hypot(dir.x, dir.y, dir.z)
+  const step = CAMERA_START_DISTANCE * inv
   return {
     autosize: true,
     paper_bgcolor: 'transparent',
@@ -183,9 +205,9 @@ function buildPlotLayout(points: readonly SimilarityPoint[]): Partial<Layout> {
       camera: {
         center: { x: c.x, y: c.y, z: c.z },
         eye: {
-          x: c.x + CAMERA_VIEW_DIR.x * step,
-          y: c.y + CAMERA_VIEW_DIR.y * step,
-          z: c.z + CAMERA_VIEW_DIR.z * step,
+          x: c.x + dir.x * step,
+          y: c.y + dir.y * step,
+          z: c.z + dir.z * step,
         },
         up: { x: 0, y: 0, z: 1 },
       },
