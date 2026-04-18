@@ -11,5 +11,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/thiamine"
   ],
-  "confidence": 0.2
+  "confidence": 0.2,
+  "synonyms": [
+    "vitamin b1",
+    "thiamine hydrochloride"
+  ]
 }

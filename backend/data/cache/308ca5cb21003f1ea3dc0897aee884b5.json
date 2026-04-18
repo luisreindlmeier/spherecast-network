@@ -11,5 +11,8 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/vitamin-b2"
   ],
-  "confidence": 0.8
+  "confidence": 0.8,
+  "synonyms": [
+    "riboflavin"
+  ]
 }

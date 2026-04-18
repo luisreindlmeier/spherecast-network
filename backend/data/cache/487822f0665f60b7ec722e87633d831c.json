@@ -11,5 +11,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/ascorbic-acid"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "vitamin c",
+    "l-ascorbic acid"
+  ]
 }

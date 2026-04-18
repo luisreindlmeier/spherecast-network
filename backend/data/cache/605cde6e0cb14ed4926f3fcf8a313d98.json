@@ -11,5 +11,9 @@
   "sources": [
     "openfoodfacts_search"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "phytonadione",
+    "vitamin k"
+  ]
 }

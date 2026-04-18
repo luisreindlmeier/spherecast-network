@@ -11,5 +11,10 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/niacin"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "nicotinamide",
+    "niacinamide",
+    "vitamin b3"
+  ]
 }

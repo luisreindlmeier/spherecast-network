@@ -11,5 +11,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/silicon-dioxide"
   ],
-  "confidence": 0.7
+  "confidence": 0.7,
+  "synonyms": [
+    "silica",
+    "fumed silica"
+  ]
 }

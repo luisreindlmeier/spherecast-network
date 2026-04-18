@@ -11,5 +11,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/vitamin-b12"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "cyanocobalamin",
+    "cobalamin"
+  ]
 }

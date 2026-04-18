@@ -11,5 +11,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/hydroxypropyl-methylcellulose"
   ],
-  "confidence": 0.7
+  "confidence": 0.7,
+  "synonyms": [
+    "hypromellose",
+    "hpmc"
+  ]
 }

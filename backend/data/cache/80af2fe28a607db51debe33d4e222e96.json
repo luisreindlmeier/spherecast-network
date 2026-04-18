@@ -11,5 +11,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/phytonadione"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "vitamin k",
+    "vitamin k1"
+  ]
 }

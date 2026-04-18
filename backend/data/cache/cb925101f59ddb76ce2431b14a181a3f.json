@@ -11,5 +11,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/sucrose"
   ],
-  "confidence": 0.8
+  "confidence": 0.8,
+  "synonyms": [
+    "sugar",
+    "cane sugar"
+  ]
 }

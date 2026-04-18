@@ -4,3 +4,5 @@ __pycache__/
 *.pyo
 .DS_Store
 data/chroma/
+*.egg-info/
+.pytest_cache/

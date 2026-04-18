@@ -11,5 +11,8 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/silica"
   ],
-  "confidence": 0.85
+  "confidence": 0.85,
+  "synonyms": [
+    "silicon dioxide"
+  ]
 }

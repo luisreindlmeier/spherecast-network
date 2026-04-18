@@ -11,5 +11,8 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/xanthan-gum"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "xanthan"
+  ]
 }

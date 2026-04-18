@@ -11,5 +11,8 @@
   "sources": [
     "llm_knowledge"
   ],
-  "confidence": 0.6
+  "confidence": 0.6,
+  "synonyms": [
+    "ac-di-sol"
+  ]
 }

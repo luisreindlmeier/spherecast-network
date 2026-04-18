@@ -13,5 +13,9 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/soy-lecithin"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "lecithin",
+    "soya lecithin"
+  ]
 }

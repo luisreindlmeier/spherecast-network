@@ -11,5 +11,8 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/sodium-ascorbate"
   ],
-  "confidence": 0.8
+  "confidence": 0.8,
+  "synonyms": [
+    "vitamin c sodium salt"
+  ]
 }

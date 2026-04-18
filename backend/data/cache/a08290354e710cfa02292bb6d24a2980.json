@@ -11,5 +11,8 @@
   "sources": [
     "https://www.incidecoder.com/ingredients/magnesium-stearate"
   ],
-  "confidence": 0.7
+  "confidence": 0.7,
+  "synonyms": [
+    "mag stearate"
+  ]
 }

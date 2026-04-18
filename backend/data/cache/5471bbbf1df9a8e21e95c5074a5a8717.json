@@ -11,5 +11,10 @@
   "sources": [
     "openfoodfacts_search"
   ],
-  "confidence": 0.9
+  "confidence": 0.9,
+  "synonyms": [
+    "folate",
+    "vitamin b9",
+    "folacin"
+  ]
 }
