@@ -1,109 +1,40 @@
 # Spherecast
 
-Next.js 16 · TypeScript · Tailwind CSS 4 · shadcn/ui · Vercel · pnpm
+Sourcing-/Netzwerk-Dashboard: **Next.js 16** (App Router) · **React 19** · **TypeScript strict** · **Tailwind CSS 4** · **shadcn/ui (Radix)** · **pnpm** · Deploy typisch **Vercel**.
 
----
+| Bereich            | Technik                                                                                                         |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| UI & Styling       | Server Components by default, `use client` nur wo nötig; Zod für Eingaben                                       |
+| Shell & Tabellen   | Layout (`Sidebar`, `AppTopNav`), Feature-Komponenten unter `components/`                                        |
+| **Network map**    | **Deck.gl** + **react-map-gl** / **MapLibre** (`SupplierNetworkMap`, API `app/api/network-map`)                 |
+| **Similarity map** | **Plotly** gl3d-Bundle (`plotly.js/dist/plotly-gl3d` + `react-plotly.js/factory`), API `app/api/similarity-map` |
+| Daten              | **Supabase** (`lib/supabase*.ts`, `lib/queries.ts`); Demo-/Fixture-Daten wo noch kein Live-Backend              |
+| Scope              | Unternehmensfilter per Cookie + **Server Actions** (`app/actions/company-scope.ts`, `lib/company-scope-*.ts`)   |
 
-## Tech Stack
-
-| Layer           | Tool                       |
-| --------------- | -------------------------- |
-| Framework       | Next.js 16 (App Router)    |
-| Language        | TypeScript (strict)        |
-| Styling         | Tailwind CSS 4 + shadcn/ui |
-| Deployment      | Vercel                     |
-| Package Manager | pnpm                       |
-| Validation      | Zod                        |
-
----
-
-## Quickstart
-
-```bash
-git clone <repo-url>
-cd spherecast
-pnpm install
-cp .env.example .env.local  # Variablen eintragen
-pnpm dev
-```
-
----
-
-## AI-Native Workflow
-
-Dieses Projekt ist für Claude Code optimiert. Die wichtigsten Dateien:
-
-- **`CLAUDE.md`** — Projektgedächtnis. Claude liest das bei jeder Session automatisch. Stack, Regeln, Git-Konventionen stehen dort. Nicht löschen.
-- **`.claude/commands/`** — Slash-Commands für wiederkehrende Workflows
-- **`.claude/hooks/`** — TypeScript + Prettier laufen automatisch nach jedem Edit
-- **`.claude/agents/`** — Spezialisierte Subagenten (Architekt, Code-Reviewer)
-
-### Session starten
-
-```bash
-claude
-```
-
-Claude kennt sofort den Stack, die Struktur und alle Konventionen.
-
-### Neues Feature
+## Struktur (kurz)
 
 ```
-/new-feature
-```
-
-Claude erstellt den Branch, fragt was gebaut werden soll, und wartet bevor er anfängt.
-
-### Feature abschließen
-
-```
-/finish-feature
-```
-
-Claude reviewed den Code, fixed kritische Issues, committet und öffnet einen PR.
-
-### Kontext-Management
-
-```
-/compact
-```
-
-Wenn der Kontext lang wird oder das Feature wechselt — verhindert Halluzinationen bei langen Sessions.
-
----
-
-## Projektstruktur
-
-```
-app/                  # Next.js App Router (Seiten & Layouts)
+app/
+  layout.tsx, page.tsx, globals.css
+  (app)/layout.tsx          # App-Shell, Navigation, CompanyScopeProvider
+  (app)/*/page.tsx          # Routen: cockpit, network-map, similarity-map, suppliers, …
+  api/*/route.ts            # JSON-APIs für Maps (dynamic / no-store wo nötig)
+  actions/                  # Server Actions (z. B. Company Scope)
 components/
-├── ui/               # shadcn-Komponenten — nie direkt editieren
-└── [feature]/        # Eigene Komponenten pro Feature
-lib/
-└── utils.ts          # cn-Helper und geteilte Utilities
-types/                # Globale TypeScript-Typen
-.claude/
-├── agents/           # Subagenten-Definitionen
-├── commands/         # Slash-Commands
-└── hooks/            # Post-Edit-Hooks (Typecheck + Prettier)
+  ui/                       # shadcn — nicht von Hand ändern; Erweiterung via CLI
+  layout/, cockpit/, network-map/, similarity-map/, sourcing/, opportunities/
+lib/                        # Queries, Supabase, Map-/Plot-Helfer, `utils.ts` (`cn`)
+types/                      # z. B. Plotly-gl3d-Ambient-Typen
 ```
 
----
+## Commands
 
-## Git-Konventionen
-
+```bash
+pnpm install
+cp .env.example .env.local   # Werte setzen
+pnpm dev                     # ggf. predev räumt stale dev-locks
+pnpm build && pnpm start
+pnpm tsc --noEmit
 ```
-feat:     Neues Feature
-fix:      Bugfix
-chore:    Dependencies, Konfiguration
-refactor: Umbau ohne neue Funktionalität
-```
 
-Nie direkt auf `main` pushen — immer Branch + PR.
-
----
-
-## Deployment
-
-PR merge in `main` → Vercel deployed automatisch.
-Vercel-Projekt mit GitHub verbinden, Env-Variablen im Vercel Dashboard eintragen.
+Weitere Konventionen (Git, PR, Agent-Hinweise): **`CLAUDE.md`** / **`AGENTS.md`**.

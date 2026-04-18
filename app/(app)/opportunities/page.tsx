@@ -1,15 +1,15 @@
 import PageHeader from '@/components/layout/PageHeader'
-import DummyBlock from '@/components/layout/DummyBlock'
+import OpportunitiesWorkspace from '@/components/opportunities/OpportunitiesWorkspace'
 
 export default function OpportunitiesPage() {
   return (
-    <>
+    <div className="opportunities-page">
       <PageHeader
-        eyebrow="My Intelligence"
+        eyebrow="Network Intelligence"
         title="Opportunities"
-        description="Ranked consolidation and sourcing opportunities surfaced by Agnes across your BOMs and supplier network."
+        description="Ranked consolidation and sourcing opportunities (demo data) — filter the list and open a row to view the full detail page."
       />
-      <DummyBlock title="12 open opportunities" hint="ranked by confidence" />
-    </>
+      <OpportunitiesWorkspace />
+    </div>
   )
 }

@@ -15,7 +15,7 @@ export default function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className="page-header">
-      <div>
+      <div className="page-header-main">
         {eyebrow && <div className="page-eyebrow">{eyebrow}</div>}
         <h1 className="page-title">{title}</h1>
         {description && <p className="page-description">{description}</p>}
