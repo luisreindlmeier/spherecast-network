@@ -134,20 +134,23 @@ button {
 .sidebar-brand {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 10px 16px 22px;
   text-decoration: none;
   color: inherit;
   outline-offset: 2px;
+  /* leicht links von der geometrischen Mitte (optisch ausgewogener zur Nav) */
+  transform: translateX(-10px);
 }
 
 .sidebar-brand-logo {
   display: block;
-  height: 52px;
+  height: 60px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
-  object-position: left center;
+  object-position: center center;
 }
 
 .sidebar-nav {
@@ -641,6 +644,18 @@ button {
   font-size: 11.5px;
   color: var(--text-muted);
   margin-top: 4px;
+}
+
+/* ── Ingredient similarity map (Plotly) ─────────────────── */
+.ingredient-similarity-plot-root {
+  margin-top: 16px;
+  height: min(72vh, 720px);
+  min-height: 420px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: #141720;
+  cursor: pointer;
 }
 
 /* ── Scrollbar ───────────────────────────────────────────── */

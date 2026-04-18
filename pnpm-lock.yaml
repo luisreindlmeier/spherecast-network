@@ -101,6 +101,9 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.3(@types/react@19.2.14)
+      '@types/react-plotly.js':
+        specifier: ^2.6.4
+        version: 2.6.4
       eslint:
         specifier: ^9
         version: 9.39.4(jiti@2.6.1)
@@ -2961,6 +2964,12 @@ packages:
       }
     peerDependencies:
       '@types/react': ^19.2.0
+
+  '@types/react-plotly.js@2.6.4':
+    resolution:
+      {
+        integrity: sha512-AU6w1u3qEGM0NmBA69PaOgNc0KPFA/+qkH6Uu9EBTJ45/WYOUoXi9AF5O15PRM2klpHSiHAAs4WnlI+OZAFmUA==,
+      }
 
   '@types/react@19.2.14':
     resolution:
@@ -11005,6 +11014,11 @@ snapshots:
 
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
+      '@types/react': 19.2.14
+
+  '@types/react-plotly.js@2.6.4':
+    dependencies:
+      '@types/plotly.js': 3.0.10
       '@types/react': 19.2.14
 
   '@types/react@19.2.14':

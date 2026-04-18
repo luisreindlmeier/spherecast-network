@@ -1,5 +1,5 @@
 import PageHeader from '@/components/layout/PageHeader'
-import DummyBlock from '@/components/layout/DummyBlock'
+import SimilarityMapPlotSection from '@/components/similarity-map/SimilarityMapPlotSection'
 
 export default function SimilarityMapPage() {
   return (
@@ -7,9 +7,9 @@ export default function SimilarityMapPage() {
       <PageHeader
         eyebrow="My Intelligence"
         title="Similarity Map"
-        description="2D embedding space of your raw material catalogue — cluster proximity signals substitutability."
+        description="Interactive UMAP space (3D) over fictitious ingredient embeddings — point size reflects how many companies use each material. Click a point to open the matching opportunity."
       />
-      <DummyBlock title="Embedding viewer" hint="149 raw materials" />
+      <SimilarityMapPlotSection />
     </>
   )
 }
