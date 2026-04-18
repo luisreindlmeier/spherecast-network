@@ -13,7 +13,7 @@ const products = [
 
 export default function ProductsPage() {
   return (
-    <PageMapDrawer mapTitle="Supplier network · products context">
+    <PageMapDrawer>
       <PageHeader
         eyebrow="Sourcing"
         title="Products"

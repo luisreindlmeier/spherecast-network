@@ -4,17 +4,26 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react'
+import {
+  clampMapSidebarWidthPx,
+  readMapSidebarWidthPx,
+  writeMapSidebarWidthPx,
+  MAP_SIDEBAR_DEFAULT_PX,
+} from '@/lib/map-sidebar-width'
 
 export type MapSidebarContextValue = {
   /** A sourcing page registered the map scope */
   active: boolean
   isOpen: boolean
-  mapTitle: string
-  enable: (title: string) => void
+  sidebarWidthPx: number
+  /** When `persist` is false (e.g. while dragging), width updates only in memory. */
+  setSidebarWidthPx: (width: number, persist?: boolean) => void
+  enable: () => void
   disable: () => void
   toggle: () => void
   setOpen: (open: boolean) => void
@@ -25,10 +34,18 @@ const MapSidebarContext = createContext<MapSidebarContextValue | null>(null)
 export function MapSidebarProvider({ children }: { children: ReactNode }) {
   const [active, setActive] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  const [mapTitle, setMapTitle] = useState('Supplier network')
+  const [sidebarWidthPx, setSidebarWidthPxState] = useState(
+    MAP_SIDEBAR_DEFAULT_PX
+  )
 
-  const enable = useCallback((title: string) => {
-    setMapTitle(title)
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() => {
+      setSidebarWidthPxState(readMapSidebarWidthPx())
+    })
+    return () => window.cancelAnimationFrame(id)
+  }, [])
+
+  const enable = useCallback(() => {
     setActive(true)
   }, [])
 
@@ -45,17 +62,38 @@ export function MapSidebarProvider({ children }: { children: ReactNode }) {
     setIsOpen(open)
   }, [])
 
+  const setSidebarWidthPx = useCallback(
+    (width: number, persist: boolean = true) => {
+      const next = clampMapSidebarWidthPx(width)
+      setSidebarWidthPxState(next)
+      if (persist) {
+        writeMapSidebarWidthPx(next)
+      }
+    },
+    []
+  )
+
   const value = useMemo<MapSidebarContextValue>(
     () => ({
       active,
       isOpen,
-      mapTitle,
+      sidebarWidthPx,
+      setSidebarWidthPx,
       enable,
       disable,
       toggle,
       setOpen,
     }),
-    [active, isOpen, mapTitle, enable, disable, toggle, setOpen]
+    [
+      active,
+      isOpen,
+      sidebarWidthPx,
+      setSidebarWidthPx,
+      enable,
+      disable,
+      toggle,
+      setOpen,
+    ]
   )
 
   return (

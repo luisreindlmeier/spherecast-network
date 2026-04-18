@@ -1,8 +1,9 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useId } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useMapSidebar } from '@/components/network-map/map-sidebar-context'
+import { clampMapSidebarWidthPx } from '@/lib/map-sidebar-width'
 
 const SupplierNetworkMap = dynamic(
   () => import('@/components/network-map/SupplierNetworkMap'),
@@ -14,11 +15,56 @@ const SupplierNetworkMap = dynamic(
   }
 )
 
-/** Full-viewport-height right rail (mirrors left app sidebar pattern). */
+/** Full-viewport-height right rail; width persisted in localStorage. */
 export default function MapRightSidebar() {
-  const { active, isOpen, mapTitle } = useMapSidebar()
-  const panelId = useId()
-  const titleId = `${panelId}-title`
+  const { active, isOpen, sidebarWidthPx, setSidebarWidthPx } = useMapSidebar()
+  const [isResizing, setIsResizing] = useState(false)
+  const dragRef = useRef<{ startX: number; startW: number } | null>(null)
+  const pendingWidthRef = useRef(sidebarWidthPx)
+
+  const onResizePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isOpen) {
+        return
+      }
+      e.preventDefault()
+      dragRef.current = { startX: e.clientX, startW: sidebarWidthPx }
+      pendingWidthRef.current = sidebarWidthPx
+      setIsResizing(true)
+      e.currentTarget.setPointerCapture(e.pointerId)
+    },
+    [isOpen, sidebarWidthPx]
+  )
+
+  const onResizePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      const d = dragRef.current
+      if (!d) {
+        return
+      }
+      const next = clampMapSidebarWidthPx(d.startW + (e.clientX - d.startX))
+      pendingWidthRef.current = next
+      setSidebarWidthPx(next, false)
+    },
+    [setSidebarWidthPx]
+  )
+
+  const endResize = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      const had = dragRef.current !== null
+      dragRef.current = null
+      setIsResizing(false)
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId)
+      } catch {
+        /* already released */
+      }
+      if (had) {
+        setSidebarWidthPx(pendingWidthRef.current, true)
+      }
+    },
+    [setSidebarWidthPx]
+  )
 
   if (!active) {
     return null
@@ -26,20 +72,27 @@ export default function MapRightSidebar() {
 
   return (
     <aside
-      id={panelId}
       className={`map-right-sidebar${isOpen ? ' is-open' : ''}`}
+      style={{
+        width: isOpen ? sidebarWidthPx : 0,
+        transition: isResizing ? 'none' : 'width 0.22s ease',
+      }}
       aria-hidden={!isOpen}
-      aria-labelledby={titleId}
+      aria-label={isOpen ? 'Supplier network map' : undefined}
     >
+      {isOpen ? (
+        <div
+          className="map-right-sidebar-resize-handle"
+          onPointerDown={onResizePointerDown}
+          onPointerMove={onResizePointerMove}
+          onPointerUp={endResize}
+          onPointerCancel={endResize}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Map panel width"
+        />
+      ) : null}
       <div className="map-right-sidebar-inner">
-        <header className="map-right-sidebar-header">
-          <span id={titleId} className="map-right-sidebar-header-title">
-            {mapTitle}
-          </span>
-          <span className="map-right-sidebar-header-hint">
-            Customers · suppliers · flows
-          </span>
-        </header>
         <div className="map-right-sidebar-map">
           {isOpen ? <SupplierNetworkMap /> : null}
         </div>

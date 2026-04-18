@@ -5,7 +5,7 @@ import PageMapDrawer from '@/components/network-map/PageMapDrawer'
 
 export default function RawMaterialsPage() {
   return (
-    <PageMapDrawer mapTitle="Supplier network · materials context">
+    <PageMapDrawer>
       <PageHeader
         eyebrow="Sourcing"
         title="Raw Materials"

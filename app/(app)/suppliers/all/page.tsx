@@ -5,7 +5,7 @@ import PageMapDrawer from '@/components/network-map/PageMapDrawer'
 
 export default function AllSuppliersPage() {
   return (
-    <PageMapDrawer mapTitle="Supplier network · full directory">
+    <PageMapDrawer>
       <PageHeader
         eyebrow="Sourcing · Suppliers"
         title="All Suppliers"
