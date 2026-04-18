@@ -128,14 +128,14 @@ const config: Partial<Config> = {
 }
 
 /** Eye distance from orbit center in data units (larger = more zoomed out). */
-const CAMERA_START_DISTANCE = 2.2
+const CAMERA_START_DISTANCE = 3.45
 
 /**
- * View from “above + right” in data space (+x, +y, +z) so the UMAP mass sits
- * more centered in the viewport; normalized when building eye offset.
+ * View from “above + right” in data space (+x, +y, +z); stronger +z for a
+ * higher vantage so more of the cloud fits without edge clipping.
  */
 function initialCameraViewDir(): { x: number; y: number; z: number } {
-  return { x: 1.42, y: 1.38, z: 1.45 }
+  return { x: 1.38, y: 1.34, z: 1.62 }
 }
 
 /** Arithmetic mean — used as zoom fallback when layout has no camera.center. */
