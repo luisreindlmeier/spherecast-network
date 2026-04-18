@@ -17,6 +17,12 @@ import {
 } from 'lucide-react'
 import { useViewer } from '@/lib/viewer-context'
 
+interface SidebarProps {
+  productsBadge?: number
+  rawMaterialsBadge?: number
+  suppliersBadge?: number
+}
+
 interface NavItem {
   label: string
   href: string
@@ -36,58 +42,6 @@ const topItems: NavItem[] = [
     label: 'Cockpit',
     href: '/cockpit',
     icon: <LayoutGrid size={16} />,
-    badge: 3,
-  },
-]
-
-const sections: NavSection[] = [
-  {
-    id: 'intelligence',
-    label: 'My Intelligence',
-    collapsible: true,
-    items: [
-      {
-        label: 'Opportunities',
-        href: '/opportunities',
-        icon: <Target size={16} />,
-        badge: 12,
-      },
-      {
-        label: 'Similarity Map',
-        href: '/similarity-map',
-        icon: <Sparkles size={16} />,
-      },
-      {
-        label: 'Ingredient Graph',
-        href: '/ingredient-graph',
-        icon: <Network size={16} />,
-      },
-    ],
-  },
-  {
-    id: 'sourcing',
-    label: 'Sourcing',
-    collapsible: true,
-    items: [
-      {
-        label: 'Products',
-        href: '/products',
-        icon: <Box size={16} />,
-        badge: 22,
-      },
-      {
-        label: 'Raw Materials',
-        href: '/raw-materials',
-        icon: <Atom size={16} />,
-        badge: 149,
-      },
-      { label: 'Suppliers', href: '/suppliers', icon: <Building2 size={16} /> },
-      {
-        label: 'Evidence Trails',
-        href: '/evidence-trails',
-        icon: <FileText size={16} />,
-      },
-    ],
   },
 ]
 
@@ -146,7 +100,11 @@ function SectionHeader({
   )
 }
 
-export default function Sidebar() {
+export default function Sidebar({
+  productsBadge,
+  rawMaterialsBadge,
+  suppliersBadge,
+}: SidebarProps) {
   const pathname = usePathname()
   const { viewer, toggle } = useViewer()
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -189,7 +147,60 @@ export default function Sidebar() {
           ))}
         </div>
 
-        {sections.map((section) => {
+        {[
+          {
+            id: 'intelligence',
+            label: 'My Intelligence',
+            collapsible: true,
+            items: [
+              {
+                label: 'Opportunities',
+                href: '/opportunities',
+                icon: <Target size={16} />,
+              },
+              {
+                label: 'Similarity Map',
+                href: '/similarity-map',
+                icon: <Sparkles size={16} />,
+              },
+              {
+                label: 'Ingredient Graph',
+                href: '/ingredient-graph',
+                icon: <Network size={16} />,
+              },
+            ],
+          },
+          {
+            id: 'sourcing',
+            label: 'Sourcing',
+            collapsible: true,
+            items: [
+              {
+                label: 'Products',
+                href: '/products',
+                icon: <Box size={16} />,
+                badge: productsBadge,
+              },
+              {
+                label: 'Raw Materials',
+                href: '/raw-materials',
+                icon: <Atom size={16} />,
+                badge: rawMaterialsBadge,
+              },
+              {
+                label: 'Suppliers',
+                href: '/suppliers',
+                icon: <Building2 size={16} />,
+                badge: suppliersBadge,
+              },
+              {
+                label: 'Evidence Trails',
+                href: '/evidence-trails',
+                icon: <FileText size={16} />,
+              },
+            ],
+          },
+        ].map((section) => {
           const open = openSections[section.id]
           return (
             <div key={section.id} className="nav-section">

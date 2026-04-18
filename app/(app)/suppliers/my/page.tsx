@@ -1,78 +1,48 @@
 import PageHeader from '@/components/layout/PageHeader'
 import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
+import SuppliersTable from '@/components/sourcing/SuppliersTable'
 import { getSuppliers } from '@/lib/queries'
 
 export default async function MySuppliersPage() {
-  const suppliers = await getSuppliers()
+  const rows = await getSuppliers()
+
+  const maxMaterials = Math.max(...rows.map((r) => r.materialCount), 1)
+  const totalLinks = rows.reduce((s, r) => s + r.materialCount, 0)
+  const avgMaterials =
+    rows.length > 0 ? Math.round(totalLinks / rows.length) : 0
 
   return (
     <PageMapDrawer>
       <PageHeader
         eyebrow="Sourcing · Suppliers"
         title="My Suppliers"
-        description="Suppliers you already work with — active contracts, qualifications and open RFQs."
+        description="All qualified suppliers in the Spherecast network — material coverage and sourcing breadth."
         actions={<MapSidebarToggle />}
       />
 
       <div
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 8,
-          overflow: 'hidden',
-        }}
+        className="stat-row"
+        style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 20 }}
       >
-        <div
-          style={{
-            padding: '10px 16px',
-            borderBottom: '1px solid var(--border)',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {suppliers.length} qualified suppliers
-          </span>
+        <div className="stat-card">
+          <div className="stat-label">Suppliers</div>
+          <div className="stat-value">{rows.length}</div>
+          <div className="stat-delta">qualified</div>
         </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr auto',
-          }}
-        >
-          {suppliers.map((s, i) => (
-            <div key={s.id} style={{ display: 'contents' }}>
-              <div
-                style={{
-                  padding: '11px 16px',
-                  fontSize: 13,
-                  color: 'var(--text-primary)',
-                  borderTop: i === 0 ? 'none' : '1px solid var(--border)',
-                }}
-              >
-                {s.name}
-              </div>
-              <div
-                style={{
-                  padding: '11px 16px',
-                  fontSize: 11,
-                  color: 'var(--text-muted)',
-                  borderTop: i === 0 ? 'none' : '1px solid var(--border)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {s.productCount} material{s.productCount !== 1 ? 's' : ''}
-              </div>
-            </div>
-          ))}
+        <div className="stat-card">
+          <div className="stat-label">Material Links</div>
+          <div className="stat-value">{totalLinks.toLocaleString()}</div>
+          <div className="stat-delta">total pairings</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Avg per Supplier</div>
+          <div className="stat-value">{avgMaterials}</div>
+          <div className="stat-delta">materials supplied</div>
         </div>
       </div>
+
+      <SuppliersTable rows={rows} maxMaterials={maxMaterials} />
     </PageMapDrawer>
   )
 }

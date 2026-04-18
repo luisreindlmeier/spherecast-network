@@ -1,95 +1,64 @@
 import PageHeader from '@/components/layout/PageHeader'
 import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
+import RawMaterialsTable from '@/components/sourcing/RawMaterialsTable'
 import { getRawMaterials } from '@/lib/queries'
 
 export default async function RawMaterialsPage() {
-  const materials = await getRawMaterials()
+  const rows = await getRawMaterials()
+
+  const withSuppliers = rows.filter((r) => r.supplierCount > 0).length
+  const noSuppliers = rows.filter((r) => r.supplierCount === 0).length
+  const multiSuppliers = rows.filter((r) => r.supplierCount >= 2).length
 
   return (
     <PageMapDrawer>
       <PageHeader
         eyebrow="Sourcing"
         title="Raw Materials"
-        description="The ingredients you buy — with substitutes, specs and active suppliers."
+        description="All ingredients in the Spherecast network — supplier coverage, BOM usage, and consolidation potential."
         actions={<MapSidebarToggle />}
       />
 
       <div
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 8,
-          overflow: 'hidden',
-        }}
+        className="stat-row"
+        style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: 20 }}
       >
-        <div
-          style={{
-            padding: '10px 16px',
-            borderBottom: '1px solid var(--border)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span
+        <div className="stat-card">
+          <div className="stat-label">Raw Materials</div>
+          <div className="stat-value">{rows.length}</div>
+          <div className="stat-delta">total in network</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Covered</div>
+          <div className="stat-value" style={{ color: 'var(--accent-green)' }}>
+            {withSuppliers}
+          </div>
+          <div className="stat-delta">have ≥1 supplier</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Multi-Supplier</div>
+          <div className="stat-value" style={{ color: 'var(--accent-blue)' }}>
+            {multiSuppliers}
+          </div>
+          <div className="stat-delta">≥2 suppliers</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Uncovered</div>
+          <div
+            className="stat-value"
             style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
+              color:
+                noSuppliers > 0 ? 'var(--accent-red)' : 'var(--text-muted)',
             }}
           >
-            {materials.length} raw materials
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'auto 1fr auto',
-          }}
-        >
-          {materials.map((m, i) => (
-            <div key={m.id} style={{ display: 'contents' }}>
-              <div
-                style={{
-                  padding: '11px 8px 11px 16px',
-                  fontFamily: 'var(--font-secondary)',
-                  fontSize: 11,
-                  color: 'var(--text-muted)',
-                  borderTop: i === 0 ? 'none' : '1px solid var(--border)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {m.sku}
-              </div>
-              <div
-                style={{
-                  padding: '11px 16px',
-                  fontSize: 13,
-                  color: 'var(--text-primary)',
-                  borderTop: i === 0 ? 'none' : '1px solid var(--border)',
-                }}
-              >
-                {m.company?.name ?? '—'}
-              </div>
-              <div
-                style={{
-                  padding: '11px 16px',
-                  fontSize: 11,
-                  color: 'var(--text-muted)',
-                  borderTop: i === 0 ? 'none' : '1px solid var(--border)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {m.supplierCount > 0
-                  ? `${m.supplierCount} supplier${m.supplierCount !== 1 ? 's' : ''}`
-                  : '—'}
-              </div>
-            </div>
-          ))}
+            {noSuppliers}
+          </div>
+          <div className="stat-delta">no supplier yet</div>
         </div>
       </div>
+
+      <RawMaterialsTable rows={rows} />
     </PageMapDrawer>
   )
 }
