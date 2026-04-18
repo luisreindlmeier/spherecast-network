@@ -1,5 +1,6 @@
 import PageHeader from '@/components/layout/PageHeader'
 import DummyBlock from '@/components/layout/DummyBlock'
+import PageMapDrawer from '@/components/network-map/PageMapDrawer'
 
 const products = [
   { sku: 'NF-D3-5000', name: 'Vitamin D3 Softgel', ingredients: 4 },
@@ -11,7 +12,7 @@ const products = [
 
 export default function ProductsPage() {
   return (
-    <>
+    <PageMapDrawer mapTitle="Supplier network · products context">
       <PageHeader
         eyebrow="Sourcing"
         title="Products"
@@ -63,6 +64,6 @@ export default function ProductsPage() {
           ))}
         </div>
       </DummyBlock>
-    </>
+    </PageMapDrawer>
   )
 }
