@@ -2,18 +2,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import {
-  Zap,
-  LayoutDashboard,
+  LayoutGrid,
+  Target,
   Sparkles,
   Network,
-  Globe,
+  Box,
+  Atom,
+  Building2,
   FileText,
-  Users,
-  Package,
-  Truck,
-  BarChart2,
+  Lock,
+  ChevronDown,
 } from 'lucide-react'
+import { useViewer } from '@/lib/viewer-context'
 
 interface NavItem {
   label: string
@@ -22,213 +24,224 @@ interface NavItem {
   badge?: string | number
 }
 
-const planningNav: NavItem[] = [
-  {
-    label: 'Cockpit',
-    href: '/cockpit',
-    icon: <LayoutDashboard size={16} />,
-    badge: 12,
-  },
-  {
-    label: 'Opportunities',
-    href: '/opportunities',
-    icon: <BarChart2 size={16} />,
-    badge: 12,
-  },
-  {
-    label: 'Similarity Map',
-    href: '/similarity-map',
-    icon: <Sparkles size={16} />,
-  },
-  {
-    label: 'Ingredient Graph',
-    href: '/ingredient-graph',
-    icon: <Network size={16} />,
-  },
-  {
-    label: 'Supplier Intel',
-    href: '/supplier-intel',
-    icon: <Globe size={16} />,
-  },
-  {
-    label: 'Evidence Trails',
-    href: '/evidence-trails',
-    icon: <FileText size={16} />,
-  },
-]
+interface NavSection {
+  id: string
+  label: string
+  collapsible?: boolean
+  items: NavItem[]
+}
 
-const recordsNav: NavItem[] = [
+const sections: NavSection[] = [
   {
-    label: 'Customers',
-    href: '/customers',
-    icon: <Users size={16} />,
-    badge: 7,
+    id: 'overview',
+    label: 'Overview',
+    collapsible: true,
+    items: [
+      {
+        label: 'Cockpit',
+        href: '/cockpit',
+        icon: <LayoutGrid size={15} />,
+        badge: 3,
+      },
+    ],
   },
   {
-    label: 'Raw Materials',
-    href: '/raw-materials',
-    icon: <Package size={16} />,
-    badge: 876,
+    id: 'intelligence',
+    label: 'My Intelligence',
+    collapsible: true,
+    items: [
+      {
+        label: 'Opportunities',
+        href: '/opportunities',
+        icon: <Target size={15} />,
+        badge: 12,
+      },
+      {
+        label: 'Similarity Map',
+        href: '/similarity-map',
+        icon: <Sparkles size={15} />,
+      },
+      {
+        label: 'Ingredient Graph',
+        href: '/ingredient-graph',
+        icon: <Network size={15} />,
+      },
+    ],
   },
   {
-    label: 'Suppliers',
-    href: '/suppliers',
-    icon: <Truck size={16} />,
-    badge: 40,
+    id: 'sourcing',
+    label: 'Sourcing',
+    collapsible: true,
+    items: [
+      {
+        label: 'Products',
+        href: '/products',
+        icon: <Box size={15} />,
+        badge: 22,
+      },
+      {
+        label: 'Raw Materials',
+        href: '/raw-materials',
+        icon: <Atom size={15} />,
+        badge: 149,
+      },
+      { label: 'Suppliers', href: '/suppliers', icon: <Building2 size={15} /> },
+      {
+        label: 'Evidence Trails',
+        href: '/evidence-trails',
+        icon: <FileText size={15} />,
+      },
+    ],
   },
 ]
 
 function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   return (
-    <Link
-      href={item.href}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '6px 12px',
-        borderRadius: 6,
-        textDecoration: 'none',
-        fontSize: 13,
-        color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
-        background: active ? 'rgba(255,255,255,0.08)' : 'transparent',
-        transition: 'background 0.12s, color 0.12s',
-      }}
-    >
-      <span
-        style={{
-          color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
-          flexShrink: 0,
-        }}
-      >
-        {item.icon}
-      </span>
-      <span style={{ flex: 1 }}>{item.label}</span>
+    <Link href={item.href} className="nav-link" data-active={active}>
+      <span className="nav-link-icon">{item.icon}</span>
+      <span className="nav-link-label">{item.label}</span>
       {item.badge !== undefined && (
-        <span
-          style={{
-            background: 'var(--accent-blue)',
-            color: '#fff',
-            fontSize: 11,
-            fontWeight: 500,
-            padding: '1px 6px',
-            borderRadius: 999,
-            minWidth: 20,
-            textAlign: 'center',
-          }}
-        >
-          {item.badge}
-        </span>
+        <span className="nav-link-badge">{item.badge}</span>
       )}
     </Link>
   )
 }
 
+function SectionHeader({
+  label,
+  collapsible,
+  open,
+  onToggle,
+  trailingIcon,
+}: {
+  label: string
+  collapsible: boolean
+  open: boolean
+  onToggle?: () => void
+  trailingIcon?: React.ReactNode
+}) {
+  const Component = collapsible ? 'button' : 'div'
+  return (
+    <Component
+      className="nav-section-header"
+      data-collapsible={collapsible}
+      onClick={collapsible ? onToggle : undefined}
+      type={collapsible ? 'button' : undefined}
+    >
+      {collapsible && (
+        <ChevronDown
+          size={11}
+          style={{
+            transform: open ? 'rotate(0deg)' : 'rotate(-90deg)',
+            transition: 'transform 0.15s',
+            color: 'var(--text-muted)',
+            flexShrink: 0,
+          }}
+        />
+      )}
+      <span
+        className="nav-section-label"
+        style={{ flex: 1, textAlign: 'left' }}
+      >
+        {label}
+      </span>
+      {trailingIcon}
+    </Component>
+  )
+}
+
 export default function Sidebar() {
   const pathname = usePathname()
+  const { viewer, toggle } = useViewer()
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    overview: true,
+    intelligence: true,
+    sourcing: true,
+    admin: true,
+  })
+
+  const toggleSection = (id: string) =>
+    setOpenSections((s) => ({ ...s, [id]: !s[id] }))
 
   return (
-    <aside
-      style={{
-        width: 220,
-        flexShrink: 0,
-        background: 'var(--bg-sidebar)',
-        borderRight: '0.5px solid var(--border)',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Logo */}
-      <div
-        style={{
-          padding: '18px 16px 14px',
-          borderBottom: '0.5px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-        }}
+    <aside className="sidebar">
+      {/* Brand */}
+      <Link
+        href="/cockpit"
+        className="sidebar-brand"
+        aria-label="Spherecast home"
       >
-        <Zap size={16} color="var(--accent-blue)" />
-        <span
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-          }}
-        >
-          Spherecast
-        </span>
-      </div>
-
-      {/* Agnes badge */}
-      <div style={{ padding: '10px 16px 6px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            background: 'rgba(59,130,246,0.10)',
-            border: '0.5px solid rgba(59,130,246,0.25)',
-            borderRadius: 6,
-            padding: '5px 10px',
-          }}
-        >
-          <Zap size={12} color="var(--accent-blue)" />
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 500,
-              color: 'var(--accent-blue)',
-            }}
-          >
-            Agnes AI
-          </span>
-          <span className="pulse-dot" style={{ marginLeft: 'auto' }} />
-        </div>
-      </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/spherecast-logo.svg"
+          alt="Spherecast"
+          className="sidebar-brand-logo"
+        />
+      </Link>
 
       {/* Nav */}
-      <nav style={{ flex: 1, overflow: 'auto', padding: '12px 8px' }}>
-        <div style={{ marginBottom: 4 }}>
-          <div style={{ padding: '4px 12px 8px' }} className="section-label">
-            Planning
-          </div>
-          {planningNav.map((item) => (
-            <NavLink
-              key={item.href}
-              item={item}
-              active={pathname === item.href}
-            />
-          ))}
-        </div>
+      <nav className="sidebar-nav">
+        {sections.map((section) => {
+          const open = openSections[section.id]
+          return (
+            <div key={section.id} className="nav-section">
+              <SectionHeader
+                label={section.label}
+                collapsible={section.collapsible ?? false}
+                open={open}
+                onToggle={() => toggleSection(section.id)}
+              />
+              {open && (
+                <div className="nav-section-items">
+                  {section.items.map((item) => (
+                    <NavLink
+                      key={item.href}
+                      item={item}
+                      active={
+                        pathname === item.href ||
+                        pathname.startsWith(item.href + '/')
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
 
-        <div style={{ marginTop: 16 }}>
-          <div style={{ padding: '4px 12px 8px' }} className="section-label">
-            Records
-          </div>
-          {recordsNav.map((item) => (
-            <NavLink
-              key={item.href}
-              item={item}
-              active={pathname === item.href}
-            />
-          ))}
+        {/* Admin-only section */}
+        <div className="nav-section">
+          <SectionHeader
+            label="Spherecast Only"
+            collapsible
+            open={openSections.admin}
+            onToggle={() => toggleSection('admin')}
+            trailingIcon={<Lock size={10} color="var(--text-muted)" />}
+          />
+          {openSections.admin && (
+            <div className="nav-section-items">
+              <div className="nav-locked-notice">
+                <Lock size={11} />
+                <span>Admin access only</span>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
-      {/* Footer */}
-      <div
-        style={{
-          padding: '12px 16px',
-          borderTop: '0.5px solid var(--border)',
-          fontSize: 11,
-          color: 'var(--text-muted)',
-        }}
-      >
-        Last scan: 14 min ago
-      </div>
+      {/* Viewer switcher */}
+      <button type="button" className="viewer-switcher" onClick={toggle}>
+        <div className="viewer-avatar" data-role={viewer.role}>
+          {viewer.initials}
+        </div>
+        <div className="viewer-meta">
+          <span className="viewer-org">{viewer.orgName}</span>
+          <span className="viewer-role">
+            {viewer.role === 'customer' ? 'Customer view' : 'Spherecast admin'}
+          </span>
+        </div>
+        <span className="viewer-switch-hint">Switch</span>
+      </button>
     </aside>
   )
 }
