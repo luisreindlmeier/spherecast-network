@@ -9,8 +9,8 @@ export default function MySuppliersPage() {
       <PageHeader
         eyebrow="Sourcing · Suppliers"
         title="My Suppliers"
-        titleActions={<MapSidebarToggle />}
         description="Suppliers you already work with — active contracts, qualifications and open RFQs."
+        actions={<MapSidebarToggle />}
       />
       <DummyBlock title="40 qualified suppliers" hint="12 active contracts" />
     </PageMapDrawer>

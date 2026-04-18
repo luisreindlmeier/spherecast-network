@@ -9,8 +9,8 @@ export default function AllSuppliersPage() {
       <PageHeader
         eyebrow="Sourcing · Suppliers"
         title="All Suppliers"
-        titleActions={<MapSidebarToggle />}
         description="Every supplier in the Spherecast network plus external matches Agnes surfaced for your materials."
+        actions={<MapSidebarToggle />}
       />
       <DummyBlock title="2,840 suppliers" hint="network + external" />
     </PageMapDrawer>

@@ -14,7 +14,7 @@ export default function MapSidebarToggle() {
   return (
     <button
       type="button"
-      className="btn btn-ghost map-sidebar-toggle"
+      className="btn btn-ghost"
       onClick={toggle}
       aria-expanded={isOpen}
     >

@@ -9,8 +9,8 @@ export default function RawMaterialsPage() {
       <PageHeader
         eyebrow="Sourcing"
         title="Raw Materials"
-        titleActions={<MapSidebarToggle />}
         description="The 149 ingredients you buy, grouped by category — with substitutes, specs and active suppliers."
+        actions={<MapSidebarToggle />}
       />
       <DummyBlock title="149 materials" hint="8 categories" />
     </PageMapDrawer>

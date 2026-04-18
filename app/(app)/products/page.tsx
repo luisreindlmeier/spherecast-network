@@ -17,8 +17,8 @@ export default function ProductsPage() {
       <PageHeader
         eyebrow="Sourcing"
         title="Products"
-        titleActions={<MapSidebarToggle />}
         description="Your finished goods. Click a product to inspect its BOM and linked raw materials."
+        actions={<MapSidebarToggle />}
       />
 
       <DummyBlock title="22 finished goods" hint="showing 5 of 22">

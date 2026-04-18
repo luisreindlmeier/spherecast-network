@@ -349,10 +349,15 @@ button {
 /* ── Page header ─────────────────────────────────────────── */
 .page-header {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 32px;
+}
+
+.page-header-main {
+  flex: 1;
+  min-width: 0;
 }
 
 .page-eyebrow {
@@ -364,24 +369,12 @@ button {
   margin-bottom: 8px;
 }
 
-.page-title-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-}
-
 .page-title {
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text-primary);
   line-height: 1.2;
-}
-
-.map-sidebar-toggle {
-  flex-shrink: 0;
 }
 
 .page-description {
@@ -394,8 +387,11 @@ button {
 
 .page-actions {
   display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
   gap: 8px;
   flex-shrink: 0;
+  padding-top: 2px;
 }
 
 /* ── Right map sidebar (Deck.gl + MapLibre, app shell height) ─ */
@@ -465,6 +461,8 @@ button {
   height: 100%;
   min-width: 0;
   min-height: 0;
+  box-sizing: border-box;
+  padding: 10px 12px 12px 8px;
 }
 
 .map-right-sidebar-map {
@@ -474,8 +472,10 @@ button {
   display: flex;
   flex-direction: column;
   position: relative;
+  border-radius: 12px;
   overflow: hidden;
   contain: layout paint;
+  box-shadow: 0 0 0 1px var(--border);
 }
 
 .map-right-sidebar-map-loading {
@@ -497,6 +497,7 @@ button {
   width: 100%;
   position: relative;
   overflow: hidden;
+  border-radius: 10px;
   background: #0a0c10;
 }
 

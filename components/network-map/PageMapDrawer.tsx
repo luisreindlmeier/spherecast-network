@@ -9,7 +9,7 @@ export interface PageMapDrawerProps {
 
 /**
  * Registers this route as a “map page”: enables the global right sidebar.
- * Map toggle lives in `PageHeader` via `titleActions={<MapSidebarToggle />}`.
+ * Map toggle lives in `PageHeader` via `actions={<MapSidebarToggle />}`.
  */
 export default function PageMapDrawer({ children }: PageMapDrawerProps) {
   const { enable, disable } = useMapSidebar()

@@ -3,8 +3,6 @@ import type { ReactNode } from 'react'
 interface PageHeaderProps {
   eyebrow?: string
   title: string
-  /** Inline next to the page title (e.g. map toggle) */
-  titleActions?: ReactNode
   description?: string
   actions?: ReactNode
 }
@@ -12,18 +10,14 @@ interface PageHeaderProps {
 export default function PageHeader({
   eyebrow,
   title,
-  titleActions,
   description,
   actions,
 }: PageHeaderProps) {
   return (
     <div className="page-header">
-      <div>
+      <div className="page-header-main">
         {eyebrow && <div className="page-eyebrow">{eyebrow}</div>}
-        <div className="page-title-row">
-          <h1 className="page-title">{title}</h1>
-          {titleActions}
-        </div>
+        <h1 className="page-title">{title}</h1>
         {description && <p className="page-description">{description}</p>}
       </div>
       {actions && <div className="page-actions">{actions}</div>}
