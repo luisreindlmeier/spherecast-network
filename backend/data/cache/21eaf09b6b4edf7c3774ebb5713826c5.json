@@ -1,0 +1,15 @@
+{
+  "name": "choline bitartrate",
+  "functional_class": "nutrient",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Choline bitartrate is added as a nutrient supplement to provide choline, supporting cellular function and metabolism.",
+  "raw_text": "Whey Protein - Chocolate: L-choline-bitartrate 168mg, extrait de racine de chicorée de Bruxelles (Cichorium intybus L. sativum) 350mg, enveloppe de la capsule (hydroxypropylméthycellulose), extrait de coeur et de pétale d'artichaut (Cynara scolymus) 210mg, extrait de racine de pissenlit (Taraxacum officinale) 210mg, extrait de rhizome de curcuma (Curcuma longa) 140mg dont 95% de curcuminoïdes 133mg | Labels: en:vegetarian, en:vegan",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.8
+}

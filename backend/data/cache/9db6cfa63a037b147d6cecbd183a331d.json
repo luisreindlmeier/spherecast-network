@@ -1,0 +1,15 @@
+{
+  "name": "cocoa powder",
+  "functional_class": "flavor",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "An unsweetened powder derived from roasted cocoa beans that provides chocolate flavor and color to food products.",
+  "raw_text": "Le Choco: chocolate powder 98% (sugar, cocoa), emulsifier: soy lecithin, natural flavour, cinnamon, | Labels: en:no-gluten, en:green-dot, en:made-in-france, en:nutriscore, en:nutriscore-grade-a | Caobel: Ingrédients Sucre, poudre de cacao, cernates, amidon, arôme artificiel vanilline, sel Conservation Afin de préserver toutes les qualités de Caobe il est recommandé de bien refermer le sachet et de le conserver dans un endroit sea. | Nesquik Cocoa: Sugar, Fat Reduced Cocoa Powder, Emulsifier From Plant Origin: Soya Lecithin, Salt, Vitamins (C, D), Natural Vanilla Flavor, Cinnamon | Labels: en:no-gluten, en:green-dot",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

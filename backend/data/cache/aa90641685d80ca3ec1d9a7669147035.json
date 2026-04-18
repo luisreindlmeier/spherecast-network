@@ -1,0 +1,17 @@
+{
+  "name": "organic whey protein",
+  "functional_class": "protein",
+  "allergens": [
+    "milk"
+  ],
+  "vegan": false,
+  "kosher": true,
+  "halal": null,
+  "e_number": null,
+  "description": "Organic whey protein concentrate derived from milk, used to boost the protein content and improve the nutritional and functional properties of food products.",
+  "raw_text": "Whey Protein natural flavour: 100% poudre de protéine de petit-lait biologique concentré à 80%. | Labels: en:no-gluten, en:organic, en:vegetarian, en:eu-organic | The Organic Whey Proteine PDR: Organic whey protein concentrate | organic whey protein: Organic Whey Protein Concentrate, Organic Sunflower Lecithin.  CONTAINS MILK | Labels: en:no-gluten, en:organic, en:kosher, en:no-gmos, en:usda-organic",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

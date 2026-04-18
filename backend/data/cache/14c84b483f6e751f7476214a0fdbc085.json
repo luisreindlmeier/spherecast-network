@@ -1,0 +1,15 @@
+{
+  "name": "cellulose gel",
+  "functional_class": "thickener",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": "E460",
+  "description": "Provides thickening and stabilizing properties to improve texture and mouthfeel by forming a gel matrix.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

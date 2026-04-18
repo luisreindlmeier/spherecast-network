@@ -1,0 +1,15 @@
+{
+  "name": "rice bran",
+  "functional_class": "bulking-agent",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": null,
+  "description": "Rice bran serves as a bulking agent that contributes dietary fiber, natural oils, vitamins, and minerals to food products.",
+  "raw_text": "Wholegrain: Steamed parboiled wholegrain rice (98%), Sunflower oil. | Labels: en:green-dot | Rice Bran Oil: Rice Bran Oil | Labels: en:no-gluten, en:no-cholesterol | SAFOLA ACTIVE - MULTI-SOURCE EDIBLE OIL: PHYSICALLY REFINED RICE BRAN OIL, REFINED SOYA BEAN OIL, ANTIOXIDANTS (INS 319, 330), VITAMINS, ANTI FOAMING AGENT (INS 900a). | Labels: en:vegetarian, en:green-dot-india",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.6
+}

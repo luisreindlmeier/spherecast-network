@@ -1,0 +1,17 @@
+{
+  "name": "hydrolyzed whey protein",
+  "functional_class": "protein",
+  "allergens": [
+    "milk"
+  ],
+  "vegan": false,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Hydrolyzed whey protein is a milk-derived protein that provides a rapidly absorbable source of amino acids to increase protein content.",
+  "raw_text": "ISO100 HYDROLYZED PROTEIN POWDER 100% WHEY PROTEIN ISOLATE GOURMET VANILLA: HYDROLYZED WHEY PROTEIN ISOLATE, WHEY PROTEIN ISOLATE. LESS THAN 2% OF: NATURAL AND ARTIFICIAL FLAVORS, SALT, SOY LECITHIN, SUCRALOSE, STEVIOL GLYCOSIDES (STEVIA) | Labels: en:no-gluten, en:contains-gmos, en:contains-milk, en:contains-soy | ISO 100  Hydrolyzed 100% Whey Protein Isolate: Hydrolyzed Whey Protein Isolate, Cocoa (Processed with Alkali), Natural & Artificial Flavors, Salt, Potassium Chloride, Sucralose, Stevia Leaf Extract. | Labels: en:no-gluten, en:made-in-usa | ISO100 hydrolyzed protein powder strawberry flavour 100% whey protein isolate: Hydrolized whey protein isolate (milk) (49%), whey protein isolate (milk) (47%), flavouring, emulsifier (lecithins), salt, colouring food (maltodextrin, beetroot juice powder), acids (malic acid, citric acid), sweeteners (sucralose, steviol glycosides from stevia), anti-caking agent (silicon dioxide). May contain: eggs, soy. As part of a varied and balanced diet and a healthy lifestyle. | Labels: en:no-gluten, en:green-dot, en:made-in-germany, fr:triman",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

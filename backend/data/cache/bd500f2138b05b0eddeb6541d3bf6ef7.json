@@ -1,0 +1,15 @@
+{
+  "name": "hemp seed protein",
+  "functional_class": "protein",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": null,
+  "description": "Hemp seed protein serves as a plant-based protein source that boosts the protein content and contributes to texture in food products.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

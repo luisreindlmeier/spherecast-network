@@ -1,0 +1,15 @@
+{
+  "name": "natural and artificial flavors",
+  "functional_class": "flavor",
+  "allergens": [],
+  "vegan": null,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Provides or enhances flavor and aroma in food products.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

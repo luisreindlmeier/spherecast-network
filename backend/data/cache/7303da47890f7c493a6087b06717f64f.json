@@ -1,0 +1,15 @@
+{
+  "name": "vitamin c calcium ascorbate",
+  "functional_class": "vitamin",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": "E302",
+  "description": "Calcium ascorbate serves as a source of vitamin C and acts as a water-soluble antioxidant to prevent oxidation and fortify foods with vitamin C.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

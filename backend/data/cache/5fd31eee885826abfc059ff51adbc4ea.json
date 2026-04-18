@@ -1,0 +1,15 @@
+{
+  "name": "natural strawberry flavor",
+  "functional_class": "flavor",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Natural strawberry flavor provides characteristic fruity aroma and taste to food products.",
+  "raw_text": "PLANT PROTEIN: Soya base - NBA Stone Sofa protein isolate, Strawberry-red currant-raspberry mix (286) (Strawbery (186) fed an Faba bean protein, Calcium (Tri-calciumcitrate), Stabiliser (Pectins), Natural flavourings, Modified at ent arcentrate koidity regulators (Citric acid, Sodium citrates), Vitamins Β12, D2, Live cultures is fermonis aper can traces of nuts (no peanuts), Free from dairy and gluten, Naturally | Labels: en:vegetarian, en:no-gluten, en:no-milk, en:vegan, en:certified-gluten-free | Strawberry Preserves: WATER*, STRAWBERRIES+, POLYDEXTROSE*. MALTODEXTRIN*, FRUIT PECTIN, CITRIC ACID, LOCUST BEAN GUM*. NATURAL FLAVORS*, POTASSIUM SORBATE (PRESERVATIVE), SUCRALOSE (NON NUTRITIVE SWEETENER)*, CALCIUM CHLORIDE*, RED 40*. | Labels: en:natural-flavors | original smooth style strawberry: Cultured Grade A Low Fat Milk, Sugar, Modified Corn Starch, Contains 1% less or less of: Corn Starch, Citric Acid, Vegetable Juice (for color), Natural Flavor, Potassium Sorbate Added to Maintain Freshness, Vitamin A Acetate, Vitamin D3. | Labels: en:no-gluten, en:natural-flavors",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.8
+}

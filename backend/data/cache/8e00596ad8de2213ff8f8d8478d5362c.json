@@ -1,0 +1,15 @@
+{
+  "name": "selenium",
+  "functional_class": "mineral",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Selenium is a trace mineral added to food products to provide essential micronutrient benefits.",
+  "raw_text": "Sélégerme: Germe de _blé_ 60%, levure maltée (levure 37%, extrait de malt de _blé_), levure enrichie en sélénium 0,2%, vitamine E | Labels: en:rich-in-vitamin-e, en:source-of-fibre, en:source-of-proteins, en:high-fibres, en:high-proteins | Skin Gummies 60 pièces: sirop de glucose ; sucre ; glucose ; gélifiant (pectine) ; collagène de poisson ; acidifiant (acide citrique, citrate de sodium) ; vitamine C (acide L-ascorbique) ; vitamine E (acétate de DL-Alpha-tocophéryle) ; arôme naturel de framboise, huile végétale (palme) ; vitamine A (acétate de rétinyle) ; citrate de zinc, colorant (concentré de carotte violette) ; vitamine B6 (chlorhydrate de pyridoxine) | Labels: fr:triman, en:biotin-zinc-and-selenium",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

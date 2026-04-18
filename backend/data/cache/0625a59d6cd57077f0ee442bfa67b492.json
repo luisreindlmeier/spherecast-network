@@ -1,0 +1,15 @@
+{
+  "name": "molybdenum",
+  "functional_class": "mineral",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": null,
+  "description": "Molybdenum is a trace mineral used to fortify food products and dietary supplements, supporting essential enzyme functions.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

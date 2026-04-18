@@ -1,0 +1,15 @@
+{
+  "name": "calcium citrate",
+  "functional_class": "mineral",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": "E333",
+  "description": "Calcium citrate is used to fortify food products with calcium and can function as an acidity regulator.",
+  "raw_text": ": Lactosérum déminéralisé (lait) – Huiles végétales (palme, colza, coprah, tournesol, huile monocellulaire) – Lactose (lait) – Lait écrémé – Maltodextrines – Concentré de protéines de lactosérum (lait) – Huile de poisson – Chlorure de choline – Émulsifiant (lécithine de soja) – Taurine – Inositol – L-tryptophane – L-carnitine – Vitamines: A,D,E,K,C,B1,B2,B3,B6, acide folique, B12, biotine, acide pan | Labels: fr:nursie, fr:bledina, fr:danone, fr:fabriquer-en-europe | Calcium Citrate Magnesium and Zinc: Calcium Citrate, Magnesium Oxide, Calcium Carbonate, Magnesium Stearate, Silicon Dioxide, Cellulose Coating, Zinc Oxide, Manganese Gluconate, Copper Gluconate, Boric Acid, Glycine, Cholecalciferol, Pyridoxine Hydrochloride | Labels: en:no-gluten, en:no-artificial-flavors, en:no-preservatives, en:no-artificial-colors, en:no-lactose | Calcium Citrate Magnesium and Zinc: Calcium Citrate, Cellulose (Plant Origin), Magnesium Oxide, Croscarmellose Sodium, Magnesium Stearate, Silicon Dioxide, Zinc Oxide, Manganese Gluconate, Copper Gluconate, Cellulose Coating, Boron Glycinate, Cholecalciferol | Labels: en:no-artificial-flavors, en:no-lactose",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

@@ -1,0 +1,17 @@
+{
+  "name": "coq10",
+  "functional_class": "antioxidant",
+  "allergens": [
+    "soybeans"
+  ],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Coenzyme Q10 is a lipid-soluble antioxidant nutrient that helps maintain product stability and provides health benefits.",
+  "raw_text": "Cold Milled Flaxseed, Almonds, Brazil Nuts, Walnuts & CoQ10: 69% flaxseed, 10% almonds, 10% brazil nuts, 10% walnuts, waxy maize starch, co-enzyme Q-10. | Labels: en:vegetarian, en:no-gluten, en:source-of-fibre, en:vegan, en:no-added-sugar | Ultra CoQ10: Medium chain triglycerides (palm oil), polysorbate 80, gelatin, glycerin, sorbitol, purified water, hydroxylated soy lecithin and annatto suspension in sunflower oil | coq10: soybean oil, glycerin, lecithin",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.8
+}

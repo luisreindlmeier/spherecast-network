@@ -1,0 +1,15 @@
+{
+  "name": "cellulose gum",
+  "functional_class": "thickener",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": "E466",
+  "description": "A water-soluble polymer used to thicken, stabilize, and improve the texture of food products.",
+  "raw_text": "King soopers city market, king soopers, chocolate cake: sugar, corn starch, partially hydrogenated vegtable oil (cotton seed and/or soybean), rice flour, soy lecithin, dextrin, confectioner's glaze, gum aribic, natural & artificial flavor, cellulose gum, carrageenan, carnauba wax, red 3. | Crunch Cake: ENRICHED WHEAT FLOUR BLEACHED (FLOUR BLEACHED (FLOUR, NIACIN, IRON THIAMINE MONONITRATE, RIBOFLAVIN, FOLIC ACID), SUGAR, EGGS, SOYBEAN OIL, WATER, MANGO, FOOD STARCH-MODIFIED (CORN), DEXTROSE, LEAVENING (SODIUM ALUMINUM PHOSPHATE, BAKING SODA, MONOCALCIUM",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

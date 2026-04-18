@@ -1,0 +1,15 @@
+{
+  "name": "vitamin a acetate",
+  "functional_class": "vitamin",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Vitamin A acetate is a stable form of vitamin A used to fortify foods and supply essential vitamin A activity for growth and vision.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

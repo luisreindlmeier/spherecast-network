@@ -1,0 +1,15 @@
+{
+  "name": "beet extract",
+  "functional_class": "colorant",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": "E162",
+  "description": "Provides natural red color and antioxidant properties in food products",
+  "raw_text": "Natural high performance preworkout energizer, natural citrus: Stevia, lemon juice powder",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.8
+}

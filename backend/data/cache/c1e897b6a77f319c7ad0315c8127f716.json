@@ -1,0 +1,15 @@
+{
+  "name": "softgel bovine gelatin",
+  "functional_class": "protein",
+  "allergens": [],
+  "vegan": false,
+  "kosher": false,
+  "halal": false,
+  "e_number": "E441",
+  "description": "Softgel bovine gelatin acts as a film-forming protein to encapsulate liquid ingredients, forming the gel matrix of softgel capsules.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

@@ -1,0 +1,15 @@
+{
+  "name": "vitamin d3 cholecalciferol",
+  "functional_class": "vitamin",
+  "allergens": [],
+  "vegan": false,
+  "kosher": true,
+  "halal": true,
+  "e_number": "E671",
+  "description": "A fat-soluble vitamin used to fortify foods, supporting bone health and immune function.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

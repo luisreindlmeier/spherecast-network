@@ -1,0 +1,15 @@
+{
+  "name": "vegetable acetoglycerides",
+  "functional_class": "emulsifier",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": "E472a",
+  "description": "Vegetable acetoglycerides are acetylated mono- and diglycerides derived from vegetable oils used as emulsifiers to stabilize fat–water mixtures in food products.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.5
+}

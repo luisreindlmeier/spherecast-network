@@ -1,0 +1,15 @@
+{
+  "name": "citric acid",
+  "functional_class": "acidulant",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": "E330",
+  "description": "Citric acid is used to provide tartness and act as an acidity regulator, controlling pH and enhancing flavor in food products.",
+  "raw_text": "Chyawanprash: Patala (Stenspermum suaveolens, St. Bk.), Agnatha (Clerodendrum phlomidis, St. B Gambhari (Gmelina arborea, St. Bk.) va (Aegle marmelos, St. Bk.), Shyon ika (Oroxylum indicum, St. BK.), Gokshura (Tribulus terrestris, Fr.), Shalaparni (Desmodium gangeticum, Pl.), Prishniparni (Uraria picta, Pl.), Brihati (Solanum indicum, Pl.), Kantakari (Solanum surattense, Pl.), Pippali (Piper longum, Fr.), Karka | Labels: en:no-artificial-flavors, en:no-artificial-sweeteners, en:no-artificial-flavourings-or-sweeteners | Organic Vegetable Broth - No Salt Added: Filtered Water, Organic Onions, Organic Celery, Organic Carrots, Organic Mushrooms, Organic Leeks, Organic Collard Greens, Organic Spinach, Organic Broccoli, Organic Fennel, Organic Tomatoes, Organic Parsley, Organic Black Peppercorns, Organic Garlic | Labels: en:low-or-no-salt, en:organic, en:no-preservatives, en:usda-organic, en:no-added-salt | Paluszki Serowe: Mleko pasteryzowane, sól, regulator kwasowości: kwas cytrynowy, kultury bakterii kwasu mlekowego.",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

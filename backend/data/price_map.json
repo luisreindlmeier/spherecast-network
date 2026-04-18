@@ -1,0 +1,23 @@
+{
+  "_comment": "Fictional USD/kg market prices by functional_class. Source: industry approximations, not real market data.",
+  "vitamin":        48.50,
+  "mineral":        11.20,
+  "protein":         7.80,
+  "fat":             4.20,
+  "sweetener":       1.80,
+  "carbohydrate":    2.10,
+  "emulsifier":      9.40,
+  "thickener":       6.30,
+  "stabilizer":      5.80,
+  "preservative":   12.50,
+  "antioxidant":    22.00,
+  "acidulant":       3.80,
+  "colorant":       18.00,
+  "flavor":         35.00,
+  "bulking-agent":   2.80,
+  "humectant":       5.40,
+  "enzyme":         65.00,
+  "nutrient":       14.20,
+  "solvent":         3.20,
+  "other":           8.00
+}

@@ -1,0 +1,15 @@
+{
+  "name": "aqueous coating",
+  "functional_class": "stabilizer",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": null,
+  "description": "An aqueous coating is a water-based protective film applied to food products to enhance surface appearance, prevent moisture loss, and extend shelf life.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.5
+}

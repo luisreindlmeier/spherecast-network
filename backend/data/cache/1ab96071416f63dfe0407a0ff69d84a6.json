@@ -1,0 +1,17 @@
+{
+  "name": "organic dairy whey protein concentrate",
+  "functional_class": "protein",
+  "allergens": [
+    "milk"
+  ],
+  "vegan": false,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Whey protein concentrate is a dairy-derived protein ingredient used to boost protein content and improve texture and functionality in food products.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

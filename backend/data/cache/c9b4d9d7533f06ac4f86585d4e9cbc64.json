@@ -1,0 +1,15 @@
+{
+  "name": "softgel capsule bovine gelatin",
+  "functional_class": "protein",
+  "allergens": [],
+  "vegan": false,
+  "kosher": false,
+  "halal": false,
+  "e_number": "E441",
+  "description": "Gelatin forms an edible, protective shell for softgel capsules to encapsulate and stabilize liquid or oil-based ingredients.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

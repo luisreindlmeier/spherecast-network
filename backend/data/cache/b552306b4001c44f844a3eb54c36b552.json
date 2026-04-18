@@ -1,0 +1,15 @@
+{
+  "name": "vegetarian capsule",
+  "functional_class": "other",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": null,
+  "description": "A plant-based capsule shell made from polymers such as hypromellose used to encase and protect active ingredients, providing a gelatin-free delivery system.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

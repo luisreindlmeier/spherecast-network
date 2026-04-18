@@ -1,0 +1,17 @@
+{
+  "name": "medium chain triglycerides mct from coconut oil",
+  "functional_class": "fat",
+  "allergens": [
+    "milk"
+  ],
+  "vegan": false,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Provides a concentrated source of rapidly digestible fat, offering energy and improving texture and mouthfeel in food products.",
+  "raw_text": "Mct oil powder made from coconut: Medium chain triglycerides, maltodextrin, sodium caseinate. | Labels: en:no-gluten",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.8
+}

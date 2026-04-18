@@ -1,0 +1,15 @@
+{
+  "name": "non gmo citric acid",
+  "functional_class": "acidulant",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": "E330",
+  "description": "Citric acid functions as an acidulant to impart tartness, regulate pH, and help preserve food products.",
+  "raw_text": "Labels: en:no-gmos, en:non-gmo-project | Labels: en:no-gmos, en:non-gmo-project | Citric acid: CITRIC ACID | Labels: en:no-gluten, en:vegetarian, en:no-gmos, en:vegan, en:non-gmo-project",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.8
+}

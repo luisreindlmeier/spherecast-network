@@ -1,0 +1,15 @@
+{
+  "name": "cultured nutrients",
+  "functional_class": "nutrient",
+  "allergens": [],
+  "vegan": null,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Blend of nutrients supplied to support microbial or probiotic growth during fermentation in food and beverage processing",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

@@ -1,0 +1,15 @@
+{
+  "name": "natural peach flavor",
+  "functional_class": "flavor",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Provides peach flavor to food and beverage products.",
+  "raw_text": "Peach Nectarine Naturally Flavored Sparkling Mountain Spring Water: CARBONATED MOUNTAIN SPRING WATER, NATURAL FLAVORS, PEACH JUICE CONCENTRATE, MALIC ACID, ESTER GUM, POTASSIUM BENZOATE (TO ENSURE FRESHNESS), SUCRALOSE, GREEN TEA EXTRACT, CALCIUM DISODIUM EDTA (TO PROTECT FLAVOR), BIOTIN 1% TRIT. (MALTODEXTRIN), NIACINAMI | Labels: en:natural-flavors | fuzetea ροδάκινο: water, sugar, citric acid acidifier, concentrated peach extract 0.1%, natural flavors, trisodium cicia corrector, ascorbic acid antioxidant, rose extract | Labels: en:natural-flavors | Peach Rings: Isomalto-oligosaccharides (vegetable source), Water, Modified potato starch, Chicory root fibre, Rice flour, Malic acid, Pectin, Citric acid, Lactic acid, Fumaric acid, Stevia leaf extract, Pumpkin, carrot, and apple preparation, Natural flavours, Modified coconut oil, Carnauba wax | Labels: en:no-gluten, en:source-of-fibre, en:high-fibres, en:natural-flavors, en:no-artificial-colors",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.8
+}

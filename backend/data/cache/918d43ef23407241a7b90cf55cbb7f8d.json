@@ -1,0 +1,15 @@
+{
+  "name": "oil fill",
+  "functional_class": "fat",
+  "allergens": [],
+  "vegan": null,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "A generic fat-based filling used in food products to enhance texture, mouthfeel, and moisture retention.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.5
+}

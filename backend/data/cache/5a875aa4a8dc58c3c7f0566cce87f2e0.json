@@ -1,0 +1,17 @@
+{
+  "name": "coconut water from concentrate",
+  "functional_class": "solvent",
+  "allergens": [
+    "tree-nuts"
+  ],
+  "vegan": true,
+  "kosher": null,
+  "halal": true,
+  "e_number": null,
+  "description": "Coconut water from concentrate serves as a liquid carrier, providing natural coconut flavor, sweetness, and hydration.",
+  "raw_text": "Coconut Water: Coconut Water | Labels: en:no-gmos, en:fsc, en:fsc-mix, en:green-dot, en:no-bisphenol-a | Coconut Water: Coconut Water from Concentrate (Water, Coconut Water Concentrate), Fructose &lt;1%, Vitamin C | Labels: en:low-or-no-fat, en:no-gluten, en:vegetarian, en:halal, en:no-gmos | Органическая кокосовая вода: Натуральная кокосовая вода ORGANIC 100%. | Labels: en:organic, en:eu-organic, en:kosher, en:no-gmos, en:eac",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.85
+}

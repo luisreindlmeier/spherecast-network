@@ -1,0 +1,15 @@
+{
+  "name": "organic cane sugar",
+  "functional_class": "sweetener",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": null,
+  "description": "Organic cane sugar serves as a natural sweetener, providing sweetness and contributing to texture and moisture control in food products.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

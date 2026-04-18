@@ -1,0 +1,15 @@
+{
+  "name": "organic food complex",
+  "functional_class": "nutrient",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Organic food complex is a blend of organic plant-derived nutrients used to fortify food products with vitamins, minerals, and phytonutrients.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.5
+}

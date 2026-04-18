@@ -1,0 +1,15 @@
+{
+  "name": "cyanocobalamin vitamin b12",
+  "functional_class": "vitamin",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "A synthetic form of vitamin B12 used to fortify foods and boost their nutritional value.",
+  "raw_text": "Fully cooked beef patties for salisbury steak with mushroom gravy: Water, modified cornstarch, onion, mushroom base [baked mushrooms, autolyzed yeast extract, potato flour, unsalted butter (cream flavorings), maltodextrin (from corn), natural flavorings and caramel color], shallots, beef base (roasted beef including natural beef juices, salt, hydrolyzed corn gluten, sugar, natural flavorings, corn oil, potato flour and caramel color), sugar, canola oil, tomato pa",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

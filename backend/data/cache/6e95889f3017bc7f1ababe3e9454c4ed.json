@@ -1,0 +1,15 @@
+{
+  "name": "olive oil",
+  "functional_class": "fat",
+  "allergens": [],
+  "vegan": true,
+  "kosher": true,
+  "halal": true,
+  "e_number": null,
+  "description": "A lipid extracted from olives used as a cooking oil and flavor ingredient providing healthy monounsaturated fats.",
+  "raw_text": "Hule D'olive: Huiled'olive vierge | EXTRA VIRGIN OLIVE OIL: EXTRA VIRGIN OLIVE OIL | Labels: en:no-gmos, en:non-gmo-project | Organic Extra Virgin Olive Oil: extra virgin olive oil (organic of higher grade obtained directly from olives and only by mechanical processes), | Labels: en:organic, en:certified-by-ecocert, en:eu-organic, en:no-gmos, en:non-eu-agriculture",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

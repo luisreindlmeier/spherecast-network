@@ -1,0 +1,17 @@
+{
+  "name": "coconut mct oil",
+  "functional_class": "fat",
+  "allergens": [
+    "tree-nuts"
+  ],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "A medium-chain triglyceride fat derived from coconut oil, used to provide calories, improve texture, and enhance mouthfeel in food products.",
+  "raw_text": "Organic MCT Oil 100% MCTS: Medium chain triglycerides | Labels: en:no-gluten, en:organic, en:vegetarian, en:no-gmos, en:usda-organic | MCT Oil: premium quality 100% pure and natural coconut oil | Labels: en:vegetarian, en:vegan, en:the-vegan-society | MCT coconut oil: 100% Organic MCT from Coconut Oil | Labels: en:organic, en:eu-organic, en:gb-org-05",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

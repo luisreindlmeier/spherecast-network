@@ -1,0 +1,56 @@
+[
+  {
+    "substance_name": "Ascorbic Acid",
+    "regulatory_category": "GRAS",
+    "cfr_21_part": "182.3013",
+    "hazard_classification": "Category I - Low Risk",
+    "approved_uses": ["antioxidant", "nutrient", "acidulant"],
+    "prop65_listed": false,
+    "max_use_level_pct": 0.1,
+    "fsvp_required": false
+  },
+  {
+    "substance_name": "Titanium Dioxide",
+    "regulatory_category": "Color Additive",
+    "cfr_21_part": "73.575",
+    "hazard_classification": "Category II - Moderate Risk",
+    "approved_uses": ["colorant"],
+    "prop65_listed": true,
+    "prop65_substances": ["titanium dioxide (inhalation risk)"],
+    "max_use_level_pct": 1.0,
+    "fsvp_required": true,
+    "notes": "EU banned (E171), US still permitted with disclosure"
+  },
+  {
+    "substance_name": "Soy Lecithin",
+    "regulatory_category": "GRAS",
+    "cfr_21_part": "184.1400",
+    "hazard_classification": "Category I - Low Risk",
+    "approved_uses": ["emulsifier"],
+    "prop65_listed": false,
+    "gmo_risk": true,
+    "allergen_disclosure_required": true,
+    "allergens": ["soybeans"],
+    "fsvp_required": false
+  },
+  {
+    "substance_name": "Potassium Bromate",
+    "regulatory_category": "Restricted",
+    "cfr_21_part": "N/A",
+    "hazard_classification": "Category III - High Risk",
+    "approved_uses": [],
+    "prop65_listed": true,
+    "prop65_substances": ["potassium bromate"],
+    "status": "Prohibited in EU, Canada, UK. Restricted in USA — banned in CA",
+    "fsvp_required": true
+  },
+  {
+    "substance_name": "Xanthan Gum",
+    "regulatory_category": "GRAS",
+    "cfr_21_part": "172.695",
+    "hazard_classification": "Category I - Low Risk",
+    "approved_uses": ["thickener", "stabilizer", "emulsifier"],
+    "prop65_listed": false,
+    "fsvp_required": false
+  }
+]

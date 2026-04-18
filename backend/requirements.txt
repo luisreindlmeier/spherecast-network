@@ -1,0 +1,12 @@
+openai>=1.30.0
+fastapi>=0.115.0
+uvicorn[standard]
+pandas
+openpyxl
+httpx
+beautifulsoup4
+pymupdf
+chromadb
+# sentence-transformers removed — using chromadb DefaultEmbeddingFunction (ONNX, lighter)
+pydantic>=2.0
+python-dotenv

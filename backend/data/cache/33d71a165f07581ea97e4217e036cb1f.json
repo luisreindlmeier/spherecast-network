@@ -1,0 +1,15 @@
+{
+  "name": "natural vanilla flavor",
+  "functional_class": "flavor",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Imparts natural vanilla aroma and flavor to the food product",
+  "raw_text": "Crème glacée vanille: Eau, _lait_ écrémé réhydraté, _crème_, sirop de glucose, sucre, _lactose_ et protéines de _lait_, émulsifiant : mono - et diglycérides d'acides gras, gélifiants : farine de graines de caroube et gomme guar, arôme naturel de vanille de Madagascar, gousses de vanille de Madagascar épuisées broyées, colorant : caroténoïdes.\nPeut contenir des traces de céréales contenant du gluten, d'œufs, d'arachides | Labels: en:natural-flavors, en:nutriscore, en:nutriscore-grade-d, fr:triman | Madagascan Vanilla Extract: Invert sugar syrup, glucose syrup, water, vanilla extract. | Labels: en:made-from-real-vanilla-pods | Yaourt au lait entier saveur vanille pot en verre 4x125g: LAIT entier 90% (origine : France), sucre 8.5%, poudre de LAIT ÉCRÉMÉ (origine : France), arôme naturel de vanille, ferments (dont LAIT). | Labels: en:no-artificial-flavors, en:french-milk, en:natural-flavors, en:no-colorings, en:nutriscore",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}

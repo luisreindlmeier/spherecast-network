@@ -1,0 +1,15 @@
+{
+  "name": "natural passionfruit flavor",
+  "functional_class": "flavor",
+  "allergens": [],
+  "vegan": true,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Provides natural passionfruit aroma and taste to food and beverage products.",
+  "raw_text": "",
+  "sources": [
+    "llm_knowledge"
+  ],
+  "confidence": 0.6
+}

@@ -1,0 +1,15 @@
+{
+  "name": "artificial flavors",
+  "functional_class": "flavor",
+  "allergens": [],
+  "vegan": null,
+  "kosher": null,
+  "halal": null,
+  "e_number": null,
+  "description": "Imparts desired flavor profiles to food products.",
+  "raw_text": "cruesly mélange de noix: _avoine_ complète (32%), _blé_ complet (18%), sirop de glucose, huile de tournesol, sucre, _amandes_ grillées (4,2%), _noisettes_ (4%), oligofructose, _noix de Pécan_ (1,5%), farine de _blé_, farine de riz, _noix du Brésil_ (1%), miel, arômes naturels, antioxydant (tocophérol). | Labels: en:no-artificial-flavors, en:no-preservatives, en:green-dot, en:no-colorings, en:no-palm-oil | Paysan Breton - Le Fromage Fouetté Madame Loïk - Nature au Sel de Guérande: _Fromage_ frais, sel de Guérande 1,1% | Labels: en:no-artificial-flavors, en:no-preservatives, fr:concours-general-agricole, en:made-in-france, en:no-colorings | Шоколад 85% какаова маса: Какаова маса, нискомаслено какао на прах, какаово масло, захар, емулгатор: лецитин (соеви), екстракт от ванилия, Може да съдържа следи от ядки и мляко, | Labels: en:vegetarian, en:fair-trade, en:fairtrade-international, en:no-artificial-flavors, en:vegan",
+  "sources": [
+    "openfoodfacts_search"
+  ],
+  "confidence": 0.9
+}
