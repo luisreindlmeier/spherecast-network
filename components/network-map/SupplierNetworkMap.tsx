@@ -1,7 +1,11 @@
 'use client'
 
-import { useMemo } from 'react'
-import Map, { NavigationControl, useControl } from 'react-map-gl/maplibre'
+import { useEffect, useMemo, useRef } from 'react'
+import Map, {
+  type MapRef,
+  NavigationControl,
+  useControl,
+} from 'react-map-gl/maplibre'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { MapboxOverlay } from '@deck.gl/mapbox'
@@ -37,6 +41,9 @@ const COLOR_ARC_SOURCE: [number, number, number, number] = [91, 141, 255, 90]
 const COLOR_ARC_TARGET: [number, number, number, number] = [167, 139, 250, 90]
 
 export default function SupplierNetworkMap() {
+  const rootRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<MapRef>(null)
+
   const layers = useMemo((): Layer[] => {
     const nodes = networkMapBundle.nodes as NetworkMapNode[]
     const arcs = networkMapBundle.arcs as NetworkMapArc[]
@@ -75,9 +82,24 @@ export default function SupplierNetworkMap() {
     ]
   }, [])
 
+  useEffect(() => {
+    const el = rootRef.current
+    if (!el || typeof ResizeObserver === 'undefined') {
+      return
+    }
+    const ro = new ResizeObserver(() => {
+      mapRef.current?.resize()
+    })
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+    }
+  }, [])
+
   return (
-    <div className="supplier-network-map-root">
+    <div ref={rootRef} className="supplier-network-map-root">
       <Map
+        ref={mapRef}
         mapLib={maplibregl}
         mapStyle={cartoDarkMatterStyle}
         initialViewState={initialViewState}
