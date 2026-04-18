@@ -137,6 +137,35 @@ def list_functional_classes():
     return {"functional_classes": get_all_functional_classes()}
 
 
+@app.get("/risk/single-supplier")
+def single_supplier_risk(min_boms: int = 1):
+    from extraction.cache import get_cached
+    df = build_ingredient_df(_DB_PATH)
+
+    at_risk = []
+    for _, row in df.iterrows():
+        suppliers = row["supplier_names"]
+        bom_count = len(row["bom_ids"])
+        if len(suppliers) == 1 and bom_count >= min_boms:
+            cached = get_cached(row["ingredient_name"]) or {}
+            at_risk.append({
+                "sku": row["ingredient_sku"],
+                "name": row["ingredient_name"],
+                "sole_supplier": suppliers[0],
+                "used_in_boms": bom_count,
+                "used_by_companies": list(set(row["company_names"])),
+                "functional_class": cached.get("functional_class", "unknown"),
+                "risk_level": "high" if bom_count >= 5 else "medium" if bom_count >= 2 else "low",
+            })
+
+    at_risk.sort(key=lambda x: -x["used_in_boms"])
+    return {
+        "total_at_risk": len(at_risk),
+        "summary": f"{len(at_risk)} ingredients sourced from a single supplier",
+        "ingredients": at_risk,
+    }
+
+
 @app.get("/companies/{company_id}/sourcing")
 def company_sourcing(company_id: int):
     df = build_ingredient_df(_DB_PATH)
