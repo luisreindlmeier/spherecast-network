@@ -27,35 +27,34 @@ from optimization.carbon import get_prop65_warning
 from src.models.material import DataSource, HazardLevel, MaterialRecord
 
 _DB_PATH = Path(__file__).parent.parent.parent / "data" / "db.sqlite"
-_PRICE_MAP_PATH = Path(__file__).parent.parent.parent / "data" / "price_map.json"
 _OUTPUT_DIR = Path(__file__).parent.parent.parent / "data" / "harmonized"
 
 _PARSE_SYSTEM = (
     "You are a regulatory and supply chain expert for US CPG ingredients. "
     "Convert raw input data into structured compliance JSON. "
-    "Respond ONLY with valid JSON matching the schema. No prose."
+    "Respond ONLY with valid JSON matching the schema. No prose. "
+    "Only output what is explicitly stated in the source — do not infer or guess."
 )
 
+# FDA API schema: only extract what the API response explicitly states.
+# is_fda_approved and fda_gras_status come ONLY from verified API data (eCFR/Excel),
+# not LLM inference. vegan/halal/non_gmo are NOT asked — require supplier certificates.
 _FDA_SCHEMA = """{
   "substance_name": "string — canonical ingredient name",
-  "is_fda_approved": "boolean — true if GRAS, Approved Food Additive, or SOI approved",
-  "fda_gras_status": "GRAS_Affirmed | Approved_Food_Additive | Approved_SOI | Restricted | Prohibited | Unknown",
-  "hazard_level": "low | medium | high | unknown",
-  "allergens": ["array — only from: milk, eggs, fish, shellfish, tree-nuts, peanuts, wheat, soybeans, sesame"],
-  "prop65_concern": "boolean",
-  "is_vegan": "boolean or null",
-  "non_gmo": "boolean or null",
-  "cfr_citation": "string or null"
+  "fda_gras_status": "GRAS_Affirmed | Approved_Food_Additive | Approved_SOI | Restricted | Prohibited | Unknown — extract ONLY if explicitly stated in the source",
+  "allergens": ["array — only from: milk, eggs, fish, shellfish, tree-nuts, peanuts, wheat, soybeans, sesame — only if explicitly listed"],
+  "prop65_concern": "boolean — true only if explicitly mentioned",
+  "cfr_citation": "string or null — copy exactly as stated, e.g. '21 CFR 182.3013'"
 }"""
 
+# CSV schema: extract what the row contains, classify functional class.
+# Do NOT infer is_fda_approved, vegan, halal, kosher, non_gmo — these require
+# certified documentation that a CSV row cannot provide.
 _CSV_SCHEMA = """{
   "name": "string — canonical ingredient name",
   "functional_class": "one of: emulsifier|sweetener|preservative|colorant|flavor|thickener|antioxidant|acidulant|bulking-agent|nutrient|fat|protein|carbohydrate|mineral|vitamin|enzyme|stabilizer|humectant|solvent|other",
-  "is_vegan": "boolean or null",
-  "non_gmo": "boolean or null — true if typically Non-GMO, false if commonly GMO-derived (corn, soy in US)",
-  "allergens": ["array — only from: milk, eggs, fish, shellfish, tree-nuts, peanuts, wheat, soybeans, sesame"],
-  "hazard_level": "low | medium | high | unknown",
-  "confidence": "float 0.3-0.7 — lower since inferred, not sourced from official data"
+  "allergens": ["array — only from: milk, eggs, fish, shellfish, tree-nuts, peanuts, wheat, soybeans, sesame — only if the row explicitly lists them"],
+  "confidence": "float 0.5-0.8 — functional_class extraction confidence only"
 }"""
 
 
@@ -89,21 +88,13 @@ class DataHarmonizer:
     def __init__(
         self,
         db_path: Path = _DB_PATH,
-        price_map_path: Path = _PRICE_MAP_PATH,
         output_dir: Path = _OUTPUT_DIR,
     ) -> None:
         self._db_path = db_path
-        self._price_map: dict[str, float] = {
-            k: v for k, v in json.loads(price_map_path.read_text()).items()
-            if not k.startswith("_")
-        }
         self._output_dir = output_dir
         self._output_dir.mkdir(parents=True, exist_ok=True)
         self._openai = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
         self._standards = get_standards()
-
-    def _price(self, functional_class: str) -> float:
-        return self._price_map.get(functional_class, self._price_map.get("other", 8.0))
 
     def _persist(self, filename: str, data: list[dict] | dict) -> Path:
         """Write intermediate result to data/harmonized/ for inspection."""
@@ -131,21 +122,25 @@ class DataHarmonizer:
             prop65 = get_prop65_warning(name)
             supplier_names: list[str] = list(row.get("supplier_names", []))
 
+            # Only use vegan/halal/kosher/non_gmo from cache if source was NOT llm_knowledge
+            # (i.e., the data came from a real web source or OpenFoodFacts, not LLM inference)
+            cached_sources = cached.get("sources", [])
+            has_real_source = cached_sources and "llm_knowledge" not in cached_sources
+
             rec = MaterialRecord(
                 material_id=str(row.get("product_id", uuid.uuid4())),
                 name=name,
                 functional_class=functional_class,
                 supplier_ids=supplier_names,
                 supplier_count=len(supplier_names),
-                is_vegan=cached.get("vegan"),
+                is_vegan=cached.get("vegan") if has_real_source else None,
                 is_fda_approved=gras_status in (
                     "GRAS_Affirmed", "Approved_Food_Additive", "Approved_SOI"
                 ),
                 fda_gras_status=gras_status,
                 hazard_level=_derive_hazard(gras_status, prop65),
                 allergens=cached.get("allergens", []),
-                non_gmo=cached.get("non_gmo"),
-                base_price_usd_per_kg=self._price(functional_class),
+                non_gmo=cached.get("non_gmo") if has_real_source else None,
                 source=DataSource.DATABASE,
                 confidence=cached.get("confidence", 0.5),
             )
@@ -264,37 +259,27 @@ class DataHarmonizer:
                 merged_suppliers = list(set(
                     rec.supplier_ids + ([supplier] if supplier else [])
                 ))
-                hazard = rec.hazard_level
-                if hazard == HazardLevel.UNKNOWN:
-                    try:
-                        hazard = HazardLevel(item.get("hazard_level", "unknown"))
-                    except ValueError:
-                        pass
+                # CSV only updates supplier list and allergens (if CSV explicitly lists them)
+                # Never overwrite vegan/non_gmo with CSV-inferred values — requires certificates
                 index[key] = rec.model_copy(update={
                     "supplier_ids": merged_suppliers,
                     "supplier_count": len(merged_suppliers),
-                    "is_vegan": rec.is_vegan if rec.is_vegan is not None else _parse_bool(item.get("is_vegan")),
-                    "non_gmo": rec.non_gmo if rec.non_gmo is not None else _parse_bool(item.get("non_gmo")),
-                    "hazard_level": hazard,
+                    "allergens": list(set(rec.allergens + item.get("allergens", []))),
                 })
             else:
-                # New material from CSV only
+                # New material from CSV only — allergens from LLM only if explicitly stated
                 s_ids = [supplier] if supplier else []
                 prop65 = get_prop65_warning(item.get("name", ""))
-                gras = None
                 index[key] = MaterialRecord(
                     material_id=str(uuid.uuid4()),
                     name=item.get("name", key),
                     functional_class=fclass,
                     supplier_ids=s_ids,
                     supplier_count=len(s_ids),
-                    is_vegan=_parse_bool(item.get("is_vegan")),
-                    non_gmo=_parse_bool(item.get("non_gmo")),
                     allergens=item.get("allergens", []),
-                    hazard_level=_derive_hazard(gras, prop65),
-                    base_price_usd_per_kg=self._price(fclass),
+                    hazard_level=_derive_hazard(None, prop65),
                     source=DataSource.CSV,
-                    confidence=float(item.get("confidence", 0.4)),
+                    confidence=float(item.get("confidence", 0.5)),
                 )
 
         # Apply FDA structured data (highest priority for compliance fields)
@@ -310,12 +295,15 @@ class DataHarmonizer:
 
             if key in index:
                 rec = index[key]
+                # FDA API data updates gras_status, hazard, allergens (if stated).
+                # is_fda_approved is DERIVED from gras_status — not taken from LLM output.
+                # vegan/halal/non_gmo: NOT updated from FDA responses (require supplier certs).
+                derived_approved = gras in ("GRAS_Affirmed", "Approved_Food_Additive", "Approved_SOI")
                 index[key] = rec.model_copy(update={
-                    "is_fda_approved": item.get("is_fda_approved", rec.is_fda_approved),
+                    "is_fda_approved": derived_approved if gras else rec.is_fda_approved,
                     "fda_gras_status": gras or rec.fda_gras_status,
                     "hazard_level": hazard if hazard != HazardLevel.UNKNOWN else rec.hazard_level,
-                    "is_vegan": rec.is_vegan if rec.is_vegan is not None else _parse_bool(item.get("is_vegan")),
-                    "allergens": rec.allergens or item.get("allergens", []),
+                    "allergens": list(set(rec.allergens + item.get("allergens", []))),
                     "source": DataSource.FDA_API,
                     "confidence": max(rec.confidence, 0.85),
                 })

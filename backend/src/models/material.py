@@ -41,9 +41,6 @@ class MaterialRecord(BaseModel):
     allergens: list[str] = []
     non_gmo: bool | None = None
 
-    # ── Pricing ──────────────────────────────────────────────────────────────
-    base_price_usd_per_kg: float = 0.0   # from price_map.json keyed by functional_class
-
     # ── Provenance ───────────────────────────────────────────────────────────
     source: DataSource = DataSource.DATABASE
     confidence: float = 0.5              # 0.0–1.0 extraction confidence
@@ -76,8 +73,6 @@ class SubstituteOption(BaseModel):
     similarity: float                # ChromaDB cosine similarity
     combined_score: float            # weighted final score
     hazard_level: HazardLevel
-    base_price_usd_per_kg: float
-    price_delta_pct: float           # (substitute - original) / original * 100
     available_from: list[str] = []
     single_source_warning: bool = False
     violations: list[str] = []       # soft compliance violations (not K.O. criteria)

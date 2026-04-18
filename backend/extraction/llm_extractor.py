@@ -156,6 +156,17 @@ Set confidence lower (0.4-0.7) since this is based on general knowledge, not ver
         )
         text = resp.choices[0].message.content.strip()
         parsed = json.loads(text)
+
+        # Certification fields require a verified source — not LLM general knowledge.
+        # Vegan/halal/kosher status depends on specific supplier formulations and
+        # certifying bodies, not ingredient chemistry. Non-GMO depends on supply chain.
+        # If no real source text was available, null these out to avoid hallucination.
+        if "llm_knowledge" in used_sources:
+            parsed["vegan"] = None
+            parsed["halal"] = None
+            parsed["kosher"] = None
+            parsed["non_gmo"] = None
+
         return IngredientProfile(name=name, raw_text=raw_text, sources=used_sources, **parsed)
     except Exception:
         return IngredientProfile(name=name, raw_text=raw_text, sources=used_sources, confidence=0.1)

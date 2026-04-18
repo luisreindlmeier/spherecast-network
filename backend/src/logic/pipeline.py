@@ -108,19 +108,15 @@ class AgnesPipeline:
             return []
 
         results: list[SubstituteOption] = []
-        orig_price = material.base_price_usd_per_kg or 1.0
 
         for c in candidates:
             cand_in_catalog = self._catalog.get(c.get("name", "").lower())
             cand_suppliers = cand_in_catalog.supplier_ids if cand_in_catalog else []
             cand_count = len(cand_suppliers)
-            cand_price = cand_in_catalog.base_price_usd_per_kg if cand_in_catalog else orig_price
 
-            # Semantic consolidation: only include if it offers sourcing advantage
-            if cand_count <= material.supplier_count and cand_price >= orig_price:
+            # Semantic consolidation: only include if it offers a sourcing advantage
+            if cand_count <= material.supplier_count:
                 continue
-
-            price_delta = round((cand_price - orig_price) / orig_price * 100, 1)
 
             results.append(SubstituteOption(
                 material_id=c.get("sku", ""),
@@ -131,8 +127,6 @@ class AgnesPipeline:
                 similarity=round(c.get("similarity", 0.0), 3),
                 combined_score=round(c.get("similarity", 0.0) * 0.6 + min(cand_count / 5, 1.0) * 0.4, 3),
                 hazard_level=cand_in_catalog.hazard_level if cand_in_catalog else HazardLevel.UNKNOWN,
-                base_price_usd_per_kg=round(cand_price, 2),
-                price_delta_pct=price_delta,
                 available_from=cand_suppliers,
                 single_source_warning=cand_count == 1,
             ))
@@ -158,8 +152,6 @@ class AgnesPipeline:
         results: list[SubstituteOption] = []
         seen: set[str] = {material.name.lower()}
         orig_hazard_rank = _HAZARD_RANK[material.hazard_level]
-        orig_price = material.base_price_usd_per_kg or 1.0
-
         # Stage 1: Matrix-validated pairs
         matrix_alts = find_known_substitutes(material.name)
         for alt in matrix_alts:
@@ -169,9 +161,7 @@ class AgnesPipeline:
             alt_rec = self._catalog.get(alt_name.lower())
             alt_hazard = alt_rec.hazard_level if alt_rec else HazardLevel.UNKNOWN
             alt_suppliers = alt_rec.supplier_ids if alt_rec else []
-            alt_price = alt_rec.base_price_usd_per_kg if alt_rec else orig_price
 
-            # Eligibility: hard filter
             cand_dict = {
                 "name": alt_name,
                 "allergens": alt_rec.allergens if alt_rec else [],
@@ -179,25 +169,19 @@ class AgnesPipeline:
                 "non_gmo": alt_rec.non_gmo if alt_rec else None,
                 "fda_status": {"gras_status": alt_rec.fda_gras_status} if alt_rec else {},
             }
-            eligible, _ = is_eligible(
-                material,  # type: ignore[arg-type]
-                cand_dict,
-            )
+            eligible, _ = is_eligible(material, cand_dict)  # type: ignore[arg-type]
             if not eligible:
                 continue
 
-            # Prefer lower hazard, accept equal hazard if sourcing improves
             alt_rank = _HAZARD_RANK[alt_hazard]
             if alt_rank > orig_hazard_rank:
-                continue  # never propose higher-hazard substitute
+                continue
 
             constraints = alt.get("constraints", [])
             ratio = alt.get("ratio", 1.0)
             fit = max(0.0, 0.95 - len(constraints) * 0.03)
-            price_delta = round((alt_price - orig_price) / orig_price * 100, 1)
             supplier_bonus = min(len(alt_suppliers) / 5.0, 1.0) * 0.15
             hazard_bonus = (orig_hazard_rank - alt_rank) * 0.10
-
             combined = round(fit * 0.40 + 1.0 * 0.20 + supplier_bonus + hazard_bonus, 3)
 
             results.append(SubstituteOption(
@@ -209,8 +193,6 @@ class AgnesPipeline:
                 similarity=0.0,
                 combined_score=min(1.0, combined),
                 hazard_level=alt_hazard,
-                base_price_usd_per_kg=round(alt_price, 2),
-                price_delta_pct=price_delta,
                 available_from=alt_suppliers,
                 single_source_warning=len(alt_suppliers) == 1,
                 matrix_constraints=constraints,
@@ -241,11 +223,6 @@ class AgnesPipeline:
 
             hazard_bonus = (orig_hazard_rank - cat_rank) * 0.10
             supplier_bonus = min(len(cat_rec.supplier_ids) / 5.0, 1.0) * 0.15
-            price_delta = round(
-                (cat_rec.base_price_usd_per_kg - orig_price) / orig_price * 100
-                if orig_price > 0 else 0.0,
-                1,
-            )
             combined = round(0.40 + 0.20 + supplier_bonus + hazard_bonus, 3)
 
             results.append(SubstituteOption(
@@ -257,8 +234,6 @@ class AgnesPipeline:
                 similarity=0.0,
                 combined_score=min(1.0, combined),
                 hazard_level=cat_rec.hazard_level,
-                base_price_usd_per_kg=round(cat_rec.base_price_usd_per_kg, 2),
-                price_delta_pct=price_delta,
                 available_from=cat_rec.supplier_ids,
                 single_source_warning=len(cat_rec.supplier_ids) == 1,
             ))
@@ -360,7 +335,7 @@ class AgnesPipeline:
             sourcing_actions.append(
                 f"SUBSTITUTE: Replace '{material.name}' with '{top.name}' "
                 f"(fit={top.functional_fit}, hazard={top.hazard_level.value}, "
-                f"price_delta={top.price_delta_pct:+.1f}%)"
+                f"suppliers={len(top.available_from)})"
             )
 
         return HarmonizationResult(
