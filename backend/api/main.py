@@ -10,8 +10,10 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 from ingestion.db_reader import build_ingredient_df, get_unique_ingredients
 from ingestion.fda_ratings import get_fda_status, get_standards
+from ingestion.fda_live import layer2_check
 from optimization.carbon import estimate_co2, get_prop65_warning
 from optimization.substitution import find_substitutes, get_all_functional_classes, get_consolidation_proposal
+from optimization.substitution_matrix import find_known_substitutes
 from optimization.embeddings import collection_exists
 from reasoning.explainer import explain_consolidation, explain_substitution
 
@@ -76,13 +78,18 @@ def get_ingredient(sku: str):
 
     fda_info = get_fda_status(name, get_standards())
     functional_class = cached.get("functional_class", "other")
+    live_compliance = layer2_check(name, supplier_info[0] if supplier_info else None)
+    matrix_alts = find_known_substitutes(name)
 
     return {
         "sku": sku,
         "suppliers": supplier_info,
+        "single_source_risk": len(supplier_info) == 1,
         "used_in_boms": bom_count,
         "used_by_companies": company_names,
         "fda_status": fda_info,
+        "live_compliance": live_compliance,
+        "matrix_validated_alternatives": matrix_alts,
         "co2_footprint_kg_per_kg": round(estimate_co2(name, functional_class), 2),
         "prop65_warning": get_prop65_warning(name),
         **cached,

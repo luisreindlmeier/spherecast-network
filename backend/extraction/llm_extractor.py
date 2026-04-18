@@ -60,7 +60,15 @@ _SCHEMA = """{
   "synonyms": ["array of up to 4 alternative names or chemical synonyms for this ingredient — empty if none known"],
   "description": "1-sentence description of what this ingredient does in a food product",
   "non_gmo": "boolean or null — true if ingredient is typically non-GMO, false if commonly GMO-derived (e.g. US corn/soy), null if unknown",
-  "confidence": "float 0.0-1.0 — how confident you are given the source text"
+  "confidence": "float 0.0-1.0 — how confident you are given the source text",
+  "functional_properties": {
+    "viscosity_role": "thickener|binder|flow-agent|film-former|null",
+    "solubility": "water-soluble|oil-soluble|insoluble|amphiphilic|null",
+    "phase": "aqueous|lipid|solid|null",
+    "preservative_mechanism": "antimicrobial|antioxidant|chelating|null",
+    "grade": "food|pharma|cosmetic|industrial|null",
+    "max_use_level_pct": "float or null — typical maximum usage percentage in formulation"
+  }
 }"""
 
 
@@ -78,6 +86,7 @@ class IngredientProfile(BaseModel):
     raw_text: str = ""
     sources: list[str] = []
     confidence: float = 0.5
+    functional_properties: dict = {}
 
     def all_names(self) -> list[str]:
         """All names including hardcoded synonyms — used for embedding."""
