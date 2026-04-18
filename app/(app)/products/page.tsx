@@ -1,5 +1,6 @@
 import PageHeader from '@/components/layout/PageHeader'
 import DummyBlock from '@/components/layout/DummyBlock'
+import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
 
 const products = [
@@ -16,6 +17,7 @@ export default function ProductsPage() {
       <PageHeader
         eyebrow="Sourcing"
         title="Products"
+        titleActions={<MapSidebarToggle />}
         description="Your finished goods. Click a product to inspect its BOM and linked raw materials."
       />
 
