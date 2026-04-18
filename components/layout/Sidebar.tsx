@@ -7,12 +7,11 @@ import {
   LayoutGrid,
   Target,
   Sparkles,
-  Network,
+  Map,
   Box,
   Atom,
   Building2,
   FileText,
-  Lock,
   ChevronDown,
 } from 'lucide-react'
 import { useViewer } from '@/lib/viewer-context'
@@ -110,7 +109,6 @@ export default function Sidebar({
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     intelligence: true,
     sourcing: true,
-    admin: true,
   })
 
   const toggleSection = (id: string) =>
@@ -150,7 +148,7 @@ export default function Sidebar({
         {[
           {
             id: 'intelligence',
-            label: 'My Intelligence',
+            label: 'Network Intelligence',
             collapsible: true,
             items: [
               {
@@ -164,9 +162,9 @@ export default function Sidebar({
                 icon: <Sparkles size={16} />,
               },
               {
-                label: 'Ingredient Graph',
-                href: '/ingredient-graph',
-                icon: <Network size={16} />,
+                label: 'Network Map',
+                href: '/network-map',
+                icon: <Map size={16} />,
               },
             ],
           },
@@ -232,25 +230,6 @@ export default function Sidebar({
             </div>
           )
         })}
-
-        {/* Admin-only section */}
-        <div className="nav-section">
-          <SectionHeader
-            label="Spherecast Only"
-            collapsible
-            open={openSections.admin}
-            onToggle={() => toggleSection('admin')}
-            trailingIcon={<Lock size={10} color="var(--text-muted)" />}
-          />
-          {openSections.admin && (
-            <div className="nav-section-items">
-              <div className="nav-locked-notice">
-                <Lock size={11} />
-                <span>Admin access only</span>
-              </div>
-            </div>
-          )}
-        </div>
       </nav>
 
       {/* Viewer */}

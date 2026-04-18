@@ -1,15 +1,5 @@
-import PageHeader from '@/components/layout/PageHeader'
-import DummyBlock from '@/components/layout/DummyBlock'
+import { redirect } from 'next/navigation'
 
-export default function IngredientGraphPage() {
-  return (
-    <>
-      <PageHeader
-        eyebrow="My Intelligence"
-        title="Ingredient Graph"
-        description="How your finished goods decompose into raw materials, and where materials are shared across products."
-      />
-      <DummyBlock title="Graph view" hint="22 products · 149 ingredients" />
-    </>
-  )
+export default function IngredientGraphRedirect() {
+  redirect('/network-map')
 }

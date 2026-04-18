@@ -401,6 +401,32 @@ button {
   padding-top: 2px;
 }
 
+/* Full-page network map (Network Intelligence) */
+.page-network-map {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: min(calc(100dvh - 140px), 900px);
+}
+
+.network-map-fullpage {
+  flex: 1;
+  min-height: min(72dvh, 720px);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #0a0c10;
+}
+
+.network-map-fullpage-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: min(72dvh, 720px);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 /* ── Right map sidebar (Deck.gl + MapLibre, app shell height) ─ */
 .map-right-sidebar {
   position: relative;

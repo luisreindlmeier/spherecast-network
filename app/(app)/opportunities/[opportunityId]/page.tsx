@@ -42,7 +42,7 @@ export default async function OpportunityDetailPage({
   return (
     <>
       <PageHeader
-        eyebrow="My Intelligence"
+        eyebrow="Network Intelligence"
         title={detail.title}
         description="Fictitious opportunity record for demo — opened from the ingredient similarity map."
         actions={

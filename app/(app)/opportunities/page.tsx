@@ -5,7 +5,7 @@ export default function OpportunitiesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="My Intelligence"
+        eyebrow="Network Intelligence"
         title="Opportunities"
         description="Ranked consolidation and sourcing opportunities surfaced by Agnes across your BOMs and supplier network."
       />
