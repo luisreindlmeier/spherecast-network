@@ -1,17 +1,11 @@
 import PageHeader from '@/components/layout/PageHeader'
-import DummyBlock from '@/components/layout/DummyBlock'
 import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
+import { getFinishedGoods } from '@/lib/queries'
 
-const products = [
-  { sku: 'NF-D3-5000', name: 'Vitamin D3 Softgel', ingredients: 4 },
-  { sku: 'NF-MAG-400', name: 'Magnesium Glycinate', ingredients: 3 },
-  { sku: 'NF-OMG-1000', name: 'Omega-3 Fish Oil', ingredients: 5 },
-  { sku: 'NF-B12-1000', name: 'Methyl-B12 Lozenge', ingredients: 4 },
-  { sku: 'NF-ASH-600', name: 'Ashwagandha Extract', ingredients: 3 },
-]
+export default async function ProductsPage() {
+  const products = await getFinishedGoods()
 
-export default function ProductsPage() {
   return (
     <PageMapDrawer>
       <PageHeader
@@ -21,51 +15,79 @@ export default function ProductsPage() {
         actions={<MapSidebarToggle />}
       />
 
-      <DummyBlock title="22 finished goods" hint="showing 5 of 22">
+      <div
+        style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 8,
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            padding: '10px 16px',
+            borderBottom: '1px solid var(--border)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--text-secondary)',
+            }}
+          >
+            {products.length} finished goods
+          </span>
+        </div>
+
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'auto 1fr auto',
-            rowGap: 0,
+            gridTemplateColumns: 'auto 1fr auto auto',
           }}
         >
           {products.map((p, i) => (
-            <div key={p.sku} style={{ display: 'contents' }}>
+            <div key={p.id} style={{ display: 'contents' }}>
               <div
                 style={{
-                  padding: '12px 0 12px 4px',
+                  padding: '11px 8px 11px 16px',
                   fontFamily: 'var(--font-secondary)',
-                  fontSize: 11.5,
+                  fontSize: 11,
                   color: 'var(--text-muted)',
                   borderTop: i === 0 ? 'none' : '1px solid var(--border)',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {p.sku}
               </div>
               <div
                 style={{
-                  padding: '12px 16px',
+                  padding: '11px 16px',
                   fontSize: 13,
                   color: 'var(--text-primary)',
                   borderTop: i === 0 ? 'none' : '1px solid var(--border)',
                 }}
               >
-                {p.name}
+                {p.company?.name ?? '—'}
               </div>
               <div
                 style={{
-                  padding: '12px 4px',
-                  fontSize: 11.5,
+                  padding: '11px 16px',
+                  fontSize: 11,
                   color: 'var(--text-muted)',
                   borderTop: i === 0 ? 'none' : '1px solid var(--border)',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                {p.ingredients} ingredients
+                finished good
               </div>
             </div>
           ))}
         </div>
-      </DummyBlock>
+      </div>
     </PageMapDrawer>
   )
 }

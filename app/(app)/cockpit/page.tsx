@@ -1,14 +1,33 @@
 import PageHeader from '@/components/layout/PageHeader'
 import DummyBlock from '@/components/layout/DummyBlock'
+import { getCockpitStats } from '@/lib/queries'
 
-const stats = [
-  { label: 'Finished Goods', value: '22', delta: 'tracked in BOMs' },
-  { label: 'Raw Materials', value: '149', delta: 'across 8 categories' },
-  { label: 'Open Opportunities', value: '12', delta: '€2.4M est. savings' },
-  { label: 'Supplier Matches', value: '87', delta: 'last 30 days' },
-]
+export default async function CockpitPage() {
+  const stats = await getCockpitStats()
 
-export default function CockpitPage() {
+  const statCards = [
+    {
+      label: 'Finished Goods',
+      value: String(stats.finishedGoods),
+      delta: 'tracked in BOMs',
+    },
+    {
+      label: 'Raw Materials',
+      value: String(stats.rawMaterials),
+      delta: 'across all BOMs',
+    },
+    {
+      label: 'Brands',
+      value: String(stats.companies),
+      delta: 'in network',
+    },
+    {
+      label: 'Suppliers',
+      value: String(stats.suppliers),
+      delta: 'qualified',
+    },
+  ]
+
   return (
     <>
       <PageHeader
@@ -24,7 +43,7 @@ export default function CockpitPage() {
       />
 
       <div className="stat-row">
-        {stats.map((s) => (
+        {statCards.map((s) => (
           <div key={s.label} className="stat-card">
             <div className="stat-label">{s.label}</div>
             <div className="stat-value">{s.value}</div>
