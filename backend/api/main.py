@@ -8,6 +8,7 @@ from pydantic import BaseModel
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 from ingestion.db_reader import build_ingredient_df, get_unique_ingredients
+from ingestion.fda_ratings import get_fda_status, get_standards
 from optimization.substitution import find_substitutes, get_all_functional_classes, get_consolidation_proposal
 from optimization.embeddings import collection_exists
 from reasoning.explainer import explain_consolidation, explain_substitution
@@ -64,11 +65,14 @@ def get_ingredient(sku: str):
         bom_count = len(row["bom_ids"])
         company_names = list(set(row["company_names"]))
 
+    fda_info = get_fda_status(name, get_standards())
+
     return {
         "sku": sku,
         "suppliers": supplier_info,
         "used_in_boms": bom_count,
         "used_by_companies": company_names,
+        "fda_status": fda_info,
         **cached,
     }
 

@@ -5,6 +5,7 @@ import pandas as pd
 from extraction.cache import get_cached
 from extraction.llm_extractor import IngredientProfile
 from ingestion.db_reader import build_ingredient_df, get_fg_vegan_status
+from ingestion.fda_ratings import get_fda_status, get_ratings, get_standards, get_supplier_score
 from optimization.embeddings import find_similar
 from optimization.rules import passes_compliance
 
@@ -44,15 +45,37 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
     substitutes = []
     consolidation = []
 
+    ratings = get_ratings()
+    standards = get_standards()
+
     for c in candidates:
         passed, violations = passes_compliance(profile, c, fg_vegan=fg_vegan)
-        combined_score = c["similarity"] * 0.6 + c["confidence"] * 0.2 + (1.0 if passed else 0.0) * 0.2
 
         rows = df[df["ingredient_sku"] == c["sku"]]
         c["available_from"] = rows.iloc[0]["supplier_names"] if not rows.empty else []
         c["used_by_companies"] = list(set(rows.iloc[0]["company_names"])) if not rows.empty else []
+
+        # FDA supplier scoring
+        supplier_scores = {s: get_supplier_score(s, ratings) for s in c["available_from"]}
+        best_supplier_score = max(supplier_scores.values()) if supplier_scores else 0.5
+        fda_certified = [s for s, sc in supplier_scores.items() if sc >= 1.0]
+
+        # FDA ingredient status
+        fda_info = get_fda_status(c["name"], standards)
+
+        combined_score = (
+            c["similarity"] * 0.50
+            + c["confidence"] * 0.15
+            + (1.0 if passed else 0.0) * 0.20
+            + best_supplier_score * 0.15
+        )
+
         c["compliance"] = passed
         c["violations"] = violations
+        c["supplier_fda_scores"] = supplier_scores
+        c["best_supplier_score"] = round(best_supplier_score, 2)
+        c["fda_certified_suppliers"] = fda_certified
+        c["fda_status"] = fda_info
         c["combined_score"] = round(combined_score, 3)
 
         if c["name"] == profile.name:
@@ -81,7 +104,7 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
             "allergens": profile.allergens,
             "vegan": profile.vegan,
             "e_number": profile.e_number,
-            "current_suppliers": df[df["ingredient_sku"] == sku].iloc[0]["supplier_names"].tolist()
+            "current_suppliers": list(df[df["ingredient_sku"] == sku].iloc[0]["supplier_names"])
                 if not df[df["ingredient_sku"] == sku].empty else [],
         },
         "substitutes": substitutes[:top_k],
