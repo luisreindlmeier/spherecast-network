@@ -31,20 +31,16 @@ interface NavSection {
   items: NavItem[]
 }
 
-const sections: NavSection[] = [
+const topItems: NavItem[] = [
   {
-    id: 'overview',
-    label: 'Overview',
-    collapsible: true,
-    items: [
-      {
-        label: 'Cockpit',
-        href: '/cockpit',
-        icon: <LayoutGrid size={15} />,
-        badge: 3,
-      },
-    ],
+    label: 'Cockpit',
+    href: '/cockpit',
+    icon: <LayoutGrid size={16} />,
+    badge: 3,
   },
+]
+
+const sections: NavSection[] = [
   {
     id: 'intelligence',
     label: 'My Intelligence',
@@ -53,18 +49,18 @@ const sections: NavSection[] = [
       {
         label: 'Opportunities',
         href: '/opportunities',
-        icon: <Target size={15} />,
+        icon: <Target size={16} />,
         badge: 12,
       },
       {
         label: 'Similarity Map',
         href: '/similarity-map',
-        icon: <Sparkles size={15} />,
+        icon: <Sparkles size={16} />,
       },
       {
         label: 'Ingredient Graph',
         href: '/ingredient-graph',
-        icon: <Network size={15} />,
+        icon: <Network size={16} />,
       },
     ],
   },
@@ -76,20 +72,20 @@ const sections: NavSection[] = [
       {
         label: 'Products',
         href: '/products',
-        icon: <Box size={15} />,
+        icon: <Box size={16} />,
         badge: 22,
       },
       {
         label: 'Raw Materials',
         href: '/raw-materials',
-        icon: <Atom size={15} />,
+        icon: <Atom size={16} />,
         badge: 149,
       },
-      { label: 'Suppliers', href: '/suppliers', icon: <Building2 size={15} /> },
+      { label: 'Suppliers', href: '/suppliers', icon: <Building2 size={16} /> },
       {
         label: 'Evidence Trails',
         href: '/evidence-trails',
-        icon: <FileText size={15} />,
+        icon: <FileText size={16} />,
       },
     ],
   },
@@ -154,7 +150,6 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { viewer, toggle } = useViewer()
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    overview: true,
     intelligence: true,
     sourcing: true,
     admin: true,
@@ -173,7 +168,7 @@ export default function Sidebar() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/spherecast-logo.svg"
+          src="/spherecast-network.png"
           alt="Spherecast"
           className="sidebar-brand-logo"
         />
@@ -181,6 +176,19 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav className="sidebar-nav">
+        {/* Top-level items (no section header) */}
+        <div className="nav-section-items" style={{ marginTop: 0 }}>
+          {topItems.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              active={
+                pathname === item.href || pathname.startsWith(item.href + '/')
+              }
+            />
+          ))}
+        </div>
+
         {sections.map((section) => {
           const open = openSections[section.id]
           return (
@@ -229,19 +237,17 @@ export default function Sidebar() {
         </div>
       </nav>
 
-      {/* Viewer switcher */}
-      <button type="button" className="viewer-switcher" onClick={toggle}>
-        <div className="viewer-avatar" data-role={viewer.role}>
-          {viewer.initials}
-        </div>
-        <div className="viewer-meta">
-          <span className="viewer-org">{viewer.orgName}</span>
-          <span className="viewer-role">
-            {viewer.role === 'customer' ? 'Customer view' : 'Spherecast admin'}
-          </span>
-        </div>
-        <span className="viewer-switch-hint">Switch</span>
-      </button>
+      {/* Viewer */}
+      <div
+        className="viewer-footer"
+        onClick={toggle}
+        style={{ cursor: 'pointer' }}
+      >
+        <span className="viewer-org">{viewer.orgName}</span>
+        <span className="viewer-role">
+          {viewer.role === 'customer' ? 'Customer view' : 'Spherecast admin'}
+        </span>
+      </div>
     </aside>
   )
 }
