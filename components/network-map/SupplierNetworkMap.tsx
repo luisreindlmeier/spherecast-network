@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Map, {
   type MapRef,
   NavigationControl,
@@ -12,11 +12,7 @@ import { MapboxOverlay } from '@deck.gl/mapbox'
 import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers'
 import type { Layer } from '@deck.gl/core'
 import { cartoDarkMatterStyle } from '@/components/network-map/carto-dark-matter-style'
-import {
-  networkMapBundle,
-  type NetworkMapArc,
-  type NetworkMapNode,
-} from '@/lib/network-map-data'
+import type { NetworkMapArc, NetworkMapNode } from '@/lib/network-map-data'
 
 function DeckGLOverlay({ layers }: { layers: Layer[] }) {
   const overlay = useControl<MapboxOverlay>(
@@ -27,74 +23,95 @@ function DeckGLOverlay({ layers }: { layers: Layer[] }) {
 }
 
 const initialViewState = {
-  longitude: 12,
-  latitude: 50,
-  zoom: 2.5,
-  pitch: 45,
-  bearing: -10,
+  longitude: -30,
+  latitude: 30,
+  zoom: 1.8,
+  pitch: 40,
+  bearing: -8,
 }
 
-/** Accent colors aligned with `app/globals.css` (cyan / purple / blue). */
-const COLOR_CUSTOMER: [number, number, number, number] = [103, 232, 249, 235]
-const COLOR_SUPPLIER: [number, number, number, number] = [167, 139, 250, 230]
-const COLOR_ARC_SOURCE: [number, number, number, number] = [91, 141, 255, 90]
-const COLOR_ARC_TARGET: [number, number, number, number] = [167, 139, 250, 90]
+/** Accent colors aligned with `app/globals.css`. */
+const COLOR_COMPANY: [number, number, number, number] = [103, 232, 249, 230] // cyan
+const COLOR_SUPPLIER: [number, number, number, number] = [167, 139, 250, 225] // purple
+const COLOR_ARC_SRC: [number, number, number, number] = [167, 139, 250, 80] // purple dim
+const COLOR_ARC_TGT: [number, number, number, number] = [103, 232, 249, 80] // cyan dim
+
+type MapBundle = { nodes: NetworkMapNode[]; arcs: NetworkMapArc[] }
 
 export default function SupplierNetworkMap() {
   const rootRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapRef>(null)
 
+  const [bundle, setBundle] = useState<MapBundle | null>(null)
+  const [status, setStatus] = useState<'loading' | 'live' | 'empty' | 'error'>(
+    'loading'
+  )
+
+  useEffect(() => {
+    fetch('/api/network-map')
+      .then((r) => r.json())
+      .then((data: MapBundle) => {
+        if (data.nodes.length === 0) {
+          setStatus('empty')
+        } else {
+          setBundle(data)
+          setStatus('live')
+        }
+      })
+      .catch(() => setStatus('error'))
+  }, [])
+
   const layers = useMemo((): Layer[] => {
-    const nodes = networkMapBundle.nodes as NetworkMapNode[]
-    const arcs = networkMapBundle.arcs as NetworkMapArc[]
+    if (!bundle) return []
+    const { nodes, arcs } = bundle
 
     return [
       new ArcLayer<NetworkMapArc>({
         id: 'network-arcs',
         data: arcs,
         greatCircle: true,
-        numSegments: 48,
+        numSegments: 64,
         getSourcePosition: (d) => d.sourcePosition,
         getTargetPosition: (d) => d.targetPosition,
-        getSourceColor: COLOR_ARC_SOURCE,
-        getTargetColor: COLOR_ARC_TARGET,
-        getWidth: 2.2,
-        getHeight: 0.35,
+        getSourceColor: COLOR_ARC_SRC,
+        getTargetColor: COLOR_ARC_TGT,
+        getWidth: 1.6,
+        getHeight: 0.3,
       }),
       new ScatterplotLayer<NetworkMapNode>({
         id: 'network-nodes',
         data: nodes,
         pickable: true,
         radiusUnits: 'pixels',
-        radiusMinPixels: 4,
-        radiusMaxPixels: 14,
+        radiusMinPixels: 3,
+        radiusMaxPixels: 12,
         lineWidthUnits: 'pixels',
         lineWidthMinPixels: 1,
         stroked: true,
         filled: true,
         getPosition: (d) => d.position,
-        getRadius: (d) => (d.kind === 'customer' ? 9 : 6.5),
+        getRadius: (d) => (d.kind === 'customer' ? 8 : 5.5),
         getFillColor: (d) =>
-          d.kind === 'customer' ? COLOR_CUSTOMER : COLOR_SUPPLIER,
-        getLineColor: [232, 236, 240, 140],
+          d.kind === 'customer' ? COLOR_COMPANY : COLOR_SUPPLIER,
+        getLineColor: [232, 236, 240, 100],
         getLineWidth: 1,
       }),
     ]
-  }, [])
+  }, [bundle])
 
   useEffect(() => {
     const el = rootRef.current
-    if (!el || typeof ResizeObserver === 'undefined') {
-      return
-    }
-    const ro = new ResizeObserver(() => {
-      mapRef.current?.resize()
-    })
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => mapRef.current?.resize())
     ro.observe(el)
-    return () => {
-      ro.disconnect()
-    }
+    return () => ro.disconnect()
   }, [])
+
+  const companyCount =
+    bundle?.nodes.filter((n) => n.kind === 'customer').length ?? 0
+  const supplierCount =
+    bundle?.nodes.filter((n) => n.kind === 'supplier').length ?? 0
+  const arcCount = bundle?.arcs.length ?? 0
 
   return (
     <div ref={rootRef} className="supplier-network-map-root">
@@ -117,6 +134,48 @@ export default function SupplierNetworkMap() {
           visualizePitch
         />
       </Map>
+
+      {/* Status overlay */}
+      {status === 'loading' && (
+        <div className="map-overlay-status">Loading…</div>
+      )}
+      {status === 'empty' && (
+        <div className="map-overlay-status">
+          Geocoding pending — run
+          <code
+            style={{ margin: '0 4px', fontFamily: 'var(--font-secondary)' }}
+          >
+            pnpm tsx scripts/geocode-entities.ts
+          </code>
+        </div>
+      )}
+      {status === 'error' && (
+        <div className="map-overlay-status">Failed to load map data</div>
+      )}
+
+      {/* Legend */}
+      {status === 'live' && (
+        <div className="map-legend">
+          <div className="map-legend-row">
+            <span
+              className="map-legend-dot"
+              style={{ background: 'rgb(103,232,249)' }}
+            />
+            <span>{companyCount} brands</span>
+          </div>
+          <div className="map-legend-row">
+            <span
+              className="map-legend-dot"
+              style={{ background: 'rgb(167,139,250)' }}
+            />
+            <span>{supplierCount} suppliers</span>
+          </div>
+          <div className="map-legend-row">
+            <span className="map-legend-line" />
+            <span>{arcCount} connections</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
