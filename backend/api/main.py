@@ -3,6 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 load_dotenv(Path(__file__).parent.parent / ".env")
@@ -18,6 +19,13 @@ app = FastAPI(
     title="Agnes – AI Supply Chain Manager",
     description="CPG raw material substitution and supplier consolidation API",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 _DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
