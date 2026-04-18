@@ -10,7 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="app-shell">
           <Sidebar />
           <main className="app-main">
-            <div className="app-main-scroll">
+            <div className="app-main-scroll app-main-chrome-bg">
               <div className="app-main-inner">{children}</div>
             </div>
             <MapRightSidebar />

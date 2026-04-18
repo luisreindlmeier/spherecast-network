@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic'
 import { useCallback, useRef, useState } from 'react'
-import { GripVertical } from 'lucide-react'
 import { useMapSidebar } from '@/components/network-map/map-sidebar-context'
 import { clampMapSidebarWidthPx } from '@/lib/map-sidebar-width'
 
@@ -43,7 +42,7 @@ export default function MapRightSidebar() {
       if (!d) {
         return
       }
-      /* Left-edge splitter: drag left → wider map, drag right → narrower map */
+      /* Left edge of map: drag left → wider panel, drag right → narrower */
       const next = clampMapSidebarWidthPx(d.startW - (e.clientX - d.startX))
       pendingWidthRef.current = next
       setSidebarWidthPx(next, false)
@@ -82,26 +81,26 @@ export default function MapRightSidebar() {
       aria-hidden={!isOpen}
       aria-label={isOpen ? 'Supplier network map' : undefined}
     >
-      {isOpen ? (
-        <div
-          className="map-right-sidebar-resize-handle"
-          title="Drag to resize map panel"
-          onPointerDown={onResizePointerDown}
-          onPointerMove={onResizePointerMove}
-          onPointerUp={endResize}
-          onPointerCancel={endResize}
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="Resize map panel — drag horizontally"
-        >
-          <span className="map-right-sidebar-resize-grip" aria-hidden>
-            <GripVertical size={14} strokeWidth={2} />
-          </span>
-        </div>
-      ) : null}
-      <div className="map-right-sidebar-inner">
+      <div
+        className={`map-right-sidebar-inner${isOpen ? ' app-main-chrome-bg' : ''}`}
+      >
         <div className="map-right-sidebar-map">
-          {isOpen ? <SupplierNetworkMap /> : null}
+          {isOpen ? (
+            <>
+              <div
+                className="map-right-sidebar-map-resize-edge"
+                title="Drag the left edge of the map to resize the panel"
+                onPointerDown={onResizePointerDown}
+                onPointerMove={onResizePointerMove}
+                onPointerUp={endResize}
+                onPointerCancel={endResize}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize map panel"
+              />
+              <SupplierNetworkMap />
+            </>
+          ) : null}
         </div>
       </div>
     </aside>

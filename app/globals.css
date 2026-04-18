@@ -90,11 +90,8 @@ button {
   background: var(--bg-base);
 }
 
-.app-main-scroll {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  overflow: auto;
+/* Main content chrome — reused behind map inset in the right rail */
+.app-main-chrome-bg {
   background:
     radial-gradient(
       1200px 600px at 20% -10%,
@@ -107,6 +104,13 @@ button {
       transparent 60%
     ),
     var(--bg-base);
+}
+
+.app-main-scroll {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
 }
 
 .app-main-inner {
@@ -402,56 +406,11 @@ button {
   height: 100vh;
   overflow: hidden;
   background: var(--bg-sidebar);
-  border-left: 1px solid transparent;
   isolation: isolate;
 }
 
 .map-right-sidebar.is-open {
-  border-left-color: var(--border);
-}
-
-.map-right-sidebar-resize-handle {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 10px;
-  margin-left: -5px;
-  cursor: col-resize;
-  touch-action: none;
-  border-left: 1px solid var(--border-strong);
-  border-right: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.035);
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.05);
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.map-right-sidebar-resize-handle:hover {
-  background: rgba(91, 141, 255, 0.14);
-  border-left-color: rgba(91, 141, 255, 0.35);
-  border-right-color: rgba(91, 141, 255, 0.2);
-}
-
-.map-right-sidebar-resize-handle:active {
-  background: rgba(91, 141, 255, 0.22);
-}
-
-.map-right-sidebar-resize-grip {
-  display: flex;
-  color: var(--text-muted);
-  opacity: 0.85;
-  pointer-events: none;
-}
-
-.map-right-sidebar-resize-handle:hover .map-right-sidebar-resize-grip {
-  color: var(--text-secondary);
-  opacity: 1;
+  background: transparent;
 }
 
 .map-right-sidebar-inner {
@@ -472,10 +431,26 @@ button {
   display: flex;
   flex-direction: column;
   position: relative;
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
   contain: layout paint;
-  box-shadow: 0 0 0 1px var(--border);
+}
+
+/* Invisible hit strip on the map’s left edge (no separate divider rail) */
+.map-right-sidebar-map-resize-edge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 8;
+  width: 10px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.map-right-sidebar-map-resize-edge:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .map-right-sidebar-map-loading {
