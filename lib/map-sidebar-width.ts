@@ -4,8 +4,8 @@ export const MAP_SIDEBAR_WIDTH_STORAGE_KEY = 'spherecast-map-sidebar-width'
 
 export const MAP_SIDEBAR_MIN_PX = 280
 /** Upper clamp for stored width; effective max also scales with viewport (see clamp). */
-export const MAP_SIDEBAR_MAX_PX = 1200
-export const MAP_SIDEBAR_DEFAULT_PX = 440
+export const MAP_SIDEBAR_MAX_PX = 800
+export const MAP_SIDEBAR_DEFAULT_PX = 420
 
 const storedWidthSchema = z.coerce
   .number()
@@ -13,14 +13,14 @@ const storedWidthSchema = z.coerce
   .min(MAP_SIDEBAR_MIN_PX)
   .max(MAP_SIDEBAR_MAX_PX)
 
-/** Never wider than ~78% of viewport so the main column stays usable. */
+/** Cap width vs. viewport so the main column keeps enough room. */
 export function maxMapSidebarWidthPx(): number {
   if (typeof window === 'undefined') {
     return MAP_SIDEBAR_MAX_PX
   }
   return Math.min(
     MAP_SIDEBAR_MAX_PX,
-    Math.max(MAP_SIDEBAR_MIN_PX + 80, Math.floor(window.innerWidth * 0.78))
+    Math.max(MAP_SIDEBAR_MIN_PX + 80, Math.floor(window.innerWidth * 0.62))
   )
 }
 
