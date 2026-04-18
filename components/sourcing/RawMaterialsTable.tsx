@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useMemo } from 'react'
 import type { RawMaterialRow } from '@/lib/queries'
 
@@ -90,7 +91,12 @@ export default function RawMaterialsTable({ rows }: Props) {
           </div>
         ) : (
           filtered.map((row) => (
-            <div key={row.id} className="data-row data-grid-materials">
+            <Link
+              key={row.id}
+              href={`/raw-materials/${row.id}`}
+              className="data-row data-grid-materials"
+              style={{ textDecoration: 'none' }}
+            >
               <span className="data-sku">{row.sku}</span>
               <span className="data-name">{row.companyName}</span>
               <span>
@@ -110,7 +116,7 @@ export default function RawMaterialsTable({ rows }: Props) {
                   <span className="data-badge data-badge-muted">—</span>
                 )}
               </span>
-            </div>
+            </Link>
           ))
         )}
       </div>

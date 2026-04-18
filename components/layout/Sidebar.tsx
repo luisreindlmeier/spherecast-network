@@ -188,6 +188,11 @@ export default function Sidebar({
                 badge: rawMaterialsBadge,
               },
               {
+                label: 'Companies',
+                href: '/companies',
+                icon: <Building2 size={16} />,
+              },
+              {
                 label: 'Suppliers',
                 href: '/suppliers',
                 icon: <Building2 size={16} />,

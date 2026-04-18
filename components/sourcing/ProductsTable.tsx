@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useMemo } from 'react'
 import type { FinishedGoodRow } from '@/lib/queries'
 
@@ -57,7 +58,13 @@ export default function ProductsTable({ rows }: Props) {
           filtered.map((row) => (
             <div key={row.id} className="data-row data-grid-products">
               <span className="data-sku">{row.sku}</span>
-              <span className="data-name">{row.companyName}</span>
+              <Link
+                href={`/companies/${row.company_id}`}
+                className="data-name detail-link"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {row.companyName}
+              </Link>
               <span className="data-col-right">
                 {row.ingredientCount > 0 ? (
                   <span className="data-badge data-badge-blue">

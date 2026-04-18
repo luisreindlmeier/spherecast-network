@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useMemo } from 'react'
 import type { SupplierRow } from '@/lib/queries'
 
@@ -54,7 +55,12 @@ export default function SuppliersTable({ rows, maxMaterials }: Props) {
             const pct =
               maxMaterials > 0 ? (row.materialCount / maxMaterials) * 100 : 0
             return (
-              <div key={row.id} className="data-row data-grid-suppliers">
+              <Link
+                key={row.id}
+                href={`/suppliers/${row.id}`}
+                className="data-row data-grid-suppliers"
+                style={{ textDecoration: 'none' }}
+              >
                 <span className="data-name">{row.name}</span>
                 <span>
                   <span className="data-badge data-badge-blue">
@@ -72,7 +78,7 @@ export default function SuppliersTable({ rows, maxMaterials }: Props) {
                     {Math.round(pct)}%
                   </span>
                 </span>
-              </div>
+              </Link>
             )
           })
         )}
