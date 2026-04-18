@@ -2,7 +2,9 @@ from extraction.llm_extractor import IngredientProfile
 
 
 def passes_compliance(
-    original: IngredientProfile | dict, candidate: dict
+    original: IngredientProfile | dict,
+    candidate: dict,
+    fg_vegan: bool | None = None,
 ) -> tuple[bool, list[str]]:
     violations: list[str] = []
 
@@ -21,8 +23,11 @@ def passes_compliance(
     if new_allergens:
         violations.append(f"Introduces new allergens: {', '.join(sorted(new_allergens))}")
 
-    if orig_vegan is True and cand_vegan is False:
-        violations.append("Original is vegan, substitute is not")
+    # Vegan check: ingredient level OR FG level
+    effective_vegan_required = orig_vegan is True or fg_vegan is True
+    if effective_vegan_required and cand_vegan is False:
+        source = "FG is vegan-certified" if fg_vegan is True else "Original ingredient is vegan"
+        violations.append(f"Vegan violation: {source} but substitute is not vegan")
 
     return len(violations) == 0, violations
 

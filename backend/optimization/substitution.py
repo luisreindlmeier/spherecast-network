@@ -4,7 +4,7 @@ import pandas as pd
 
 from extraction.cache import get_cached
 from extraction.llm_extractor import IngredientProfile
-from ingestion.db_reader import build_ingredient_df
+from ingestion.db_reader import build_ingredient_df, get_fg_vegan_status
 from optimization.embeddings import find_similar
 from optimization.rules import passes_compliance
 
@@ -20,10 +20,20 @@ def _load_profile(sku: str) -> IngredientProfile | None:
     return None
 
 
-def find_substitutes(sku: str, top_k: int = 5) -> dict:
+def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dict:
     profile = _load_profile(sku)
     if not profile:
         return {"error": f"No profile found for {sku}. Run build_index.py first."}
+
+    # Derive FG vegan status if fg_sku provided, otherwise infer from first BOM using this ingredient
+    fg_vegan: bool | None = None
+    if fg_sku:
+        fg_vegan = get_fg_vegan_status(fg_sku)
+    else:
+        df_check = build_ingredient_df(_DB_PATH)
+        rows = df_check[df_check["ingredient_sku"] == sku]
+        if not rows.empty and rows.iloc[0]["fg_skus"]:
+            fg_vegan = get_fg_vegan_status(rows.iloc[0]["fg_skus"][0])
 
     # Fetch many more candidates so we can deduplicate by name
     candidates = find_similar(sku, profile.name, profile.functional_class, top_k=top_k + 40)
@@ -35,7 +45,7 @@ def find_substitutes(sku: str, top_k: int = 5) -> dict:
     consolidation = []
 
     for c in candidates:
-        passed, violations = passes_compliance(profile, c)
+        passed, violations = passes_compliance(profile, c, fg_vegan=fg_vegan)
         combined_score = c["similarity"] * 0.6 + c["confidence"] * 0.2 + (1.0 if passed else 0.0) * 0.2
 
         rows = df[df["ingredient_sku"] == c["sku"]]

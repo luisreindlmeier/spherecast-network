@@ -17,7 +17,8 @@ def _client() -> chromadb.PersistentClient:
 
 
 def _embed_text(p: IngredientProfile) -> str:
-    parts = [p.name, p.functional_class]
+    parts = p.all_names()  # name + synonyms + hardcoded dict
+    parts.append(p.functional_class)
     if p.allergens:
         parts.append("allergens: " + " ".join(p.allergens))
     if p.description:
@@ -60,9 +61,12 @@ def build_index(profiles: dict[str, IngredientProfile]) -> None:
 
 
 def find_similar(sku: str, name: str, functional_class: str, top_k: int = 10) -> list[dict]:
+    from extraction.llm_extractor import SYNONYMS
     client = _client()
     col = client.get_collection(_COLLECTION, embedding_function=_ef)
-    query_text = f"{name} {functional_class}"
+    # Expand query with synonyms so e.g. "cholecalciferol" also matches "vitamin d3" entries
+    all_names = [name] + SYNONYMS.get(name.lower(), [])
+    query_text = f"{' '.join(all_names)} {functional_class}"
     results = col.query(query_texts=[query_text], n_results=min(top_k + 1, col.count()))
     out = []
     for i, (rid, dist, meta) in enumerate(

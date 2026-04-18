@@ -6,6 +6,46 @@ from pydantic import BaseModel, field_validator
 
 _client: OpenAI | None = None
 
+# Known chemical↔common name synonyms — used as fallback when LLM doesn't provide them
+SYNONYMS: dict[str, list[str]] = {
+    "ascorbic acid": ["vitamin c", "l-ascorbic acid"],
+    "cholecalciferol": ["vitamin d3", "vitamin d"],
+    "cyanocobalamin": ["vitamin b12", "cobalamin"],
+    "phytonadione": ["vitamin k", "vitamin k1"],
+    "nicotinamide": ["niacin", "niacinamide", "vitamin b3"],
+    "nicotinic acid": ["niacin", "vitamin b3"],
+    "sucrose": ["sugar", "cane sugar"],
+    "tocopherol": ["vitamin e"],
+    "alpha tocopherol": ["vitamin e"],
+    "dl alpha tocopheryl acetate": ["vitamin e acetate", "vitamin e"],
+    "retinol": ["vitamin a"],
+    "retinyl palmitate": ["vitamin a palmitate", "vitamin a"],
+    "thiamine": ["vitamin b1", "thiamine hydrochloride"],
+    "thiamine hydrochloride": ["vitamin b1", "thiamine"],
+    "riboflavin": ["vitamin b2"],
+    "pyridoxine": ["vitamin b6", "pyridoxine hydrochloride"],
+    "pyridoxine hydrochloride": ["vitamin b6", "pyridoxine"],
+    "folic acid": ["folate", "vitamin b9", "folacin"],
+    "cobalamin": ["vitamin b12", "cyanocobalamin"],
+    "calcium ascorbate": ["vitamin c calcium salt"],
+    "sodium ascorbate": ["vitamin c sodium salt"],
+    "ergocalciferol": ["vitamin d2"],
+    "menaquinone": ["vitamin k2"],
+    "pantothenic acid": ["vitamin b5", "calcium pantothenate"],
+    "calcium pantothenate": ["vitamin b5", "pantothenic acid"],
+    "biotin": ["vitamin b7", "vitamin h"],
+    "magnesium stearate": ["mag stearate"],
+    "microcrystalline cellulose": ["mcc", "cellulose microcrystalline"],
+    "silicon dioxide": ["silica", "fumed silica"],
+    "silica": ["silicon dioxide"],
+    "soy lecithin": ["lecithin", "soya lecithin"],
+    "sunflower lecithin": ["lecithin sunflower"],
+    "xanthan gum": ["xanthan"],
+    "hypromellose": ["hpmc", "hydroxypropyl methylcellulose"],
+    "croscarmellose sodium": ["ac-di-sol"],
+    "magnesium oxide": ["mag oxide"],
+}
+
 _SYSTEM = """You are a food ingredient classification expert for the CPG industry.
 Given a raw text about an ingredient, extract structured facts.
 Respond ONLY with valid JSON matching the schema. No prose, no markdown."""
@@ -17,6 +57,7 @@ _SCHEMA = """{
   "kosher": "boolean or null if unknown",
   "halal": "boolean or null if unknown",
   "e_number": "string like E471 or null",
+  "synonyms": ["array of up to 4 alternative names or chemical synonyms for this ingredient — empty if none known"],
   "description": "1-sentence description of what this ingredient does in a food product",
   "confidence": "float 0.0-1.0 — how confident you are given the source text"
 }"""
@@ -30,10 +71,17 @@ class IngredientProfile(BaseModel):
     kosher: bool | None = None
     halal: bool | None = None
     e_number: str | None = None
+    synonyms: list[str] = []
     description: str = ""
     raw_text: str = ""
     sources: list[str] = []
     confidence: float = 0.5
+
+    def all_names(self) -> list[str]:
+        """All names including hardcoded synonyms — used for embedding."""
+        names = [self.name] + list(self.synonyms)
+        hardcoded = SYNONYMS.get(self.name.lower(), [])
+        return list(dict.fromkeys(names + hardcoded))  # deduplicated, order preserved
 
     @field_validator("functional_class")
     @classmethod

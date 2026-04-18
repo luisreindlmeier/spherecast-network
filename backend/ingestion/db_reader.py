@@ -89,6 +89,36 @@ def build_ingredient_df(path: str | Path | None = None) -> pd.DataFrame:
     ]
 
 
+def get_fg_vegan_status(fg_sku: str, path: str | Path | None = None) -> bool | None:
+    from extraction.cache import get_cached
+    dfs = load_db(path)
+    fg = dfs["Product"][(dfs["Product"]["SKU"] == fg_sku) & (dfs["Product"]["Type"] == "finished-good")]
+    if fg.empty:
+        return None
+    fg_id = fg.iloc[0]["Id"]
+    bom = dfs["BOM"][dfs["BOM"]["ProducedProductId"] == fg_id]
+    if bom.empty:
+        return None
+    bom_id = bom.iloc[0]["Id"]
+    components = dfs["BOM_Component"][dfs["BOM_Component"]["BOMId"] == bom_id]
+    if components.empty:
+        return None
+
+    verdicts = []
+    for _, row in components.iterrows():
+        rm = dfs["Product"][dfs["Product"]["Id"] == row["ConsumedProductId"]]
+        if rm.empty:
+            continue
+        name = parse_name_from_sku(rm.iloc[0]["SKU"])
+        cached = get_cached(name)
+        if cached and cached.get("vegan") is not None:
+            verdicts.append(cached["vegan"])
+
+    if not verdicts:
+        return None
+    return all(verdicts)
+
+
 def get_unique_ingredients(path: str | Path | None = None) -> list[dict]:
     df = build_ingredient_df(path)
     result = []
