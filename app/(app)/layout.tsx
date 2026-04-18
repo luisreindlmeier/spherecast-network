@@ -1,15 +1,54 @@
 import Sidebar from '@/components/layout/Sidebar'
+import AppTopNav from '@/components/layout/AppTopNav'
+import MapRightSidebar from '@/components/network-map/MapRightSidebar'
+import { MapSidebarProvider } from '@/components/network-map/map-sidebar-context'
+import { CompanyScopeProvider } from '@/lib/company-scope-context'
 import { ViewerProvider } from '@/lib/viewer-context'
+import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
+import {
+  getCompanyPickerList,
+  getGlobalSearchItems,
+  getNavCounts,
+} from '@/lib/queries'
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [scopeCompanyId, pickerCompanies] = await Promise.all([
+    resolveCompanyScopeFilter(),
+    getCompanyPickerList(),
+  ])
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const [counts, searchItems] = await Promise.all([
+    getNavCounts(scopeCompanyId),
+    getGlobalSearchItems(scopeCompanyId),
+  ])
+
   return (
     <ViewerProvider>
-      <div className="app-shell">
-        <Sidebar />
-        <main className="app-main">
-          <div className="app-main-inner">{children}</div>
-        </main>
-      </div>
+      <CompanyScopeProvider
+        key={String(scopeCompanyId ?? 'all')}
+        companies={pickerCompanies}
+        initialCompanyId={scopeCompanyId}
+      >
+        <MapSidebarProvider>
+          <div className="app-shell">
+            <Sidebar
+              productsBadge={counts.finishedGoods}
+              rawMaterialsBadge={counts.rawMaterials}
+              suppliersBadge={counts.suppliers}
+            />
+            <main className="app-main">
+              <div className="app-main-scroll app-main-chrome-bg">
+                <AppTopNav searchItems={searchItems} />
+                <div className="app-main-inner">{children}</div>
+              </div>
+              <MapRightSidebar />
+            </main>
+          </div>
+        </MapSidebarProvider>
+      </CompanyScopeProvider>
     </ViewerProvider>
   )
 }
