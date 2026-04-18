@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/clear-stale-next-dev-lock.mjs",
     "dev": "next dev",
+    "dev:stop": "node scripts/stop-next-dev.mjs",
+    "dev:restart": "pnpm dev:stop && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
