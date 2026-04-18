@@ -59,6 +59,7 @@ _SCHEMA = """{
   "e_number": "string like E471 or null",
   "synonyms": ["array of up to 4 alternative names or chemical synonyms for this ingredient — empty if none known"],
   "description": "1-sentence description of what this ingredient does in a food product",
+  "non_gmo": "boolean or null — true if ingredient is typically non-GMO, false if commonly GMO-derived (e.g. US corn/soy), null if unknown",
   "confidence": "float 0.0-1.0 — how confident you are given the source text"
 }"""
 
@@ -70,6 +71,7 @@ class IngredientProfile(BaseModel):
     vegan: bool | None = None
     kosher: bool | None = None
     halal: bool | None = None
+    non_gmo: bool | None = None
     e_number: str | None = None
     synonyms: list[str] = []
     description: str = ""

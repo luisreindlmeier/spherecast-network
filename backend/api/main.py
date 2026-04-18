@@ -9,6 +9,7 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 from ingestion.db_reader import build_ingredient_df, get_unique_ingredients
 from ingestion.fda_ratings import get_fda_status, get_standards
+from optimization.carbon import estimate_co2, get_prop65_warning
 from optimization.substitution import find_substitutes, get_all_functional_classes, get_consolidation_proposal
 from optimization.embeddings import collection_exists
 from reasoning.explainer import explain_consolidation, explain_substitution
@@ -66,6 +67,7 @@ def get_ingredient(sku: str):
         company_names = list(set(row["company_names"]))
 
     fda_info = get_fda_status(name, get_standards())
+    functional_class = cached.get("functional_class", "other")
 
     return {
         "sku": sku,
@@ -73,6 +75,8 @@ def get_ingredient(sku: str):
         "used_in_boms": bom_count,
         "used_by_companies": company_names,
         "fda_status": fda_info,
+        "co2_footprint_kg_per_kg": round(estimate_co2(name, functional_class), 2),
+        "prop65_warning": get_prop65_warning(name),
         **cached,
     }
 
@@ -165,4 +169,68 @@ def company_sourcing(company_id: int):
         "total_raw_materials": len(ingredients),
         "ingredients": ingredients,
         "top_suppliers": [{"name": s, "ingredient_count": c} for s, c in supplier_summary],
+    }
+
+
+@app.get("/roadmap")
+def roadmap():
+    return {
+        "product": "Agnes — AI Supply Chain Manager",
+        "powered_by": "Spherecast",
+        "current_capabilities": [
+            "Raw material substitution with compliance scoring (FDA GRAS, allergens, vegan, non-GMO)",
+            "Prop 65 risk flagging for California compliance",
+            "Supplier consolidation proposals by functional class",
+            "FDA supplier certification scoring (FSSC 22000, ISO 9001, USP)",
+            "21 CFR citation and GRAS status per ingredient",
+            "FG-level vegan inference from Bill of Materials",
+            "Semantic ingredient search with synonym expansion (876 ingredients, 61 companies)",
+        ],
+        "roadmap": {
+            "2026": {
+                "title": "CO₂ Footprint Intelligence",
+                "description": (
+                    "Per-ingredient carbon footprint tracking (kg CO₂e/kg) based on "
+                    "verified LCA data. Sourcing decisions optimised for lowest Scope 3 "
+                    "emissions. Agnes will flag when a compliant substitute also reduces "
+                    "your supply chain carbon footprint."
+                ),
+                "pillars": [
+                    "Scope 1, 2 & 3 emissions per ingredient SKU",
+                    "Carbon-optimised substitute ranking",
+                    "ESG reporting data feeds (GRI, CSRD, SEC climate disclosure)",
+                ],
+                "data_sources": ["Ecoinvent LCA database", "Our World in Data", "supplier EPDs"],
+                "note": "CO₂ estimates are already available in /ingredients and /recommend as LLM-based approximations.",
+            },
+            "2027": {
+                "title": "Raw Materials Brokerage",
+                "description": (
+                    "Agnes moves from recommendation to execution. Extended payment term "
+                    "structuring, commodity contract brokerage, and direct access to "
+                    "Spherecast's vetted supplier network with pre-negotiated benchmarks."
+                ),
+                "pillars": [
+                    "Extended Payment Terms (EPT) deal structuring",
+                    "Spot and forward contract brokerage",
+                    "Supplier network with pre-qualified pricing benchmarks",
+                ],
+            },
+            "2030": {
+                "title": "EU Digital Product Passport (DPP)",
+                "description": (
+                    "EU ESPR regulation mandates a Digital Product Passport for CPG products "
+                    "by 2030. Agnes will build the ingredient-level data infrastructure now "
+                    "so clients are DPP-ready before the deadline — provenance, materials, "
+                    "sustainability data, and lifecycle traceability from raw material to shelf."
+                ),
+                "pillars": [
+                    "EU DPP data architecture (ESPR-compliant)",
+                    "Full lifecycle traceability per SKU",
+                    "W3C Verifiable Credentials for supplier certifications",
+                    "GS1 Digital Link integration",
+                ],
+                "regulatory_basis": "EU Regulation 2024/1781 (ESPR), mandatory from 2030",
+            },
+        },
     }

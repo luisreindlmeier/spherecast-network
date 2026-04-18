@@ -6,6 +6,7 @@ from extraction.cache import get_cached
 from extraction.llm_extractor import IngredientProfile
 from ingestion.db_reader import build_ingredient_df, get_fg_vegan_status
 from ingestion.fda_ratings import get_fda_status, get_ratings, get_standards, get_supplier_score
+from optimization.carbon import co2_delta, estimate_co2, get_prop65_warning
 from optimization.embeddings import find_similar
 from optimization.rules import passes_compliance
 
@@ -47,6 +48,7 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
 
     ratings = get_ratings()
     standards = get_standards()
+    orig_co2 = estimate_co2(profile.name, profile.functional_class)
 
     for c in candidates:
         passed, violations = passes_compliance(profile, c, fg_vegan=fg_vegan)
@@ -62,6 +64,14 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
 
         # FDA ingredient status
         fda_info = get_fda_status(c["name"], standards)
+
+        # CO₂ footprint estimate
+        cand_co2 = estimate_co2(c["name"], c["functional_class"])
+        c["co2_footprint_kg_per_kg"] = round(cand_co2, 2)
+        c["co2_vs_original"] = co2_delta(orig_co2, cand_co2)
+
+        # Prop 65 warning
+        c["prop65_warning"] = get_prop65_warning(c["name"])
 
         combined_score = (
             c["similarity"] * 0.50
@@ -103,7 +113,11 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
             "functional_class": profile.functional_class,
             "allergens": profile.allergens,
             "vegan": profile.vegan,
+            "non_gmo": profile.non_gmo,
             "e_number": profile.e_number,
+            "co2_footprint_kg_per_kg": round(orig_co2, 2),
+            "prop65_warning": get_prop65_warning(profile.name),
+            "fda_status": get_fda_status(profile.name, standards),
             "current_suppliers": list(df[df["ingredient_sku"] == sku].iloc[0]["supplier_names"])
                 if not df[df["ingredient_sku"] == sku].empty else [],
         },
