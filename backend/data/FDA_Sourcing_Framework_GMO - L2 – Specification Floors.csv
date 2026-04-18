@@ -1,0 +1,90 @@
+Material,Quality / GMO Parameter,Unit,FDA / FCC / NBFDS Minimum,Your Acceptance Floor,Premium / Non-GMO Target,Test Method,Supplier CoA Value,Status
+Sucrose (Refined Sugar),Pol (Sucrose content),%,≥99.5,≥99.7,≥99.8,ICUMSA GS2/3-1,,Enter CoA →
+Sucrose (Refined Sugar),ICUMSA Colour,IU,≤45,≤35,≤25,ICUMSA GS2/3-9,,Enter CoA →
+Sucrose (Refined Sugar),Moisture,%,≤0.06,≤0.05,≤0.04,ICUMSA GS2/1/3/9-15,,Enter CoA →
+Sucrose (Refined Sugar),SO₂,mg/kg,≤15,≤12,≤10,ICUMSA GS2/3-33,,Enter CoA →
+Sucrose (Beet — BE check),"GMO/BE Detectable Material
+(if Non-GMO claim)",% GMO,N/A (BE-listed crop),≤0.9%,≤0.1% (IP certified),Quantitative PCR (ISO 21570),,Enter CoA →
+Pea Protein Isolate,"Protein (N×6.25, dry basis)",%,≥85.0,≥87.0,≥90.0,AOAC 990.03,,Enter CoA →
+Pea Protein Isolate,Moisture,%,≤8.0,≤7.5,≤7.0,AOAC 925.10,,Enter CoA →
+Pea Protein Isolate,Lead (Pb),mg/kg,≤0.5,≤0.30,≤0.10,ICP-MS,,Enter CoA →
+Pea Protein Isolate,"GMO/BE Screen
+(pea not BE-listed — verify purity)",qualit.,N/A (not BE listed),Absent,Absent (maintain IP claim),Qualitative PCR (ISO 21569),,Enter CoA →
+Soy Protein Isolate,"Protein (N×6.25, dry basis)",%,≥90.0,≥91.0,≥93.0,AOAC 990.03,,Enter CoA →
+Soy Protein Isolate,Moisture,%,≤7.0,≤6.5,≤6.0,AOAC 925.10,,Enter CoA →
+Soy Protein Isolate,Lead (Pb),mg/kg,≤10,≤2.0,≤0.50,ICP-MS,,Enter CoA →
+Soy Protein Isolate,Salmonella,detect,Absent/25g,Absent/25g,Absent/375g,BAM FDA,,Enter CoA →
+Soy Protein Isolate,"GMO/BE Event Detection
+(NBFDS mandatory disclosure if BE)",% GMO,"Disclosure required
+if BE detected",Non-GMO: ≤0.9%,"Non-GMO Project: ≤0.9%
+USDA Organic: 0%",Quantitative PCR (ISO 21570); Event-specific PCR,,Enter CoA →
+Soy Lecithin,Acetone Insolubles,%,≥62.0,≥63.0,≥65.0,AOCS Ja 4-46,,Enter CoA →
+Soy Lecithin,Moisture & Volatiles,%,≤1.5,≤1.2,≤1.0,AOCS Ja 2b-87,,Enter CoA →
+Soy Lecithin,"GMO/BE Lecithin Test
+(retains DNA — NBFDS disclosure required)",% GMO,"Disclosure required
+if BE soy",Non-GMO: ≤0.9%,Non-GMO Project: ≤0.9%,Quantitative PCR (ISO 21570),,Enter CoA →
+Cocoa Powder (Natural),Fat content (Cocoa Butter),%,≥10.0,≥10.5,≥11.0,Soxhlet / ISO 7532,,Enter CoA →
+Cocoa Powder (Natural),Moisture,%,≤5.0,≤4.5,≤3.5,ISO 2291,,Enter CoA →
+Cocoa Powder (Natural),Cadmium (Cd),mg/kg,≤0.3 (ICCO),≤0.20,≤0.10,ICP-MS,,Enter CoA →
+Cocoa Powder (Natural),"GMO/BE Screen
+(not BE-listed; verify cross-contamination for EU export)",qualit.,N/A (not BE listed in US),Absent (EU export: ≤0.9%),Absent,Qualitative PCR (ISO 21569),,Enter CoA →
+Corn Starch,Moisture,%,≤14.0,≤13.5,≤13.0,AOAC 925.10,,Enter CoA →
+Corn Starch,Ash,%,≤0.50,≤0.40,≤0.30,AOAC 923.03,,Enter CoA →
+Corn Starch,SO₂,mg/kg,≤50,≤40,≤30,Monier-Williams,,Enter CoA →
+Corn Starch,"GMO/BE Corn Event Detection
+(NBFDS disclosure required — corn is BE listed)",% GMO,"Disclosure required
+if BE corn",Non-GMO: ≤0.9%,"IP certified: ≤0.1%
+Non-GMO Project: ≤0.9%",Quantitative PCR (ISO 21570); AOCS GMO method,,Enter CoA →
+Canola Oil (Refined),Erucic Acid (C22:1),% FA,≤2.0,≤1.0,≤0.5,GC-FID (AOCS Ce 1a-13),,Enter CoA →
+Canola Oil (Refined),Free Fatty Acids,%,≤0.10,≤0.08,≤0.05,AOCS Ca 5a-40,,Enter CoA →
+Canola Oil (Refined),"GMO/BE Canola Oil
+(highly refined — verify AMS guidance on detectability)",% GMO,"Verify per AMS
+highly refined oil guidance",Prefer IP CoA from supplier,Non-GMO claim: ≤0.9% PCR,Quantitative PCR if Non-GMO claimed (ISO 21570),,Enter CoA →
+Soybean Oil (Refined),Free Fatty Acids (as Oleic),%,≤0.10,≤0.08,≤0.05,AOCS Ca 5a-40,,Enter CoA →
+Soybean Oil (Refined),Peroxide Value,meq/kg,≤5.0,≤4.0,≤2.0,AOCS Cd 8b-90,,Enter CoA →
+Soybean Oil (Refined),"GMO/BE Soybean Oil
+(highly refined — verify per AMS guidance)",% GMO,"Verify per AMS
+highly refined oil guidance",Prefer IP CoA,Non-GMO claim: ≤0.9%,Quantitative PCR if Non-GMO claimed,,Enter CoA →
+Salt (NaCl),NaCl content (dry basis),%,≥97.0,≥98.5,≥99.5,Argentometric,,Enter CoA →
+Salt (NaCl),Arsenic (As),mg/kg,≤0.5,≤0.3,≤0.1,ICP-MS,,Enter CoA →
+Wheat Flour (Enriched),Moisture,%,≤14.5,≤14.0,≤13.5,AACC 44-15.02,,Enter CoA →
+Wheat Flour (Enriched),Ash (moisture-free basis),%,≤0.60,≤0.55,≤0.50,AACC 08-01.01,,Enter CoA →
+Wheat Flour (Enriched),Falling Number,sec,≥300,≥320,≥350,AACC 56-81.03,,Enter CoA →
+Vitamin Premix (Vit C),Assay (L-Ascorbic Acid),% dry,98.0–100.5,98.5–100.5,99.0–100.5,USP titration,,Enter CoA →
+Vitamin Premix — Carrier,"GMO/BE Carrier Screen
+(if corn starch or maltodextrin carrier)",% GMO,"Carrier: apply corn
+BE thresholds",Non-GMO carrier: ≤0.9%,Non-GMO carrier: ≤0.1%,PCR on carrier isolate (ISO 21570),,Enter CoA →
+Sucralose,Assay (HPLC),% dry,98.0–102.0,98.5–101.5,99.0–101.0,HPLC,,Enter CoA →
+Sucralose,Moisture (KF),%,≤2.0,≤1.8,≤1.5,Karl Fischer,,Enter CoA →
+Vitamin C (L-Ascorbic Acid),Assay (HPLC or iodometric),% dry,99.0–100.5,99.3–100.5,99.5–100.5,USP <621> HPLC / iodometric titration,,Enter CoA →
+Vitamin C (L-Ascorbic Acid),Specific Rotation [α]²⁰D,degrees,−20.5 to −21.5,−20.5 to −21.5,−20.8 to −21.2,USP <781> Polarimetry,,Enter CoA →
+Vitamin C (L-Ascorbic Acid),Moisture (KF),%,≤0.40,≤0.35,≤0.30,Karl Fischer,,Enter CoA →
+Vitamin C (L-Ascorbic Acid),Heavy Metals (as Pb),mg/kg,≤10,≤5,≤2,USP <231> / ICP-MS,,Enter CoA →
+Vitamin C (L-Ascorbic Acid),pH (5% solution),,2.1–2.6,2.2–2.6,2.2–2.5,USP potentiometry,,Enter CoA →
+Vitamin C (L-Ascorbic Acid),"GMO/BE Screen
+(synthetic molecule — no BE concern; verify carrier if tablet grade)",,N/A (not BE-listed),Absent (no BE),N/A — not a biological crop product,No PCR test required,,Enter CoA →
+Cholecalciferol (Vit D3),Potency vs declared label claim,%,90.0–115.0,92.0–110.0,95.0–105.0,USP <871> / HPLC,,Enter CoA →
+Cholecalciferol (Vit D3),Purity (HPLC — D3 peak area),%,≥98.0,≥98.5,≥99.0,HPLC (USP D3 method),,Enter CoA →
+Cholecalciferol (Vit D3),Pre-vitamin D3 & tachysterol,%,≤3.0,≤2.5,≤2.0,HPLC impurity profile,,Enter CoA →
+Cholecalciferol (Vit D3),Heavy Metals (as Pb),mg/kg,≤20,≤10,≤5,ICP-MS,,Enter CoA →
+Cholecalciferol (Vit D3),"GMO/BE Screen
+(D3 is not BE; check carrier: corn starch or soy oil in oil-based prep)",% GMO,"N/A (D3 not BE)
+Carrier: apply corn/soy rule",Carrier ≤0.9% if Non-GMO claim,Specify sunflower oil or MCT carrier for Non-GMO D3,PCR on carrier isolate if Non-GMO claimed,,Enter CoA →
+"Tocopherol (Vit E, d-alpha)",d-alpha-Tocopherol / Acetate assay,%,≥96.0,≥97.0,≥98.0,USP HPLC <621>,,Enter CoA →
+"Tocopherol (Vit E, d-alpha)",Acid Value,mg KOH/g,≤2.0,≤1.5,≤1.0,AOCS Cd 3d-63,,Enter CoA →
+"Tocopherol (Vit E, d-alpha)",Peroxide Value,meq/kg,≤10,≤7,≤5,AOCS Cd 8b-90,,Enter CoA →
+"Tocopherol (Vit E, d-alpha)",Refractive Index (25°C),n²⁵D,1.494–1.499,1.494–1.499,1.495–1.498,USP <831>,,Enter CoA →
+"Tocopherol (Vit E, d-alpha)","GMO/BE Origin check
+(soy-derived tocopherol → soy is BE listed; prefer sunflower source)",% GMO,Soy-derived: verify per AMS highly refined guidance,Sunflower-derived: ≤0.9% (Non-GMO claim),Specify sunflower-derived tocopherol on PO for Non-GMO / allergen-free positioning (Nature Made standard),PCR on source oil if soy-derived and Non-GMO claim made,,Enter CoA →
+Sunflower Lecithin,Acetone Insolubles (phospholipid content),%,≥62.0,≥63.0,≥65.0,AOCS Ja 4-46,,Enter CoA →
+Sunflower Lecithin,Moisture & Volatiles,%,≤1.5,≤1.2,≤1.0,AOCS Ja 2b-87,,Enter CoA →
+Sunflower Lecithin,Acid Value,mg KOH/g,≤36,≤30,≤25,AOCS Cd 3-25,,Enter CoA →
+Sunflower Lecithin,Peroxide Value,meq/kg,≤10,≤7,≤5,AOCS Cd 8b-90,,Enter CoA →
+Sunflower Lecithin,"Soy Protein Residue (ELISA)
+(cross-contamination screen if soy-free claim)",mg/kg,Absent or <1 mg/kg (LOD-based),Absent (<0.5 mg/kg),Absent — verified soy-free processing line,ELISA (soy-specific antibody); ISO 21572,,Enter CoA →
+Sunflower Lecithin,"GMO/BE Screen
+(sunflower NOT BE-listed — key advantage vs soy lecithin)",% GMO,N/A — sunflower not BE listed,N/A — no BE concern,"No NBFDS disclosure required.
+No soy allergen declaration required.
+Ideal for Non-GMO + allergen-free positioning.",No PCR required (not BE-listed). Optional confirmatory screen if shared facility with soy.,,Enter CoA →
+,,,,,,,,
+TEAL ROWS = GMO/BE test parameters.  Paste PCR test result (% GMO) into column H.  For Non-GMO claim acceptance: Status = PASS if result ≤ Your Acceptance Floor (col E).  ORANGE = FDA/NBFDS minimum | GREEN = your Non-GMO acceptance floor.  Test method: ISO 21569 (qualitative PCR) or ISO 21570 (quantitative PCR).  EU export threshold: ≤0.9% per Regulation EC 1829/2003.,,,,,,,,

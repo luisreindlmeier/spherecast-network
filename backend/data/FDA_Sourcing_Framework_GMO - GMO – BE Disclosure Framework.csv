@@ -1,0 +1,56 @@
+"SECTION A — USDA NBFDS: Currently Listed Bioengineered (BE) Crops (7 CFR Part 66, Appendix A)",,,,,,
+Crop / Substance,Common Use in CPG,Disclosure Required?,"Refined Ingredient Note
+(highly refined exemption)","Non-GMO Verification
+Required For Claim","EU Status
+(Reg EC 1829/2003)","Key PCR Target
+Genes / Events"
+Alfalfa,Animal feed (not direct CPG),YES — if used directly in food,N/A (alfalfa in food is uncommon),IP CoA + PCR (qualitative),Authorised: consult EC register,RR gene (CP4 EPSPS)
+Apple (non-browning),"Fresh cut apple products, fruit prep",YES — if Okanagan Arctic Apple variety,Not highly refined — disclosure mandatory,Non-GMO Project or USDA Organic cert,Authorised: Arctic® apple events,PPO suppression gene
+Canola / Rapeseed,"Canola oil, emulsifiers, lecithin","YES for whole or minimally processed canola
+Highly refined oil: verify per AMS guidance",Highly refined canola oil likely no detectable modified material — AMS guidance applies,IP CoA + quantitative PCR (ISO 21570),"Authorised: GT73, Ms8/Rf3, T45 events","CP4 EPSPS, pat/bar genes"
+Corn (Maize),"HFCS, corn starch, corn flour, corn oil, masa","YES — corn and most corn derivatives require disclosure
+Highly refined corn oil: verify per AMS","Starch, flour, meal: disclosure required
+Corn oil (highly refined): AMS guidance may exempt",IP CoA + quantitative PCR per lot,"Authorised: multiple events (MON810, NK603, etc.)","Cry1Ab, Cry3Bb, CP4 EPSPS, pat gene"
+Cotton,Cottonseed oil (frying),YES for cottonseed and products,Highly refined cottonseed oil: AMS guidance may exempt,IP CoA if Non-GMO claim,Authorised: multiple Bt cotton events,"Cry1Ac, CP4 EPSPS"
+Eggplant (Bt Brinjal),Vegetable in South Asian CPG,YES if Bt Brinjal variety,Not used in refined form,Source documentation from farm,NOT authorised in EU,Cry1Ac
+Papaya (PRSV-resistant),"Dried papaya, fruit products",YES — SunUp and Rainbow varieties are BE,Not highly refined — disclosure mandatory,Source documentation; Non-GMO variety spec,Pending EU authorisation (prohibited as of 2026),PRSV coat protein gene
+Pineapple (pink flesh),Pink pineapple products (Rosé variety),YES — ArcticPink® pineapple is BE,Not highly refined,Variety documentation,Status: pending EU review,Lycopene gene insert
+Potato,"Potato starch, dried potato, crisps",YES — Innate® varieties are BE,Potato starch: disclosure required,Non-GMO variety spec + PCR,NOT authorised in EU,"RNAi for PPO, VInv genes"
+Salmon (AquAdvantage),Farmed salmon products,YES — AquAdvantage GM salmon,N/A — not refined,Wild-caught certification or species verification,NOT authorised in EU,GH gene construct
+Soybean,"Soy protein, soy lecithin, soybean oil, tofu, miso","YES for most soy-derived ingredients
+Highly refined soybean oil: AMS guidance may exempt","SPI, lecithin: disclosure required (retain DNA/protein)
+Soybean oil: verify per AMS",Non-GMO Project Verified + IP CoA + PCR per lot,"Authorised: multiple events (MON40-3-2, GTS40-3-2, etc.)","CP4 EPSPS, EPSPS gene"
+Sugar Beet,"Refined beet sugar, beet molasses","YES for sugar beet and direct products
+Highly refined white sugar: verify per AMS — modified DNA unlikely detectable","Refined white sugar: AMS guidance typically exempts (no detectable modified material)
+Molasses: disclosure may apply",IP CoA for Non-GMO claim on sugar,Authorised: H7-1 event,CP4 EPSPS gene
+Summer Squash,Squash in processed foods,"YES for BE squash varieties (ZW-20, CZW-3)",Not highly refined — disclosure required,Non-GMO variety documentation,NOT authorised in EU,"CP4 EPSPS, WMV / ZYMV coat protein"
+,,,,,,
+SECTION B — NBFDS ACCEPTABLE DISCLOSURE METHODS  (7 CFR 66.100–66.116),,,,,,
+Disclosure Method,Description,,Requirements,,Who May Use,Practical Note
+Text on label,Words 'Bioengineered food' or 'Contains a bioengineered food ingredient' printed on label,,Font ≥ same size as other required label text; placed prominently,,All manufacturers,Simplest and most defensible. Recommended for B2B ingredients destined for finished foods requiring disclosure.
+BE Disclosure Symbol,USDA-designed sun/smiley symbol (AMS official BE symbol) on packaging,,Symbol must be legible; min size per USDA AMS spec; approved colour renderings only,,All manufacturers,Growing consumer recognition. Requires AMS symbol file. Works well on retail packs.
+Electronic / Digital Link (QR code),QR code or URL linking to online disclosure page maintained by manufacturer,,Must include text: 'Scan here for more food information'; landing page must be AMS-compliant,,All manufacturers,Allows detailed information. URL/QR must be maintained. Requires digital infrastructure.
+Text Message (SMS) Option,Phone number + 'Text [word] to [number] for bioengineered food information',,Response must deliver disclosure; system maintained,,"Small manufacturers
+(<$2.5M annual receipts) may use SMS-only",Least common. Only viable for small brands or foodservice packaging.
+"Small / Very Small Manufacturer
+Exemptions",Small manufacturers (<$2.5M receipts) may use electronic or text message disclosure only for 1 year additional transition; very small manufacturers exempt.,,Annual receipts threshold checked against prior year,,Small / Very Small manufacturers only,B2B ingredient suppliers are NOT exempt — disclosure obligation applies to the finished food manufacturer.
+,,,,,,
+,,,,,,
+SECTION C — GMO TESTING METHODS & THRESHOLDS,,,,,,
+Test Type,Standard,Detection Limit,Scope,,US Threshold,"EU Threshold
+(Reg EC 1829/2003)"
+Qualitative PCR,ISO 21569:2005 + AMD 1:2013,0.1%,"Screen for presence/absence of specific GMO construct (e.g. 35S promoter, NOS terminator, event-specific)",,No NBFDS threshold — any detection triggers disclosure obligation,No de minimis — any detection = labelling required under Reg EC 1829/2003
+Quantitative Real-Time PCR,ISO 21570:2005 + AMD 1:2013,0.1%,Quantifies % GMO content per event; required for EU labelling threshold compliance,,"No NBFDS % threshold — disclosure triggered by presence, not quantity",≤0.9% per approved event: adventitious/technically unavoidable presence exemption
+Protein-based (LFD / ELISA),ISO 21572:2004,0.1–0.5%,"Detects novel proteins expressed by GM construct (Bt Cry proteins, CP4 EPSPS)",,Useful for initial screen; confirm with PCR,Not accepted as standalone for EU labelling compliance — PCR required for confirmation
+Event-Specific PCR,ENGL validated methods (EU); USDA GIPSA,0.01–0.1% depending on event,"Identifies specific approved GM event (e.g. MON810, NK603, RR soybean)",,Required for EU import compliance and Non-GMO Project verification,Required: must show <0.9% of specific authorised event
+IP (Identity Preserved) Chain of Custody,Non-GMO Project Standard v14+; USDA NOP (Organic),0.1–0.9% (scheme-dependent),Segregation + chain-of-custody CoA from field through processing. Physical audits at each step.,,Non-GMO Project: PCR test per lot + IP CoA required. Sets ≤0.9% threshold.,Organic certification: ≤0% intentional — accidental contamination case-by-case
+,,,,,,
+,,,,,,
+SECTION D — REQUIREMENTS TO SUBSTANTIATE A 'NON-GMO' CLAIM ON FINISHED PRODUCT,,,,,,
+#,Requirement,Detail,,Applies To,Standard,
+1,Supplier Non-GMO Declaration,Written statement from ingredient supplier confirming ingredient is not bioengineered and not derived from BE sources,,All ingredients in product,Minimum — not sufficient alone for verified Non-GMO claim,
+2,IP (Identity Preserved) CoA,Chain-of-custody document from seed/harvest through processing confirming physical segregation from GMO materials at each step,,All BE-listed crop derivatives,Required by Non-GMO Project and for meaningful claim substantiation,
+3,Quantitative PCR Test,Per-lot PCR test showing ≤0.9% GMO content (ISO 21570 or Non-GMO Project approved lab). Annual contract testing acceptable for low-risk ingredients.,,All BE-listed crop derivatives,ISO/IEC 17025 accredited lab required. Non-GMO Project mandates testing per scheme v14.,
+4,Non-GMO Project Verification,"Third-party verification by Non-GMO Project (nongmoproject.org). Covers supply chain, testing, and annual renewal. Most recognised US consumer standard.",,Ingredients from BE-listed crops,Gold standard for US retail Non-GMO claims. Required by most major US retailers for Non-GMO shelf label.,
+5,USDA Organic Certification,USDA NOP certified organic products may not intentionally use GMO. De facto Non-GMO status — organic seal substitutes Non-GMO claim.,,All organic-labelled products,Covers GMO by definition. No separate GMO test required if USDA Organic certified.,
+6,Allergen + BE Cross-declaration Alignment,If ingredient is soy or corn-derived AND Non-GMO claimed: ensure allergen declaration is consistent with non-GMO sourcing and IP program,,"Soy-derived, corn-derived ingredients",FALCPA + NBFDS compliance must be aligned. Non-GMO soy lecithin: still requires soy allergen disclosure.,

@@ -1,0 +1,27 @@
+#,Decision / Check,YES → Next Step,NO → Action,Responsible
+1,Is the substance GRAS (21 CFR 182/184) or Approved Food Additive (21 CFR 172–178) for this application?,→ Step 2,STOP. Find alternative or engage GRAS petition (18–24 months).,Regulatory Affairs
+2,Does the intended use level fall within FDA-permitted limits (e.g. Sucralose ≤0.024%; Canola erucic acid ≤2%)?,→ Step 3,Reformulate to within limits OR select different ingredient.,R&D / Regulatory
+3,"Is the ingredient derived from a USDA NBFDS BE-listed crop? (Corn, Soy, Canola, Sugar Beet, Cotton, Potato, Alfalfa, Squash, Papaya, Salmon, Apple, Pineapple)",→ Step 3a: Determine disclosure obligation,→ Step 4 (Non-BE ingredient — skip GMO steps),Regulatory / R&D
+3a,"[BE-LISTED INGREDIENT] Is the ingredient highly refined (oil, purified sugar)? Check USDA AMS guidance for detectable modified material.",Highly refined + no detectable modified material → document per AMS guidance → Step 4,Not highly refined OR modified material detectable → NBFDS disclosure MANDATORY on finished food → Step 4,Regulatory Affairs
+4,Is the supplier's CoA available? Does every parameter meet your Layer 2 Acceptance Floor AND (for BE ingredients) GMO test result ≤ your Non-GMO threshold?,→ Step 5,Request reformulated grade or alternative. Issue SCAR. Do NOT accept non-conforming goods.,QA Manager
+5,Is this a foreign (non-US) supplier?,→ Step 6 (FSVP required),→ Skip to Step 7 (domestic: FSMA Part 117 applies),Procurement
+6,[FOREIGN ONLY] Is the FSVP file complete? Hazard analysis + GMO declaration on file + QI sign-off + FDA alert clear?,→ Step 7,Freeze import. Complete FSVP + GMO documentation. No PO until complete.,FSVP QI / Regulatory
+7,"Does the supplier hold FSSC 22000, BRC, or SQF L2+? AND (for Non-GMO claim) Non-GMO Project Verified OR USDA Organic cert?",→ Step 8,Conditional status. 3rd-party audit within 90 days. For Non-GMO claim: PCR per lot until certified.,QA Manager
+8,Has Layer 3 Weighted Scorecard been completed including GMO Risk dimension? Is composite score ≥ 70?,→ Step 9,"Score 55–69: Conditional + improvement plan.
+Score <55: Disqualify.",Procurement / QA
+9,Is the supplier the ONLY source (single-source risk)?,Proceed with caution. Develop backup supplier within 12 months.,APPROVED. Add to preferred/approved list. Set annual re-qualification date.,Supply Chain
+,,,,
+NON-NEGOTIABLE REQUIREMENTS — Must Obtain Before Signing Supplier Agreement,,,,
+#,Non-Negotiable Requirement,,Regulatory Basis,Status
+1,SOC 2 Type II audit OR ISO 27001 certificate (if supplier holds your data digitally),,Data security due diligence,☐ Obtained  /  ☐ Pending
+2,GDPR Data Processing Agreement with EU data residency guarantee (EU suppliers / EU operations),,GDPR / DSGVO — data sovereignty,☐ Obtained  /  ☐ Pending
+3,Full sub-processor list (for digital/SaaS platforms),,GDPR Art. 28; FSMA data integrity,☐ Obtained  /  ☐ Pending
+4,Complete FSVP file on record before first PO release (foreign suppliers only),,21 CFR Part 1 Subpart L — FSMA,☐ Obtained  /  ☐ Pending
+5,"Recognised food safety certification (FSSC 22000, BRC AA/A, SQF Level 2+) or committed audit date",,FSMA 21 CFR Part 117,☐ Obtained  /  ☐ Pending
+6,"Allergen management declaration (Big-9: peanut, tree nut, milk, egg, wheat, soy, fish, shellfish, sesame)",,FALCPA + FASTER Act 2021,☐ Obtained  /  ☐ Pending
+7,Lot-level batch traceability documentation per FDA Traceability Rule,,21 CFR Part 1 Subpart S,☐ Obtained  /  ☐ Pending
+8,Certificate of Analysis with accredited lab sign-off (ISO/IEC 17025) for each lot,,FDA cGMP 21 CFR Part 117,☐ Obtained  /  ☐ Pending
+9,Written recall & withdrawal procedure with 2-hour notification commitment,,21 CFR Part 7; FSMA mandatory recall authority,☐ Obtained  /  ☐ Pending
+10,Contractual right to audit with 48-hour notice,,FSMA supplier verification; SQF/BRC audit right,☐ Obtained  /  ☐ Pending
+11,"GMO/BE Status Declaration — written confirmation of ingredient's NBFDS status and, if BE-listed, whether IP segregation or NBFDS disclosure is in place",,USDA NBFDS 7 CFR Part 66 — mandatory BE disclosure,☐ Obtained  /  ☐ Pending
+12,For Non-GMO claimed ingredients: IP Chain-of-Custody CoA + quantitative PCR test result (ISO 21570) ≤0.9% per lot,,Non-GMO Project Standard v14; EU Reg EC 1829/2003 (for EU export),☐ Obtained  /  ☐ Pending

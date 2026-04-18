@@ -1,0 +1,33 @@
+Layer,Name,Decision Logic,FDA / Regulatory Anchor,Output,System Home
+0,Pre-Screen,Is the raw material intended use legal under US food law? + Is GMO/BE status determined?,"GRAS (21 CFR 182/184), Approved Food Additive (21 CFR 172–178), SOI (21 CFR 100–169); USDA NBFDS (7 CFR Part 66)",Eligible / Not Eligible,Master data — supplier-material approval table; GMO status field in ERP
+1,Eligibility Gate,Binary Pass/Fail: FDA approval for application + BE disclosure obligation determined,21 CFR GRAS; Food Additive approvals; FSMA 21 CFR Part 117; USDA NBFDS 7 CFR Part 66,"PASS → Layer 2
+FAIL → Stop",ERP item master; blocks PO for unapproved or undisclosed BE materials
+2,Specification Floor,Numeric threshold check: CoA parameters + GMO/IP test results vs acceptance floor,FCC; USP-NF; 21 CFR specific limits; ISO 21569/21570/21571 GMO detection,"PASS → Layer 3
+FAIL → CoA rejection + SCAR",QMS / incoming inspection; IP CoA review
+3,Comparative Scoring,"Weighted score across quality, compliance, supply risk, commercial — includes GMO risk dimension",FSMA FSVP (21 CFR Part 1 Subpart L); FSSC 22000 / BRC; Non-GMO Project / USDA Organic,"Score ≥ 70: Approved
+55–69: Conditional
+<55: Disqualified",Procurement scorecard + annual review
+4,Ongoing Monitoring,"CoA trending, annual re-qualification, recall readiness, FSVP review, NBFDS compliance audit",FSMA 21 CFR 117.136; FSVP §1.505(d); USDA NBFDS annual review; IP audit,Approved / Conditional / Suspended,Supplier portal / QMS / ERP alert rules
+,,,,,
+CORE PRINCIPLE — INCLUDING GMO / BIOENGINEERED FOOD,,,,,
+"FDA minimums are the legal basement — your internal quality floors must be the commercial ground floor.
+Build acceptance thresholds 3–5% ABOVE FDA minimums on critical parameters.
+
+GMO / Bioengineered (BE) layer: From 1 January 2022, the USDA National Bioengineered Food Disclosure Standard (NBFDS, 7 CFR Part 66) is MANDATORY. Any food containing a listed BE substance must carry disclosure (BE symbol, text, or digital QR link). Failure = USDA enforcement action + reputational risk.
+For Non-GMO claims: require IP (Identity Preserved) chain of custody CoA + PCR quantitative test ≤0.9% (EU threshold) or Non-GMO Project Verified certificate. USDA Organic certification is de facto non-GMO.",,,,,
+,,,,,
+LAYER 3 COMPOSITE SCORE BANDS,,,,,
+Score,Status,Sourcing Action,,,
+85–100,PREFERRED SUPPLIER,Long-term purchase agreement; primary allocation,,,
+70–84,APPROVED SUPPLIER,Standard sourcing; dual-source with preferred,,,
+55–69,CONDITIONAL,Time-limited; mandatory audit within 90 days,,,
+< 55,DISQUALIFIED,Do not source. Document reason. Re-apply in 12 months.,,,
+,,,,,
+,,,,,
+NATURE MADE COMPETITIVE BENCHMARK — Key Sourcing Implications,,,,,
+Ingredient / Area,Nature Made Standard / Approach,,,Your Competitive Response,
+Vitamin C,Nature Made sources pharmaceutical-grade L-Ascorbic Acid (USP Verified). USP assay 99.0–100.5% dry basis. Non-GMO (synthetic). USP Verification Program certificate required from supplier.,,,"Match or exceed: USP Verified grade, assay ≥99.3%, ISO 17025 accredited lab CoA per lot.",
+Vitamin D3 (Cholecalciferol),Nature Made uses cholecalciferol (D3) — not ergocalciferol (D2). Source: lanolin-derived. Potency 90–115% of label per USP. Oil-based D3 preparations: specify MCT or sunflower oil carrier — NOT soy oil (allergen/GMO risk).,,,"Specify: lanolin or lichen source, USP potency compliance, non-soy carrier in oil-based D3 premix.",
+Vitamin E (Tocopherol),Nature Made uses d-alpha-Tocopheryl Acetate (natural form). Moving to sunflower-derived to eliminate soy GMO/allergen exposure. Natural d-alpha has 1.49× the biological activity of synthetic dl-alpha (1 mg d-alpha = 1.49 IU vs 1 mg dl-alpha = 1.1 IU).,,,Specify: d-alpha (natural) form; sunflower-derived preferred; acid value ≤1.5 mg KOH/g; peroxide ≤7 meq/kg.,
+Soy → Sunflower Lecithin,"Nature Made has transitioned core multivitamin SKUs from soy lecithin to sunflower lecithin. Benefits: no FALCPA soy allergen declaration, no NBFDS BE disclosure, cleaner label, broader consumer reach (soy-free, Non-GMO). AOCS Ja 4-46 acetone insolubles ≥62% applies equally.",,,Source sunflower lecithin with verified soy-free processing line (ELISA <0.5 mg/kg soy protein). No PCR required — sunflower not BE-listed. Label as 'sunflower lecithin' specifically.,
+USP Verification Program,"Nature Made is the #1 pharmacist-recommended vitamin brand in the US and holds USP Verification on most products. This means their suppliers provide USP-grade ingredients with USP <621> HPLC assays, <231> heavy metals, <61>/<62> microbial limits — tested by USP-accredited labs.",,,To compete: require USP-grade CoA on all active ingredients; prefer ISO 17025 accredited labs; build acceptance floors at USP specifications +3–5% buffer.,

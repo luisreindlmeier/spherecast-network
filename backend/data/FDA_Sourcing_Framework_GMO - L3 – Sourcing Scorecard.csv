@@ -1,0 +1,33 @@
+Score ≥70 = Approved  ·  55–69 = Conditional  ·  <55 = Disqualified  ·  Total weight = 100%  (GMO Risk replaces 10% of supply continuity weight),,,,,,,,,
+,,,,,,,,,
+INSTRUCTIONS:  (1) Enter material + supplier names in row 7.  (2) Score each dimension 0–10 per supplier using the guide.  (3) Weighted score auto-calculates.  (4) GMO Risk dimension (row 7 in table) is new — score 0–10 per guide below.,,,,,,,,,
+DIMENSION,WEIGHT,HOW TO SCORE  (0 = worst  ·  10 = best),,FDA / NBFDS ANCHOR,,SUPPLIER A,SUPPLIER B,SUPPLIER C,"BEST IN CLASS
+Benchmark"
+MATERIAL:,,← Enter material name,,,,← Supplier name,← Supplier name,← Supplier name,← Supplier name
+Purity / Assay margin above FDA floor,20%,Score = (Actual – FDA min) / (Best available – FDA min) × 10,,FCC / USP / 21 CFR specific purity minimums,,,,,
+"Contaminant profile
+(Heavy metals, mycotoxins, pesticides)",20%,"10 = all ≤50% of FDA/FCC action level
+5 = 50–90% of limit
+0 = any >90% of limit",,FDA/FCC heavy metal limits; FDA mycotoxin action levels,,,,,
+FSMA & Food Safety Certifications,15%,FSSC 22000 = 10 | BRC AA = 9 | SQF L3 = 8 | ISO 22000 = 6 | None = 0,,FSMA 21 CFR Part 117 (Preventive Controls),,,,,
+"FSVP / Foreign Supplier Verification
+(foreign suppliers only)",15%,"Fully verified (audit on file, annual review current) = 10
+Partial (CoA review only) = 5
+Unverified = 0 (DISQUALIFYING)",,21 CFR Part 1 Subpart L (FSVP Rule),,,,,
+"Analytical traceability
+(CoA → production batch)",10%,"Full batch-level with ISO 17025 lab accreditation = 10
+Batch no accreditation = 6
+Lot-level only = 3 | None = 0",,cGMP 21 CFR 117; FSMA Traceability Rule (Part 1 Subpart S),,,,,
+Supply continuity & geographic risk,10%,"Multi-site, multi-geography, strategic stock = 10
+Single site, low risk = 6
+Single site, high risk = 2",,FSMA supply chain programme (21 CFR 117.136),,,,,
+"GMO / Bioengineered Risk Management
+★ NEW DIMENSION",5%,"NBFDS compliant disclosure on file + IP CoA + PCR test per lot = 10
+Disclosure compliant but no PCR test = 6
+Non-GMO claim without IP CoA or PCR = 2
+No GMO disclosure / unknown GMO status = 0",,USDA NBFDS 7 CFR Part 66; ISO 21569/21570; Non-GMO Project Standard,,,,,
+"Commercial competitiveness
+(vs. category benchmark price)",5%,"≥10% below benchmark = 10 | At benchmark = 6
+Up to 10% above = 3 | >10% above = 0",,Market benchmark pricing (not FDA-regulated),,,,,
+,,,,,,,,,
+COMPOSITE WEIGHTED SCORE  (max = 10.0),,,,,,,,,
