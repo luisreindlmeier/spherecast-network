@@ -1,7 +1,10 @@
+import logging
 import os
 from pathlib import Path
 
 import chromadb
+
+logger = logging.getLogger(__name__)
 from chromadb.utils import embedding_functions
 
 from extraction.llm_extractor import IngredientProfile
@@ -30,8 +33,8 @@ def build_index(profiles: dict[str, IngredientProfile]) -> None:
     client = _client()
     try:
         client.delete_collection(_COLLECTION)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("No existing collection to delete: %s", exc)
     col = client.create_collection(_COLLECTION, embedding_function=_ef)
 
     ids, docs, metas = [], [], []

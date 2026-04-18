@@ -120,6 +120,8 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
     ratings = get_ratings()
     standards = get_standards()
     orig_co2 = estimate_co2(profile.name, profile.functional_class)
+    orig_fda = get_fda_status(profile.name, standards)
+    orig_gras = (orig_fda.get("gras_status", "") if orig_fda else "").lower()
 
     for c in candidates:
         # --- STEP 1: Hard eligibility filter (K.O. criteria — no score) ---
@@ -159,16 +161,27 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
         # --- STEP 2: Functional fit ---
         fit = _functional_fit(profile, c)
 
-        # --- STEP 3: Composite score (functional_fit now dominant) ---
+        # --- STEP 2b: Hazard proxy bonus — prefer GRAS-affirmed candidates ---
+        cand_gras = (fda_info.get("gras_status", "") if fda_info else "").lower()
+        if "affirmed" in cand_gras and "affirmed" not in orig_gras:
+            hazard_bonus = 0.10  # candidate is safer than original
+        elif "affirmed" in cand_gras:
+            hazard_bonus = 0.05  # both affirmed, small bonus for confirmed safety
+        else:
+            hazard_bonus = 0.0
+
+        # --- STEP 3: Composite score (functional_fit dominant, hazard bonus unified) ---
         combined_score = (
             fit * 0.35
             + soft_compliance * 0.20
             + c["similarity"] * 0.20
             + c["confidence"] * 0.10
             + supplier_score * 0.15
+            + hazard_bonus
         )
 
         c["functional_fit"] = round(fit, 3)
+        c["hazard_bonus"] = round(hazard_bonus, 2)
         c["compliance"] = len(violations) == 0
         c["violations"] = violations
         c["supplier_fda_scores"] = supplier_scores

@@ -1,12 +1,20 @@
+import logging
 import os
+import re
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 load_dotenv(Path(__file__).parent.parent / ".env")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s — %(message)s",
+)
+logger = logging.getLogger("agnes")
 
 from ingestion.db_reader import build_ingredient_df, get_unique_ingredients
 from ingestion.fda_ratings import get_fda_status, get_standards
@@ -23,20 +31,39 @@ app = FastAPI(
     version="1.0.0",
 )
 
+_FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[_FRONTEND_URL, "http://localhost:3000"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "X-API-Key"],
 )
 
 _DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
+_API_KEY = os.getenv("AGNES_API_KEY", "")
+
+_SKU_RE = re.compile(r"^[\w\s\-./()]+$")
+
+
+def _require_key(x_api_key: str = Header(default="", alias="X-API-Key")) -> None:
+    if _API_KEY and x_api_key != _API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid or missing X-API-Key header")
+
+
+_auth = Depends(_require_key)
 
 
 class RecommendRequest(BaseModel):
-    ingredient_sku: str
-    top_k: int = 5
+    ingredient_sku: str = Field(..., min_length=1, max_length=200)
+    top_k: int = Field(default=5, ge=1, le=20)
     explain: bool = True
+
+    @field_validator("ingredient_sku")
+    @classmethod
+    def validate_sku(cls, v: str) -> str:
+        if not _SKU_RE.match(v):
+            raise ValueError("SKU contains invalid characters")
+        return v
 
 
 @app.get("/")
@@ -44,8 +71,11 @@ def root():
     return {"service": "Agnes", "status": "ok", "index_ready": collection_exists()}
 
 
-@app.get("/ingredients")
-def list_ingredients(limit: int = 100, offset: int = 0):
+@app.get("/ingredients", dependencies=[_auth])
+def list_ingredients(
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+):
     all_ing = get_unique_ingredients(_DB_PATH)
     return {
         "total": len(all_ing),
@@ -55,8 +85,11 @@ def list_ingredients(limit: int = 100, offset: int = 0):
     }
 
 
-@app.get("/ingredients/{sku:path}")
+@app.get("/ingredients/{sku:path}", dependencies=[_auth])
 def get_ingredient(sku: str):
+    if not _SKU_RE.match(sku):
+        raise HTTPException(status_code=400, detail="SKU contains invalid characters")
+
     from extraction.cache import get_cached
     from ingestion.db_reader import parse_name_from_sku
 
@@ -96,7 +129,7 @@ def get_ingredient(sku: str):
     }
 
 
-@app.post("/recommend")
+@app.post("/recommend", dependencies=[_auth])
 def recommend(req: RecommendRequest):
     if not collection_exists():
         raise HTTPException(
@@ -108,7 +141,6 @@ def recommend(req: RecommendRequest):
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
 
-    # LLM explanation for top substitute
     if req.explain and result["substitutes"]:
         top = result["substitutes"][0]
         result["explanation"] = explain_substitution(
@@ -122,7 +154,7 @@ def recommend(req: RecommendRequest):
     return result
 
 
-@app.get("/consolidate/{functional_class}")
+@app.get("/consolidate/{functional_class}", dependencies=[_auth])
 def consolidate(functional_class: str, explain: bool = True):
     proposal = get_consolidation_proposal(functional_class)
     if not proposal["top_suppliers"]:
@@ -139,13 +171,13 @@ def consolidate(functional_class: str, explain: bool = True):
     return proposal
 
 
-@app.get("/consolidate")
+@app.get("/consolidate", dependencies=[_auth])
 def list_functional_classes():
     return {"functional_classes": get_all_functional_classes()}
 
 
-@app.get("/risk/single-supplier")
-def single_supplier_risk(min_boms: int = 1):
+@app.get("/risk/single-supplier", dependencies=[_auth])
+def single_supplier_risk(min_boms: int = Query(default=1, ge=0, le=1000)):
     from extraction.cache import get_cached
     df = build_ingredient_df(_DB_PATH)
 
@@ -173,10 +205,9 @@ def single_supplier_risk(min_boms: int = 1):
     }
 
 
-@app.get("/companies/{company_id}/sourcing")
+@app.get("/companies/{company_id}/sourcing", dependencies=[_auth])
 def company_sourcing(company_id: int):
     df = build_ingredient_df(_DB_PATH)
-    # Filter ingredients used in this company's BOMs
     mask = df["company_ids"].apply(lambda ids: company_id in ids)
     company_df = df[mask]
 
@@ -201,7 +232,6 @@ def company_sourcing(company_id: int):
             }
         )
 
-    # Supplier diversity summary
     all_suppliers: list[str] = []
     for ing in ingredients:
         all_suppliers.extend(ing["suppliers"])

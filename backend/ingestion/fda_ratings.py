@@ -1,7 +1,10 @@
+import logging
 import re
 from pathlib import Path
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 _EXCEL_PATH = Path(__file__).parent.parent / "data" / "CPG_Supplier_Rating_Analysis.xlsx"
 
@@ -141,7 +144,8 @@ def get_ratings() -> dict:
     if _ratings_cache is None:
         try:
             _ratings_cache = load_supplier_ratings()
-        except Exception:
+        except Exception as exc:
+            logger.warning("Failed to load supplier ratings from Excel: %s", exc)
             _ratings_cache = {}
     return _ratings_cache
 
@@ -151,6 +155,7 @@ def get_standards() -> dict:
     if _standards_cache is None:
         try:
             _standards_cache = load_fda_standards()
-        except Exception:
+        except Exception as exc:
+            logger.warning("Failed to load FDA standards from Excel: %s", exc)
             _standards_cache = {}
     return _standards_cache

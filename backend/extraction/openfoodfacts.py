@@ -1,4 +1,8 @@
+import logging
+
 import httpx
+
+logger = logging.getLogger(__name__)
 
 _HEADERS = {"User-Agent": "Agnes-SupplyChain/1.0 (hackathon)"}
 _TIMEOUT = 10
@@ -26,8 +30,8 @@ def fetch_ingredient(name: str) -> dict:
                     "sources": ["openfoodfacts"],
                     "success": True,
                 }
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("OFF ingredient lookup failed for %r: %s", name, exc)
 
     # Fallback: search endpoint
     try:
@@ -52,7 +56,7 @@ def fetch_ingredient(name: str) -> dict:
                     texts.append("Labels: " + ", ".join(p["labels_tags"][:5]))
             if texts:
                 return {"raw_text": " | ".join(texts)[:3000], "sources": ["openfoodfacts_search"], "success": True}
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("OFF search failed for %r: %s", name, exc)
 
     return {"raw_text": "", "sources": [], "success": False}

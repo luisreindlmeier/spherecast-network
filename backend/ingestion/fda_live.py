@@ -8,6 +8,7 @@ Sources:
 
 All results cached 24h in memory to avoid hammering rate limits.
 """
+import logging
 import re
 import time
 from datetime import datetime, timedelta
@@ -15,6 +16,8 @@ from functools import lru_cache
 from typing import Any
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 _OPENFDA_BASE = "https://api.fda.gov"
 _ECFR_BASE = "https://www.ecfr.gov/api/versioner/v1"
@@ -41,8 +44,8 @@ def _get(url: str, params: dict | None = None, timeout: int = 8) -> dict | None:
         r = httpx.get(url, params=params, timeout=timeout, follow_redirects=True)
         if r.status_code == 200:
             return r.json()
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("FDA live API call failed for %s: %s", url, exc)
     return None
 
 
