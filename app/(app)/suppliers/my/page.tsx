@@ -1,15 +1,24 @@
 import PageHeader from '@/components/layout/PageHeader'
-import DummyBlock from '@/components/layout/DummyBlock'
+import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
+import PageMapDrawer from '@/components/network-map/PageMapDrawer'
+import SuppliersTable from '@/components/sourcing/SuppliersTable'
+import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
+import { getSuppliers } from '@/lib/queries'
 
-export default function MySuppliersPage() {
+export default async function MySuppliersPage() {
+  const scope = await resolveCompanyScopeFilter()
+  const rows = await getSuppliers(scope)
+
   return (
-    <>
+    <PageMapDrawer>
       <PageHeader
         eyebrow="Sourcing · Suppliers"
         title="My Suppliers"
-        description="Suppliers you already work with — active contracts, qualifications and open RFQs."
+        description="All qualified suppliers — each count is distinct raw-material SKU links in the graph (no volumes or spend)."
+        actions={<MapSidebarToggle />}
       />
-      <DummyBlock title="40 qualified suppliers" hint="12 active contracts" />
-    </>
+
+      <SuppliersTable rows={rows} />
+    </PageMapDrawer>
   )
 }

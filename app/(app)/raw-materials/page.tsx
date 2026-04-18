@@ -1,15 +1,24 @@
 import PageHeader from '@/components/layout/PageHeader'
-import DummyBlock from '@/components/layout/DummyBlock'
+import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
+import PageMapDrawer from '@/components/network-map/PageMapDrawer'
+import RawMaterialsTable from '@/components/sourcing/RawMaterialsTable'
+import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
+import { getRawMaterials } from '@/lib/queries'
 
-export default function RawMaterialsPage() {
+export default async function RawMaterialsPage() {
+  const scope = await resolveCompanyScopeFilter()
+  const rows = await getRawMaterials(scope)
+
   return (
-    <>
+    <PageMapDrawer>
       <PageHeader
         eyebrow="Sourcing"
         title="Raw Materials"
-        description="The 149 ingredients you buy, grouped by category — with substitutes, specs and active suppliers."
+        description="All ingredients in the Spherecast network — supplier coverage, BOM usage, and consolidation potential."
+        actions={<MapSidebarToggle />}
       />
-      <DummyBlock title="149 materials" hint="8 categories" />
-    </>
+
+      <RawMaterialsTable rows={rows} />
+    </PageMapDrawer>
   )
 }
