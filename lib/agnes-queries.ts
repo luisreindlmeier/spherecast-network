@@ -197,9 +197,7 @@ export async function getSupplierDetail(
 export type CompanyPickerRow = { id: number; name: string }
 export type CompanyWithCounts = AgnesCompany
 export type FinishedGoodRow = AgnesProduct
-export type RawMaterialRow = AgnesRawMaterial & {
-  profile?: IngredientProfile | null
-}
+export type RawMaterialRow = AgnesRawMaterial
 export type SupplierRow = AgnesSupplier
 
 export async function getGlobalSearchItems(

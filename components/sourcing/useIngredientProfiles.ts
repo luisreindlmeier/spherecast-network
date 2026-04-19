@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { IngredientProfile } from '@/lib/agnes-client'
-import { getRawMaterialDetail } from '@/lib/agnes-queries'
+import {
+  type IngredientProfile,
+  getRawMaterialDetail,
+} from '@/lib/agnes-client'
 
 type ProfileCache = Record<number, IngredientProfile | null>
 

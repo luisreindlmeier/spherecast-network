@@ -269,6 +269,45 @@ def get_finished_good_detail(product_id: int, path: str | Path | None = None) ->
     }
 
 
+def _extract_profile(p, _json=None) -> dict:
+    """Extract inline ingredient profile from a Product row."""
+    import json as _json_mod
+    if _json is None:
+        _json = _json_mod
+
+    def _col(name: str):
+        val = p.get(name)
+        import pandas as _pd
+        return None if (val is None or (isinstance(val, float) and _pd.isna(val))) else val
+
+    def _json_col(name: str) -> list:
+        raw = _col(name)
+        if raw is None:
+            return []
+        try:
+            return _json.loads(raw)
+        except Exception:
+            return []
+
+    def _bool_col(name: str):
+        val = _col(name)
+        return None if val is None else bool(val)
+
+    return {
+        "functionalClass": _col("functional_class"),
+        "allergens": _json_col("allergens"),
+        "vegan": _bool_col("vegan"),
+        "kosher": _bool_col("kosher"),
+        "halal": _bool_col("halal"),
+        "nonGmo": _bool_col("non_gmo"),
+        "eNumber": _col("e_number"),
+        "confidence": _col("confidence"),
+        "description": _col("description"),
+        "synonyms": _json_col("synonyms"),
+        "enrichedSources": _json_col("enriched_sources"),
+    }
+
+
 def get_raw_materials(path: str | Path | None = None, scope_company_id: int | None = None) -> list[dict]:
     dfs = load_db(path)
     products = dfs["Product"][dfs["Product"]["Type"] == "raw-material"]
@@ -287,6 +326,7 @@ def get_raw_materials(path: str | Path | None = None, scope_company_id: int | No
             "companyName": company_map.get(p["CompanyId"], ""),
             "supplierCount": int(sp.shape[0]),
             "usedInProducts": int(bom_comps.shape[0]),
+            "profile": _extract_profile(p),
         })
     return result
 
@@ -320,38 +360,7 @@ def get_raw_material_detail(product_id: int, path: str | Path | None = None) -> 
             "companyName": company_map.get(fg["CompanyId"], ""),
         })
 
-    import json as _json
-
-    def _col(name: str):
-        val = p.get(name)
-        return None if (val is None or (isinstance(val, float) and pd.isna(val))) else val
-
-    def _json_col(name: str) -> list:
-        raw = _col(name)
-        if raw is None:
-            return []
-        try:
-            return _json.loads(raw)
-        except Exception:
-            return []
-
-    def _bool_col(name: str) -> bool | None:
-        val = _col(name)
-        return None if val is None else bool(val)
-
-    profile = {
-        "functionalClass": _col("functional_class"),
-        "allergens": _json_col("allergens"),
-        "vegan": _bool_col("vegan"),
-        "kosher": _bool_col("kosher"),
-        "halal": _bool_col("halal"),
-        "nonGmo": _bool_col("non_gmo"),
-        "eNumber": _col("e_number"),
-        "confidence": _col("confidence"),
-        "description": _col("description"),
-        "synonyms": _json_col("synonyms"),
-        "enrichedSources": _json_col("enriched_sources"),
-    }
+    profile = _extract_profile(p)
 
     return {
         "id": int(p["Id"]),
@@ -398,6 +407,7 @@ def get_suppliers(path: str | Path | None = None, scope_company_id: int | None =
 
 
 def get_supplier_detail(supplier_id: int, path: str | Path | None = None) -> dict | None:
+    import sqlite3 as _sqlite3
     dfs = load_db(path)
     s_row = dfs["Supplier"][dfs["Supplier"]["Id"] == supplier_id]
     if s_row.empty:
@@ -419,6 +429,7 @@ def get_supplier_detail(supplier_id: int, path: str | Path | None = None) -> dic
         materials.append({
             "productId": int(p["Id"]),
             "sku": p["SKU"],
+            "ingredientName": parse_name_from_sku(p["SKU"]),
             "companyName": company_map.get(p["CompanyId"], ""),
             "usedInProducts": used_in,
         })
@@ -428,6 +439,50 @@ def get_supplier_detail(supplier_id: int, path: str | Path | None = None) -> dic
         for co_id, cnt in company_product_counts.items()
     ]
 
+    # Facilities
+    facilities = []
+    if "SupplierFacility" in dfs:
+        sf = dfs["SupplierFacility"][dfs["SupplierFacility"]["SupplierId"] == supplier_id]
+        for _, f in sf.iterrows():
+            lat = f.get("Lat")
+            lng = f.get("Lng")
+            facilities.append({
+                "id": int(f["Id"]),
+                "name": f.get("FacilityName") or s["Name"],
+                "address": f.get("Address"),
+                "city": f.get("City"),
+                "state": f.get("State"),
+                "country": f.get("Country") or "USA",
+                "fdaRegNumber": f.get("FdaRegNumber"),
+                "lat": float(lat) if lat is not None and not pd.isna(lat) else None,
+                "lng": float(lng) if lng is not None and not pd.isna(lng) else None,
+            })
+
+    # Rating
+    rating = None
+    db_path = path or _DB_PATH
+    try:
+        with _sqlite3.connect(db_path) as conn:
+            row = conn.execute(
+                """
+                SELECT sr.Rank, sr.Segment, sr.RevenueBn, sr.Certifications
+                FROM Map_Supplier_SupplierRating msr
+                JOIN SupplierRating sr ON sr.Id = msr.SupplierRatingId
+                WHERE msr.SupplierId = ?
+                """,
+                (supplier_id,),
+            ).fetchone()
+            if row:
+                certs = [c.strip() for c in (row[3] or "").split(",") if c.strip()]
+                rating = {
+                    "rank": row[0],
+                    "segment": row[1],
+                    "revenueBn": row[2],
+                    "certifications": certs,
+                }
+    except Exception:
+        pass
+
     return {
         "id": int(s["Id"]),
         "name": s["Name"],
@@ -435,6 +490,8 @@ def get_supplier_detail(supplier_id: int, path: str | Path | None = None) -> dic
         "companiesReached": len(companies),
         "materials": materials,
         "companies": companies,
+        "facilities": facilities,
+        "rating": rating,
     }
 
 
@@ -459,13 +516,15 @@ def get_global_search(query: str, path: str | Path | None = None, scope_company_
         products = products[products["CompanyId"] == scope_company_id]
     company_map = dict(zip(dfs["Company"]["Id"], dfs["Company"]["Name"]))
     for _, p in products.iterrows():
-        if q in p["SKU"].lower():
+        sku = p["SKU"]
+        name = parse_name_from_sku(sku) if p["Type"] == "raw-material" else sku
+        if q in sku.lower() or q in name.lower():
             kind = "finished-good" if p["Type"] == "finished-good" else "raw-material"
             route = "products" if kind == "finished-good" else "raw-materials"
             results.append({
                 "kind": kind,
                 "id": int(p["Id"]),
-                "label": p["SKU"],
+                "label": name,
                 "subtitle": company_map.get(p["CompanyId"], ""),
                 "href": f"/{route}/{p['Id']}",
             })

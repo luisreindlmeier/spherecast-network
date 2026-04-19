@@ -84,13 +84,30 @@ export type AgnesRawMaterial = {
   companyName: string
   supplierCount: number
   usedInProducts: number
+  profile: IngredientProfile
 }
 export type AgnesRawMaterialDetail = AgnesRawMaterial & {
   suppliers: { id: number; name: string }[]
   foundIn: { productId: number; sku: string; companyName: string }[]
-  profile: IngredientProfile
 }
 export type AgnesSupplier = { id: number; name: string; materialCount: number }
+export type AgnesSupplierFacility = {
+  id: number
+  name: string
+  address: string | null
+  city: string | null
+  state: string | null
+  country: string
+  fdaRegNumber: string | null
+  lat: number | null
+  lng: number | null
+}
+export type AgnesSupplierRating = {
+  rank: number
+  segment: string
+  revenueBn: string
+  certifications: string[]
+}
 export type AgnesSupplierDetail = {
   id: number
   name: string
@@ -99,10 +116,13 @@ export type AgnesSupplierDetail = {
   materials: {
     productId: number
     sku: string
+    ingredientName: string
     companyName: string
     usedInProducts: number
   }[]
   companies: { id: number; name: string; productCount: number }[]
+  facilities: AgnesSupplierFacility[]
+  rating: AgnesSupplierRating | null
 }
 export type AgnesStats = {
   finishedGoods: number

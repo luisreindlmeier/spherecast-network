@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
-import PlaceholderSection from '@/components/sourcing/PlaceholderSection'
 import { getSupplierDetail } from '@/lib/agnes-queries'
 import {
   brandsLinkedCount,
@@ -13,8 +12,9 @@ import {
   Atom,
   Building2,
   Star,
-  Phone,
+  MapPin,
   FileCheck,
+  BadgeCheck,
 } from 'lucide-react'
 
 interface Props {
@@ -87,8 +87,8 @@ export default async function SupplierDetailPage({ params }: Props) {
                   href={`/raw-materials/${m.productId}`}
                   className="detail-list-row detail-list-row-link"
                 >
-                  <span className="data-sku">{m.sku}</span>
-                  <span className="detail-list-name">{m.companyName}</span>
+                  <span className="detail-list-name">{m.ingredientName}</span>
+                  <span className="data-name">{m.companyName}</span>
                   {m.usedInProducts > 0 && (
                     <span className="data-badge data-badge-muted">
                       {productsUsedInLabel(m.usedInProducts)}
@@ -129,26 +129,89 @@ export default async function SupplierDetailPage({ params }: Props) {
           )}
         </div>
 
-        {/* Placeholder: Contact & Location */}
-        <PlaceholderSection
-          title="Contact & Location"
-          description="Primary contact, headquarters, warehousing locations, and emergency contacts."
-          icon={<Phone size={14} />}
-        />
+        {/* Facilities */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            <MapPin size={14} />
+            <span>Manufacturing facilities</span>
+            <span className="data-badge data-badge-muted detail-section-count">
+              {supplier.facilities.length === 0
+                ? 'none on record'
+                : `${supplier.facilities.length} location${supplier.facilities.length !== 1 ? 's' : ''}`}
+            </span>
+          </div>
+          {supplier.facilities.length === 0 ? (
+            <div className="detail-empty">No facility records on file</div>
+          ) : (
+            <div className="detail-list">
+              {supplier.facilities.map((f) => (
+                <div key={f.id} className="detail-list-row">
+                  <span className="detail-list-name">{f.name}</span>
+                  <span className="data-name">
+                    {[f.city, f.state, f.country].filter(Boolean).join(', ')}
+                  </span>
+                  {f.fdaRegNumber && (
+                    <span className="data-badge data-badge-muted">
+                      FDA {f.fdaRegNumber}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-        {/* Placeholder: Certifications */}
-        <PlaceholderSection
-          title="Certifications"
-          description="GMP, ISO, organic, Halal/Kosher, Non-GMO and other quality certifications."
-          icon={<FileCheck size={14} />}
-        />
+        {/* Rating & Certifications */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            {supplier.rating ? (
+              <BadgeCheck size={14} />
+            ) : (
+              <FileCheck size={14} />
+            )}
+            <span>Certifications</span>
+            {supplier.rating && (
+              <span className="data-badge data-badge-green detail-section-count">
+                Rank #{supplier.rating.rank}
+              </span>
+            )}
+          </div>
+          {supplier.rating ? (
+            <div className="flex flex-col gap-3 px-1 py-2">
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">Segment:</span>{' '}
+                {supplier.rating.segment}
+              </div>
+              {supplier.rating.revenueBn && (
+                <div className="text-xs text-gray-500">
+                  <span className="font-medium text-gray-700">Revenue:</span>{' '}
+                  {supplier.rating.revenueBn}B USD (est.)
+                </div>
+              )}
+              <div className="flex flex-wrap gap-1 mt-1">
+                {supplier.rating.certifications.map((cert) => (
+                  <span key={cert} className="data-badge data-badge-green">
+                    {cert}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="detail-empty">No certification data on file</div>
+          )}
+        </div>
 
-        {/* Placeholder: Performance */}
-        <PlaceholderSection
-          title="Performance History"
-          description="On-time delivery rate, quality rejection rate, and historical order volume."
-          icon={<Star size={14} />}
-        />
+        {/* Performance History placeholder */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            <Star size={14} />
+            <span>Performance History</span>
+          </div>
+          <div className="detail-empty">
+            On-time delivery rate, quality rejection rate, and historical order
+            volume — coming soon.
+          </div>
+        </div>
       </div>
     </>
   )
