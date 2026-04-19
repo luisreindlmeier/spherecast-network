@@ -3,7 +3,8 @@ import pandas as pd
 from pathlib import Path
 import re
 
-_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
+from config import DB_PATH as _DB_PATH
+
 _DATA_DIR = Path(__file__).parent.parent / "data"
 
 def clean_columns(df):

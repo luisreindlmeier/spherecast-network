@@ -18,12 +18,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent / ".env")
 
+from config import DB_PATH
 from ingestion.db_reader import get_unique_ingredients
 from extraction.pipeline import enrich_batch
 from optimization.embeddings import build_index
 from ingestion.db_writer import write_profiles_to_db, get_enrichment_stats
-
-DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
 
 
 def main() -> None:

@@ -1,8 +1,7 @@
-from pathlib import Path
 from ingestion.db_reader import build_ingredient_df, load_db
 import pandas as pd
 
-_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
+from config import DB_PATH as _DB_PATH
 
 def get_direct_consolidation_opportunities() -> list[dict]:
     """

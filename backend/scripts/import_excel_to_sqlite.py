@@ -3,8 +3,9 @@ import pandas as pd
 from pathlib import Path
 import re
 
+from config import DB_PATH as _DB_PATH
+
 _EXCEL_PATH = Path(__file__).parent.parent / "data" / "CPG_Supplier_Rating_Analysis.xlsx"
-_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
 
 def _normalize_name(name: str) -> str:
     name = name.lower()

@@ -1,8 +1,7 @@
 import sqlite3
 import re
-from pathlib import Path
 
-_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
+from config import DB_PATH as _DB_PATH
 
 def _normalize_name(name: str) -> str:
     name = name.lower()
