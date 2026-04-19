@@ -25,6 +25,7 @@ export async function agnesGet(
   return safeFetch(url, {
     headers: { 'X-API-Key': AGNES_KEY },
     next: { revalidate: 0 },
+    signal: AbortSignal.timeout(30_000),
   })
 }
 

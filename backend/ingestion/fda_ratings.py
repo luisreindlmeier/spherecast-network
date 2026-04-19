@@ -1,11 +1,10 @@
 import logging
 import re
 import sqlite3
-from pathlib import Path
+
+from config import DB_PATH as _DB_PATH
 
 logger = logging.getLogger(__name__)
-
-_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
 
 _CERT_SCORES = {
     "fssc 22000": 1.0,

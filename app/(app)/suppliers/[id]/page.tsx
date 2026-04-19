@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
-import { getSupplierDetail } from '@/lib/agnes-queries'
+import { getSupplierDetail, getSupplierPerformance } from '@/lib/agnes-queries'
 import {
   brandsLinkedCount,
   linkedSkusLabel,
@@ -23,7 +23,10 @@ interface Props {
 
 export default async function SupplierDetailPage({ params }: Props) {
   const { id } = await params
-  const supplier = await getSupplierDetail(Number(id))
+  const [supplier, performance] = await Promise.all([
+    getSupplierDetail(Number(id)),
+    getSupplierPerformance(Number(id)),
+  ])
   if (!supplier) notFound()
 
   return (
@@ -201,16 +204,76 @@ export default async function SupplierDetailPage({ params }: Props) {
           )}
         </div>
 
-        {/* Performance History placeholder */}
+        {/* Performance History */}
         <div className="detail-section">
           <div className="detail-section-header">
             <Star size={14} />
             <span>Performance History</span>
+            {performance && performance.auditScore >= 4.5 && (
+              <span className="data-badge data-badge-green detail-section-count">
+                Excellent
+              </span>
+            )}
           </div>
-          <div className="detail-empty">
-            On-time delivery rate, quality rejection rate, and historical order
-            volume — coming soon.
-          </div>
+          {performance ? (
+            <div className="flex flex-col gap-3 px-1 py-2">
+              <div className="flex gap-4 flex-wrap">
+                <div className="text-xs text-gray-500">
+                  <span className="font-medium text-gray-700">
+                    On-time rate:
+                  </span>{' '}
+                  <span
+                    style={{
+                      color:
+                        performance.onTimeRate >= 0.95
+                          ? 'var(--accent-green)'
+                          : performance.onTimeRate >= 0.88
+                            ? 'var(--accent-yellow)'
+                            : 'var(--accent-red)',
+                    }}
+                  >
+                    {(performance.onTimeRate * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <span className="font-medium text-gray-700">
+                    Rejection rate:
+                  </span>{' '}
+                  <span
+                    style={{
+                      color:
+                        performance.rejectionRate <= 0.01
+                          ? 'var(--accent-green)'
+                          : performance.rejectionRate <= 0.025
+                            ? 'var(--accent-yellow)'
+                            : 'var(--accent-red)',
+                    }}
+                  >
+                    {(performance.rejectionRate * 100).toFixed(2)}%
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <span className="font-medium text-gray-700">
+                    Avg lead time:
+                  </span>{' '}
+                  {performance.avgLeadDays}d
+                </div>
+                <div className="text-xs text-gray-500">
+                  <span className="font-medium text-gray-700">
+                    Audit score:
+                  </span>{' '}
+                  {performance.auditScore.toFixed(1)}/5.0
+                </div>
+              </div>
+              {performance.lastAuditDate && (
+                <div className="text-xs text-gray-400">
+                  Last audit: {performance.lastAuditDate}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="detail-empty">No performance data on file</div>
+          )}
         </div>
       </div>
     </>

@@ -1,10 +1,9 @@
 import sqlite3
 import re
-from pathlib import Path
 from extraction.llm_extractor import IngredientProfile
+from config import DB_PATH as _DB_PATH
 
 _HARD_REJECT_FDA = {"Prohibited", "Restricted", "Not Approved"}
-_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
 
 def _parse_name_from_sku(sku: str) -> str:
     m = re.match(r"RM-C\d+-(.+)-[0-9a-f]{8}$", sku)

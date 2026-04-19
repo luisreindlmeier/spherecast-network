@@ -1,14 +1,13 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
-import PlaceholderSection from '@/components/sourcing/PlaceholderSection'
 import { getCompanyDetail } from '@/lib/agnes-queries'
 import { bomIngredientsLabel, skuListCount } from '@/lib/format-labels'
 import {
   ArrowLeft,
   Package,
   Atom,
-  FileText,
+  MapPin,
   BarChart3,
   ShieldCheck,
 } from 'lucide-react'
@@ -26,6 +25,10 @@ export default async function CompanyDetailPage({ params }: Props) {
     (s, g) => s + g.ingredientCount,
     0
   )
+  const p = company.profile
+
+  const hqParts = [p.hqCity, p.hqState, p.hqCountry].filter(Boolean)
+  const hqLabel = hqParts.length > 0 ? hqParts.join(', ') : null
 
   return (
     <>
@@ -37,7 +40,9 @@ export default async function CompanyDetailPage({ params }: Props) {
       </div>
 
       <PageHeader
-        eyebrow="Brand"
+        eyebrow={
+          p.type ? p.type.charAt(0).toUpperCase() + p.type.slice(1) : 'Brand'
+        }
         title={company.name}
         description={`${company.finishedGoods.length} finished good${company.finishedGoods.length !== 1 ? 's' : ''} · ${company.rawMaterials.length} raw material${company.rawMaterials.length !== 1 ? 's' : ''} · ${totalIngredients} total BOM ingredients`}
       />
@@ -160,26 +165,112 @@ export default async function CompanyDetailPage({ params }: Props) {
           )}
         </div>
 
-        {/* Placeholder: Company Info */}
-        <PlaceholderSection
-          title="Company Profile"
-          description="Founding year, headquarters, revenue range, employee count, and company type."
-          icon={<FileText size={14} />}
-        />
+        {/* Company Profile */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            <MapPin size={14} />
+            <span>Company Profile</span>
+          </div>
+          <div className="flex flex-col gap-3 px-1 py-2">
+            {hqLabel && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">HQ:</span> {hqLabel}
+              </div>
+            )}
+            {p.foundedYear && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">Founded:</span>{' '}
+                {p.foundedYear}
+              </div>
+            )}
+            {p.revenueRange && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">Revenue:</span>{' '}
+                {p.revenueRange}
+              </div>
+            )}
+            {p.channels.length > 0 && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700 block mb-1">
+                  Channels:
+                </span>
+                <div className="flex flex-wrap gap-1">
+                  {p.channels.map((ch) => (
+                    <span key={ch} className="data-badge data-badge-muted">
+                      {ch}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {!hqLabel &&
+              !p.foundedYear &&
+              !p.revenueRange &&
+              p.channels.length === 0 && (
+                <div className="detail-empty">No profile data on file</div>
+              )}
+          </div>
+        </div>
 
-        {/* Placeholder: Market Intelligence */}
-        <PlaceholderSection
-          title="Market Intelligence"
-          description="Market share, growth trend, channel distribution (DTC vs retail), and iHerb ranking."
-          icon={<BarChart3 size={14} />}
-        />
+        {/* Market Intelligence */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            <BarChart3 size={14} />
+            <span>Market Intelligence</span>
+          </div>
+          <div className="flex flex-col gap-3 px-1 py-2">
+            {p.channels.length > 0 && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">Distribution:</span>{' '}
+                {p.channels.includes('DTC')
+                  ? 'Direct-to-consumer + retail'
+                  : 'Primarily retail'}
+              </div>
+            )}
+            {p.type && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">Type:</span>{' '}
+                {p.type.charAt(0).toUpperCase() + p.type.slice(1)}
+              </div>
+            )}
+            {p.revenueRange && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">
+                  Estimated revenue:
+                </span>{' '}
+                {p.revenueRange}
+              </div>
+            )}
+            {!p.type && !p.revenueRange && p.channels.length === 0 && (
+              <div className="detail-empty">Market data not yet available</div>
+            )}
+          </div>
+        </div>
 
-        {/* Placeholder: Compliance */}
-        <PlaceholderSection
-          title="Compliance & Certifications"
-          description="FDA, NSF, USP, cGMP status, third-party testing policies, and recall history."
-          icon={<ShieldCheck size={14} />}
-        />
+        {/* Certifications */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            <ShieldCheck size={14} />
+            <span>Certifications</span>
+            {p.certifications.length > 0 && (
+              <span className="data-badge data-badge-green detail-section-count">
+                {p.certifications.length} cert
+                {p.certifications.length !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+          {p.certifications.length === 0 ? (
+            <div className="detail-empty">No certification data on file</div>
+          ) : (
+            <div className="flex flex-wrap gap-1 px-1 py-2">
+              {p.certifications.map((cert) => (
+                <span key={cert} className="data-badge data-badge-green">
+                  {cert}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </>
   )

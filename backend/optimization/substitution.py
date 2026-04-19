@@ -1,7 +1,6 @@
-from pathlib import Path
-
 import pandas as pd
 
+from config import DB_PATH as _DB_PATH
 from extraction.cache import get_cached
 from extraction.llm_extractor import IngredientProfile
 from ingestion.db_reader import build_ingredient_df, get_fg_vegan_status
@@ -10,8 +9,6 @@ from optimization.carbon import co2_delta, estimate_co2, get_prop65_warning
 from optimization.embeddings import find_similar
 from optimization.rules import compliance_score_granular, is_eligible, passes_compliance
 from optimization.substitution_matrix import find_known_substitutes, lookup, matrix_functional_fit
-
-_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
 
 
 def _load_profile(sku: str) -> IngredientProfile | None:

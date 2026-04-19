@@ -1,148 +1,62 @@
-# Agnes
+# Agnes — Backend Pipeline
 
-## Overview
+Agnes is the intelligence layer behind Spherecast. It takes raw SKU data from a SQLite database and enriches it into structured ingredient profiles that drive the substitution engine, consolidation analysis, and API.
 
-**Agnes** is a 5-layer supply chain intelligence system that combines structured data, LLM extraction, vector search, and rule-based reasoning to enable ingredient analysis, substitution, and supplier optimization.
+## The pipeline
 
----
+Enrichment runs once (or on-demand) and caches everything. At runtime, no LLM is called for facts — only for explanations.
 
-## 🏗️ Architecture
+```
+SQLite DB
+   │
+   ▼
+Ingestion          parse SKUs → ingredient names, join BOM/Supplier/Company
+   │
+   ▼
+Enrichment         OpenFoodFacts → supplier website scraping → LLM fallback
+   │
+   ▼
+LLM Extraction     o4-mini → structured IngredientProfile (vegan, allergens,
+   │               functional class, certifications, E-number, confidence)
+   ▼
+ChromaDB Index     all-MiniLM-L6-v2 embeddings + synonym expansion
+   │
+   ▼
+Rules Engine       allergen filter · vegan constraints · functional class match
+   │               · FDA/GRAS status · supplier diversity scoring
+   ▼
+FastAPI            REST endpoints consumed by the Next.js frontend
+```
 
----
+## Key design decisions
 
-## ⚙️ Features
+**Anti-hallucination:** LLM runs only at index-build time and writes to cache. At query time, the model is only used to format an explanation — it never generates facts.
 
-### Layer 1 — Ingestion
+**Layered enrichment:** Each source is tried in order (OpenFoodFacts → supplier scrape → LLM). Confidence score reflects which layer succeeded.
 
-- Load all SQLite tables into Pandas
-- Parse human-readable names from SKUs
-- Join RM, Supplier, BOM, and Company into flat tables
-- Extract unique ingredients with metadata
-- Derive finished-good vegan status
+**Centralized config:** `config.py` is the single source of truth for the DB path (env-var `DB_PATH` overrides the default).
 
----
+## API endpoints
 
-### Layer 2 — Enrichment
+| Endpoint                       | Description                               |
+| ------------------------------ | ----------------------------------------- |
+| `GET /`                        | Health + index status                     |
+| `GET /ingredients`             | Paginated ingredient list                 |
+| `GET /ingredients/{sku}`       | Full profile                              |
+| `POST /recommend`              | Ranked substitutions                      |
+| `GET /consolidate`             | Cross-company consolidation opportunities |
+| `GET /companies/{id}/sourcing` | Company sourcing view                     |
+| `GET /enrichment/stats`        | Enrichment coverage                       |
 
-- OpenFoodFacts API integration
-- Web scraping fallback
-- LLM fallback when no structured data exists
+## Running locally
 
----
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env          # set OPENAI_API_KEY etc.
+uvicorn api.main:app --reload
 
-### Layer 3 — LLM Extraction
-
-- Structured `IngredientProfile` (10 fields)
-- Synonym expansion (LLM + hardcoded mappings)
-- JSON schema extraction using o4-mini
-- Confidence scoring
-- Persistent caching (no duplicate LLM calls)
-
----
-
-### Layer 4 — Vector Search + Rules
-
-- Embeddings via all-MiniLM-L6-v2 (ONNX)
-- ChromaDB vector index
-- Semantic similarity search with synonym expansion
-- Compliance engine:
-  - Functional class matching
-  - Allergen filtering
-  - Vegan constraints
-- Scoring formula:
-  `score = similarity * 0.6 + confidence * 0.2 + compliance * 0.2`
-- Supplier consolidation detection
-
----
-
-### Layer 5 — API
-
-| Endpoint                   | Method | Description                 |
-| -------------------------- | ------ | --------------------------- |
-| `/`                        | GET    | Health check + index status |
-| `/ingredients`             | GET    | Paginated ingredient list   |
-| `/ingredients/{sku}`       | GET    | Full ingredient profile     |
-| `/recommend`               | POST   | Substitutions + explanation |
-| `/consolidate`             | GET    | Functional classes          |
-| `/consolidate/{class}`     | GET    | Supplier insights           |
-| `/companies/{id}/sourcing` | GET    | Company sourcing            |
-
----
-
-## 🧠 Anti-Hallucination Design
-
-Index Build (one-time):
-LLM → structured JSON → cached
-
-Runtime:
-Cache → Vector Search → Rules Engine → LLM (formatting only)
-
-**Key principle:**  
-LLM is never used to generate facts at runtime — only to explain them.
-
----
-
-## 🎨 Frontend (Recommended)
-
-### Stack
-
-- Next.js 14
-- Tailwind CSS
-- shadcn/ui
-
-### Why
-
-- Fast server-side rendering
-- No CORS issues (API proxy)
-- Type-safe API integration
-- Production-ready UI components
-
----
-
-## 🖥️ Views
-
-### Dashboard
-
-- Key metrics
-- Quick search
-- Top consolidation opportunities
-
-### Ingredient Catalog
-
-- Searchable table
-- Filters: class, allergens, vegan
-
-### Ingredient Detail
-
-- Full profile
-- Compliance badges
-- Confidence score
-- CTA to substitution
-
-### Substitution Finder
-
-- Ranked alternatives
-- Score visualization
-- Compliance validation
-- LLM explanation
-
-### Supplier Consolidation
-
-- Supplier coverage chart
-- Optimization insights
-
----
-
-## 🚀 Summary
-
-Agnes combines:
-
-- Structured supply chain data
-- LLM-powered enrichment
-- Vector similarity search
-- Deterministic rule validation
-- Explainable AI outputs
-
-**Result:** A reliable, explainable ingredient intelligence system ready for production.
-
----
+# One-time: build the ingredient index
+python scripts/build_index.py
+```

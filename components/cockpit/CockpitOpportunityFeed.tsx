@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import type { OpportunityRow } from '@/lib/agnes-queries'
+import { postDecision } from '@/lib/agnes-client'
 
 type Confidence = 'high' | 'medium' | 'low'
 
@@ -25,15 +26,42 @@ export default function CockpitOpportunityFeed({
   rows,
 }: CockpitOpportunityFeedProps) {
   const [hidden, setHidden] = useState<Set<string>>(() => new Set())
+  const [pending, setPending] = useState<Set<string>>(() => new Set())
 
   const visible = useMemo(
     () => rows.filter((o) => !hidden.has(o.id)).slice(0, 7),
     [rows, hidden]
   )
 
-  function dismiss(id: string) {
-    setHidden((prev) => new Set(prev).add(id))
-  }
+  const handleDecision = useCallback(
+    async (row: OpportunityRow, action: 'accepted' | 'rejected') => {
+      if (pending.has(row.id)) return
+      setPending((prev) => new Set(prev).add(row.id))
+      try {
+        await postDecision({
+          entityType: 'opportunity',
+          entityId: row.rawMaterialId.toString(),
+          entityLabel: `${row.ingredientName} → ${row.altSupplier}`,
+          action,
+          reasoning:
+            action === 'accepted'
+              ? `Accepted via cockpit. Confidence ${Math.round(row.confidence * 100)}%.`
+              : `Rejected via cockpit.`,
+          userId: 'sourcing-agent',
+        })
+      } catch {
+        // silently fail — decision is still dismissed from UI
+      } finally {
+        setHidden((prev) => new Set(prev).add(row.id))
+        setPending((prev) => {
+          const next = new Set(prev)
+          next.delete(row.id)
+          return next
+        })
+      }
+    },
+    [pending]
+  )
 
   return (
     <section className="cockpit-panel" aria-labelledby="cockpit-opps-heading">
@@ -73,14 +101,16 @@ export default function CockpitOpportunityFeed({
                   <button
                     type="button"
                     className="btn btn-primary btn-compact"
-                    onClick={() => dismiss(row.id)}
+                    disabled={pending.has(row.id)}
+                    onClick={() => handleDecision(row, 'accepted')}
                   >
                     Accept
                   </button>
                   <button
                     type="button"
                     className="btn btn-ghost btn-compact"
-                    onClick={() => dismiss(row.id)}
+                    disabled={pending.has(row.id)}
+                    onClick={() => handleDecision(row, 'rejected')}
                   >
                     Reject
                   </button>

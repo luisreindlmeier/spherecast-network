@@ -22,6 +22,8 @@ from ingestion.db_reader import (
     get_finished_goods, get_finished_good_detail,
     get_raw_materials, get_raw_material_detail,
     get_suppliers, get_supplier_detail,
+    get_supplier_performance,
+    get_audit_log, create_audit_log_entry,
     get_global_search, get_network_map_data,
     get_similarity_map_raw_data,
     parse_name_from_sku,
@@ -502,6 +504,46 @@ def supplier_detail(supplier_id: int):
     if result is None:
         raise HTTPException(status_code=404, detail=f"Supplier {supplier_id} not found")
     return result
+
+
+@app.get("/suppliers/{supplier_id}/performance", dependencies=[_auth])
+def supplier_performance(supplier_id: int):
+    result = get_supplier_performance(supplier_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"No performance data for supplier {supplier_id}")
+    return result
+
+
+class DecisionRequest(BaseModel):
+    entityType: str = Field(..., min_length=1, max_length=50)
+    entityId: str = Field(..., min_length=1, max_length=100)
+    entityLabel: str | None = Field(default=None, max_length=200)
+    action: str = Field(..., min_length=1, max_length=50)
+    reasoning: str | None = Field(default=None, max_length=1000)
+    userId: str | None = Field(default=None, max_length=100)
+    scopeCompanyId: int | None = Field(default=None)
+
+
+@app.get("/decisions", dependencies=[_auth])
+def get_decisions(
+    scope_company_id: int | None = Query(default=None),
+    entity_type: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+):
+    return get_audit_log(scope_company_id=scope_company_id, entity_type=entity_type, limit=limit)
+
+
+@app.post("/decisions", dependencies=[_auth])
+def post_decision(req: DecisionRequest):
+    return create_audit_log_entry(
+        entity_type=req.entityType,
+        entity_id=req.entityId,
+        entity_label=req.entityLabel,
+        action=req.action,
+        reasoning=req.reasoning,
+        user_id=req.userId,
+        scope_company_id=req.scopeCompanyId,
+    )
 
 
 @app.get("/search", dependencies=[_auth])

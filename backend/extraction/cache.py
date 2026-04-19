@@ -1,9 +1,7 @@
 import json
-import os
 import sqlite3
-from pathlib import Path
 
-_DB_PATH = Path(os.getenv("DB_PATH", Path(__file__).parent.parent / "data" / "db.sqlite"))
+from config import DB_PATH as _DB_PATH
 
 _CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS IngredientProfile (

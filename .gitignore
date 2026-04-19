@@ -40,3 +40,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# backend runtime data (generated, not source)
+backend/data/db.sqlite
+backend/data/db.sqlite-shm
+backend/data/db.sqlite-wal
+backend/data/chroma/
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
