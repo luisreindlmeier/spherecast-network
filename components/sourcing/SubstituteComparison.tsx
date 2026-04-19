@@ -5,7 +5,6 @@ import type {
   IngredientProfile,
 } from '@/lib/agnes-client'
 import type { OpportunityDetail } from '@/lib/agnes-queries'
-import { estimateSavings, fmtSavingsRange } from '@/lib/savings-estimate'
 import {
   Sparkles,
   CheckCircle2,
@@ -103,14 +102,6 @@ export default function SubstituteComparison({
 
   const subProfile: IngredientProfile | null = substituteDetail?.profile ?? null
   const isCurrentOptimal = sub.sku === material.sku
-
-  const savings = estimateSavings(
-    opportunity.row.ingredientName,
-    opportunity.row.rawMaterialSku,
-    opportunity.row.category,
-    opportunity.row.confidence,
-    opportunity.row.brandsAffected
-  )
 
   const rows: Row[] = [
     {
@@ -220,58 +211,6 @@ export default function SubstituteComparison({
         </span>
       ),
       substitute: <Co2Cell delta={sub.co2_vs_original} />,
-    },
-    {
-      label: 'Est. Cost/kg',
-      current: (
-        <span className="substitute-cmp-score">
-          ${savings.costPerKgCurrent.toFixed(1)}
-        </span>
-      ),
-      substitute: (
-        <span className="substitute-cmp-score substitute-cmp-score-high">
-          ${savings.costPerKgAlt.toFixed(1)}
-        </span>
-      ),
-    },
-    {
-      label: 'Est. Annual Savings',
-      current: (
-        <span className="substitute-cmp-score substitute-cmp-score-baseline">
-          —
-        </span>
-      ),
-      substitute: (
-        <span className="substitute-cmp-savings-highlight">
-          {fmtSavingsRange(savings.savingsLow, savings.savingsHigh)}
-        </span>
-      ),
-    },
-    {
-      label: 'Min. Order for Savings',
-      current: (
-        <span className="substitute-cmp-score substitute-cmp-score-baseline">
-          —
-        </span>
-      ),
-      substitute: (
-        <span className="substitute-cmp-score">{savings.minOrderKg} kg</span>
-      ),
-    },
-    {
-      label: 'Companies That Benefit',
-      current: (
-        <span className="substitute-cmp-score substitute-cmp-score-baseline">
-          —
-        </span>
-      ),
-      substitute: (
-        <span className="substitute-cmp-score">
-          {opportunity.row.brandsAffected.length > 0
-            ? opportunity.row.brandsAffected.map((b) => b.name).join(', ')
-            : `${savings.companiesCount} brand${savings.companiesCount !== 1 ? 's' : ''}`}
-        </span>
-      ),
     },
   ]
 
