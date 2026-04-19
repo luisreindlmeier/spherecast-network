@@ -3031,6 +3031,331 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Raw material detail profile body ────────────────────── */
+.detail-profile-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 4px 2px;
+}
+
+.detail-profile-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.detail-profile-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.detail-profile-meta-val {
+  color: var(--text-secondary);
+}
+
+/* ── Substitute comparison ───────────────────────────────── */
+.substitute-scope-chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.substitute-chip-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+}
+
+.substitute-chip-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: color-mix(in srgb, var(--accent-green) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-green) 36%, transparent);
+  color: var(--accent-green);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.substitute-chip-rec:hover {
+  background: color-mix(in srgb, var(--accent-green) 22%, transparent);
+}
+
+.substitute-chip-optimal {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: color-mix(in srgb, var(--accent-green) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-green) 36%, transparent);
+  color: var(--accent-green);
+}
+
+/* Optimal banner */
+.substitute-optimal-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent-green) 8%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--accent-green) 28%, transparent);
+  margin-top: 24px;
+}
+
+.substitute-optimal-icon {
+  color: var(--accent-green);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.substitute-optimal-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-green);
+  margin-bottom: 3px;
+}
+
+.substitute-optimal-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Comparison root */
+.substitute-cmp-root {
+  margin-top: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.substitute-cmp-header {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.substitute-cmp-header-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.substitute-cmp-sub-link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.substitute-cmp-sub-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-green);
+  text-decoration: none;
+}
+
+.substitute-cmp-sub-link:hover {
+  text-decoration: underline;
+}
+
+.substitute-cmp-sub-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.substitute-cmp-sku {
+  font-family: var(--font-secondary);
+}
+
+.substitute-cmp-explanation {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-top: 8px;
+}
+
+/* Table */
+.substitute-cmp-table {
+  width: 100%;
+}
+
+.substitute-cmp-thead {
+  display: grid;
+  grid-template-columns: 1fr 120px 140px;
+  padding: 6px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.substitute-cmp-th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.substitute-cmp-th-rec {
+  color: var(--accent-green);
+}
+
+.substitute-cmp-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 140px;
+  padding: 7px 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.substitute-cmp-row:last-child {
+  border-bottom: none;
+}
+
+.substitute-cmp-row:hover {
+  background: var(--bg-hover);
+}
+
+.substitute-cmp-td-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.substitute-cmp-td {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.substitute-cmp-td-highlight {
+  color: var(--accent-green);
+}
+
+.substitute-cmp-icon-yes {
+  color: var(--accent-green);
+}
+
+.substitute-cmp-icon-no {
+  color: var(--accent-red);
+}
+
+.substitute-cmp-icon-neutral {
+  color: var(--text-faint);
+}
+
+.substitute-cmp-score {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.substitute-cmp-score-baseline {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.substitute-cmp-score-high {
+  color: var(--accent-green);
+}
+
+.substitute-cmp-score-mid {
+  color: var(--accent-yellow);
+}
+
+.substitute-cmp-score-low {
+  color: var(--accent-red);
+}
+
+.substitute-cmp-allergens {
+  font-size: 11px;
+  color: var(--accent-red);
+}
+
+.substitute-cmp-co2-better {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--accent-green);
+}
+
+.substitute-cmp-co2-worse {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--accent-red);
+}
+
+/* Sourcing actions */
+.substitute-cmp-actions {
+  padding: 14px 20px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.substitute-cmp-actions-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.substitute-cmp-actions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.substitute-cmp-action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.substitute-cmp-action-dot {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  margin-top: 6px;
+}
+
 /* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;

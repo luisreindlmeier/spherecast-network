@@ -6,15 +6,22 @@ import {
   IngredientProfileBadges,
   IngredientConfidenceBar,
 } from '@/components/sourcing/IngredientProfileBadges'
-import { getRawMaterialDetail } from '@/lib/agnes-queries'
+import SubstituteComparison from '@/components/sourcing/SubstituteComparison'
+import {
+  getRawMaterialDetail,
+  getRawMaterials,
+  getOpportunityDetail,
+} from '@/lib/agnes-queries'
+import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
 import { productsUsedInLabel, suppliersCountLabel } from '@/lib/format-labels'
 import {
-  FlaskConical,
   Package,
   Building2,
   ArrowLeft,
   Tag,
   ShieldCheck,
+  Sparkles,
+  ArrowRight,
 } from 'lucide-react'
 
 interface Props {
@@ -23,8 +30,26 @@ interface Props {
 
 export default async function RawMaterialDetailPage({ params }: Props) {
   const { id } = await params
-  const material = await getRawMaterialDetail(Number(id))
+  const scopeCompanyId = await resolveCompanyScopeFilter()
+
+  const [material, opportunity] = await Promise.all([
+    getRawMaterialDetail(Number(id)),
+    scopeCompanyId != null
+      ? getOpportunityDetail(Number(id), scopeCompanyId)
+      : Promise.resolve(null),
+  ])
   if (!material) notFound()
+
+  // Look up substitute's full detail by SKU (to get its profile for the comparison table)
+  let substituteDetail = null
+  const bestSub = opportunity?.allSubstitutes[0]
+  if (bestSub && bestSub.sku !== material.sku) {
+    const allMaterials = await getRawMaterials(scopeCompanyId)
+    const match = allMaterials.find((m) => m.sku === bestSub.sku)
+    if (match) substituteDetail = await getRawMaterialDetail(match.id)
+  }
+
+  const isCurrentOptimal = opportunity != null && bestSub?.sku === material.sku
 
   return (
     <>
@@ -40,6 +65,35 @@ export default async function RawMaterialDetailPage({ params }: Props) {
         title={material.sku}
         description={`Owned by ${material.companyName} · ${material.supplierCount} supplier${material.supplierCount !== 1 ? 's' : ''} · used in ${material.usedInProducts} finished product${material.usedInProducts !== 1 ? 's' : ''}`}
       />
+
+      {/* Scope chips — only when a company is selected */}
+      {scopeCompanyId != null && (
+        <div className="substitute-scope-chips">
+          <span className="substitute-chip-current">Currently selected</span>
+          {isCurrentOptimal ? (
+            <span className="substitute-chip-optimal">
+              <Sparkles size={11} />
+              Optimal choice
+            </span>
+          ) : bestSub ? (
+            substituteDetail ? (
+              <Link
+                href={`/raw-materials/${substituteDetail.id}`}
+                className="substitute-chip-rec"
+              >
+                <Sparkles size={11} />
+                Recommended substitute: {bestSub.name}
+                <ArrowRight size={11} />
+              </Link>
+            ) : (
+              <span className="substitute-chip-rec">
+                <Sparkles size={11} />
+                Recommended: {bestSub.name}
+              </span>
+            )
+          ) : null}
+        </div>
+      )}
 
       {/* Stats */}
       <div
@@ -138,7 +192,7 @@ export default async function RawMaterialDetailPage({ params }: Props) {
           )}
         </div>
 
-        {/* Ingredient profile — certifications, allergens, functional class */}
+        {/* Ingredient profile */}
         <div className="detail-section">
           <div className="detail-section-header">
             <ShieldCheck size={14} />
@@ -151,24 +205,27 @@ export default async function RawMaterialDetailPage({ params }: Props) {
               </span>
             )}
           </div>
-          <div className="flex flex-col gap-3 px-1 py-2">
+          <div className="detail-profile-body">
             <IngredientProfileBadges profile={material.profile} />
             {material.profile.description && (
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="detail-profile-desc">
                 {material.profile.description}
               </p>
             )}
             {material.profile.synonyms.length > 0 && (
-              <div className="text-xs text-gray-400">
+              <div className="detail-profile-meta">
                 Also known as:{' '}
-                <span className="text-gray-600">
+                <span className="detail-profile-meta-val">
                   {material.profile.synonyms.join(', ')}
                 </span>
               </div>
             )}
             {material.profile.enrichedSources.length > 0 && (
-              <div className="text-xs text-gray-400">
-                Sources: {material.profile.enrichedSources.join(', ')}
+              <div className="detail-profile-meta">
+                Sources:{' '}
+                <span className="detail-profile-meta-val">
+                  {material.profile.enrichedSources.join(', ')}
+                </span>
               </div>
             )}
           </div>
@@ -181,6 +238,31 @@ export default async function RawMaterialDetailPage({ params }: Props) {
           icon={<Tag size={14} />}
         />
       </div>
+
+      {/* Substitute comparison — only when scoped to a company */}
+      {scopeCompanyId != null &&
+        opportunity != null &&
+        (isCurrentOptimal ? (
+          <div className="substitute-optimal-banner">
+            <Sparkles size={16} className="substitute-optimal-icon" />
+            <div>
+              <div className="substitute-optimal-title">
+                Great — this is already the optimal choice
+              </div>
+              <div className="substitute-optimal-sub">
+                Based on similarity, functional fit, and compliance data, no
+                superior substitute was found for the currently selected company
+                scope.
+              </div>
+            </div>
+          </div>
+        ) : (
+          <SubstituteComparison
+            material={material}
+            opportunity={opportunity}
+            substituteDetail={substituteDetail}
+          />
+        ))}
     </>
   )
 }
