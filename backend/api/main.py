@@ -117,7 +117,7 @@ def get_ingredient(sku: str):
         bom_count = len(row["bom_ids"])
         company_names = list(set(row["company_names"]))
 
-    fda_info = get_fda_status(name, get_standards())
+    fda_info = get_fda_status(sku, get_standards())
     functional_class = cached.get("functional_class", "other")
     live_compliance = layer2_check(name, supplier_info[0] if supplier_info else None)
     matrix_alts = find_known_substitutes(name)
@@ -177,6 +177,20 @@ def consolidate(functional_class: str, explain: bool = True):
             proposal["total_ingredients"],
         )
     return proposal
+
+
+@app.get("/consolidation/direct", dependencies=[_auth])
+def direct_consolidation():
+    """Use Case 1: Identical Ingredient, Multiple Companies (Direct Consolidation)"""
+    from optimization.consolidation import get_direct_consolidation_opportunities
+    return get_direct_consolidation_opportunities()
+
+
+@app.get("/consolidation/suppliers", dependencies=[_auth])
+def supplier_consolidation():
+    """Use Case 4: Master Supplier Leverage across the network"""
+    from optimization.consolidation import get_supplier_consolidation_opportunities
+    return get_supplier_consolidation_opportunities()
 
 
 @app.get("/consolidate", dependencies=[_auth])

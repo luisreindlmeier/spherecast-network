@@ -1,7 +1,53 @@
+import sqlite3
+import re
+from pathlib import Path
 from extraction.llm_extractor import IngredientProfile
 
-
 _HARD_REJECT_FDA = {"Prohibited", "Restricted", "Not Approved"}
+_DB_PATH = Path(__file__).parent.parent / "data" / "db.sqlite"
+
+def _parse_name_from_sku(sku: str) -> str:
+    m = re.match(r"RM-C\d+-(.+)-[0-9a-f]{8}$", sku)
+    if m:
+        return m.group(1).replace("-", " ")
+    return sku
+
+def get_framework_rules(sku: str) -> dict:
+    """Fetches L1 and L2 rules from the CSV-derived SQLite tables for an ingredient."""
+    name = _parse_name_from_sku(sku).lower()
+    rules = {"l1_disqualify": None, "l2_specs": []}
+    
+    try:
+        conn = sqlite3.connect(_DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        
+        # 1. Fetch L1 Eligibility
+        cur.execute("SELECT * FROM Framework_L1_Eligibility WHERE SearchKey = ?", (name,))
+        l1_row = cur.fetchone()
+        if not l1_row:
+            cur.execute("SELECT * FROM Framework_L1_Eligibility WHERE SearchKey LIKE ? LIMIT 1", (f"%{name}%",))
+            l1_row = cur.fetchone()
+            
+        if l1_row and l1_row["Auto-Disqualify If…"] and str(l1_row["Auto-Disqualify If…"]) != "nan":
+            rules["l1_disqualify"] = str(l1_row["Auto-Disqualify If…"])
+            
+        # 2. Fetch L2 Spec Floors
+        cur.execute("SELECT * FROM Framework_L2_Specs WHERE SearchKey = ?", (name,))
+        l2_rows = cur.fetchall()
+        if not l2_rows:
+            cur.execute("SELECT * FROM Framework_L2_Specs WHERE SearchKey LIKE ?", (f"%{name}%",))
+            l2_rows = cur.fetchall()
+            
+        for row in l2_rows:
+            if row["Quality / GMO Parameter"] and str(row["Quality / GMO Parameter"]) != "nan":
+                rules["l2_specs"].append(f"{row['Quality / GMO Parameter']}: {row['Your Acceptance Floor']}")
+                
+        conn.close()
+    except Exception as exc:
+        print(f"Error fetching framework rules: {exc}")
+        
+    return rules
 
 
 def is_eligible(
@@ -50,6 +96,18 @@ def passes_compliance(
 
     if orig_class != cand_class and orig_class != "other" and cand_class != "other":
         violations.append(f"Different functional class: {orig_class} vs {cand_class}")
+
+    # Apply L1 and L2 Framework Rules
+    if "sku" in candidate:
+        rules = get_framework_rules(candidate["sku"])
+        
+        # L1: If there's an Auto-Disqualify rule, we flag it as a strict compliance warning
+        if rules["l1_disqualify"]:
+            violations.append(f"L1 GATE CHECK REQUIRED: Disqualify if '{rules['l1_disqualify']}'")
+            
+        # L2: If there are spec floors, add them to the compliance warnings
+        for spec in rules["l2_specs"]:
+            violations.append(f"L2 SPEC FLOOR: Must meet {spec}")
 
     return len(violations) == 0, violations
 

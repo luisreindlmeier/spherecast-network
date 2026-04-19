@@ -314,6 +314,143 @@ _MATRIX: dict[tuple[str, str], dict] = {
         "validated": True,
         "cfr_ref": "21 CFR 184.1061",
     },
+
+    # ── Proteins ────────────────────────────────────────────────────────────
+    ("whey protein isolate", "pea protein isolate"): {
+        "function": "protein",
+        "ratio": 1.05, # Pea has slightly lower PDCAAS, need slightly more to hit label claim
+        "constraints": [
+            "plant_based_vegan_claim_enabled",
+            "dairy_allergen_removed",
+            "different_flavor_profile_earthy_notes",
+            "solubility_at_low_ph_differs"
+        ],
+        "validated": True,
+    },
+    ("whey protein concentrate", "soy protein isolate"): {
+        "function": "protein",
+        "ratio": 1.0,
+        "constraints": [
+            "soy_is_major_allergen",
+            "dairy_allergen_removed",
+            "excellent_emulsification_properties"
+        ],
+        "validated": True,
+        "cfr_ref": "21 CFR 170.30",
+    },
+
+    # ── High-Intensity Sweeteners ───────────────────────────────────────────
+    ("aspartame", "sucralose"): {
+        "function": "sweetener",
+        "ratio": 0.33, # Sucralose is ~600x sweeter than sugar, Aspartame is ~200x
+        "constraints": [
+            "sucralose_heat_stable_for_baking",
+            "aspartame_breaks_down_in_heat",
+            "phenylketonurics_warning_removed_if_sucralose"
+        ],
+        "validated": True,
+        "cfr_ref": "21 CFR 172.831 / 172.804",
+    },
+    ("sucralose", "stevia leaf extract"): {
+        "function": "sweetener",
+        "ratio": 2.0, # Stevia is ~300x sweeter, requires 2x the mass of sucralose
+        "constraints": [
+            "natural_claim_enabled",
+            "licorice_bitter_aftertaste_requires_masking",
+            "significant_cost_increase"
+        ],
+        "validated": True,
+        "cfr_ref": "GRAS Notice No. GRN 000287",
+    },
+    ("erythritol", "allulose"): {
+        "function": "sweetener",
+        "ratio": 1.0,
+        "constraints": [
+            "allulose_browning_maillard_reaction_enabled",
+            "erythritol_cooling_effect_removed",
+            "allulose_does_not_count_as_added_sugar_fda"
+        ],
+        "validated": True,
+    },
+
+    # ── Natural Colors ──────────────────────────────────────────────────────
+    ("red 40", "beet juice extract"): {
+        "function": "colorant",
+        "ratio": 4.0, # Natural colors require much higher dosing for same tinctorial strength
+        "constraints": [
+            "clean_label_no_artificial_colors",
+            "beet_is_heat_sensitive_browns_above_80c",
+            "potential_flavor_impact_at_high_dose"
+        ],
+        "validated": True,
+        "cfr_ref": "21 CFR 73.40 / 74.3400",
+    },
+    ("yellow 5", "turmeric oleoresin"): {
+        "function": "colorant",
+        "ratio": 3.0,
+        "constraints": [
+            "clean_label",
+            "light_sensitive_requires_uv_blocking_packaging",
+            "potential_spicy_flavor_at_high_dose"
+        ],
+        "validated": True,
+        "cfr_ref": "21 CFR 73.600",
+    },
+    ("titanium dioxide", "calcium carbonate"): {
+        "function": "colorant", # Opacifier
+        "ratio": 1.5,
+        "constraints": [
+            "titanium_dioxide_banned_in_eu_e171",
+            "calcium_carbonate_less_opaque",
+            "ph_must_be_above_4_or_it_dissolves"
+        ],
+        "validated": True,
+    },
+
+    # ── Natural Preservatives (Clean Label) ─────────────────────────────────
+    ("sodium nitrite", "celery powder"): {
+        "function": "preservative", # Curing agent
+        "ratio": 5.0, # Celery powder contains ~2-3% natural nitrates
+        "constraints": [
+            "clean_label_uncured_claim",
+            "requires_starter_culture_to_convert_nitrate_to_nitrite",
+            "flavor_contribution"
+        ],
+        "validated": True,
+        "cfr_ref": "USDA FSIS Directive 7120.1",
+    },
+    ("calcium propionate", "cultured wheat extract"): {
+        "function": "preservative", # Anti-mold in baking
+        "ratio": 2.0,
+        "constraints": [
+            "clean_label_baking",
+            "cost_increase",
+            "fermented_flavor_notes"
+        ],
+        "validated": True,
+    },
+
+    # ── Starches / Texturizers ──────────────────────────────────────────────
+    ("modified corn starch", "native tapioca starch"): {
+        "function": "thickener",
+        "ratio": 1.2,
+        "constraints": [
+            "clean_label_claim_enabled",
+            "native_starch_has_lower_shear_and_acid_stability",
+            "clearer_gel_than_corn"
+        ],
+        "validated": True,
+    },
+    ("polysorbate 80", "sunflower lecithin"): {
+        "function": "emulsifier",
+        "ratio": 2.5, # Polysorbate is highly synthetic and powerful
+        "constraints": [
+            "clean_label",
+            "lecithin_has_lower_hlb_value",
+            "may_require_co_emulsifier"
+        ],
+        "validated": True,
+    }
 }
 
 

@@ -120,7 +120,7 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
     ratings = get_ratings()
     standards = get_standards()
     orig_co2 = estimate_co2(profile.name, profile.functional_class)
-    orig_fda = get_fda_status(profile.name, standards)
+    orig_fda = get_fda_status(sku, standards)
     orig_gras = (orig_fda.get("gras_status", "") if orig_fda else "").lower()
 
     for c in candidates:
@@ -147,7 +147,7 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
         supplier_score = 0.5 * fda_cert_score + 0.5 * diversity_score
 
         # FDA ingredient status
-        fda_info = get_fda_status(c["name"], standards)
+        fda_info = get_fda_status(c["sku"], standards)
         c["fda_status"] = fda_info
 
         # CO₂ footprint
@@ -219,11 +219,15 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
         sourcing_actions.append(
             "DUAL_SOURCE: Initiate alternative supplier qualification within 90 days"
         )
-        if substitutes:
+        if substitutes and substitutes[0]["functional_fit"] >= 0.5:
             top_sub = substitutes[0]["name"]
             sourcing_actions.append(
                 f"SUBSTITUTE_AVAILABLE: '{top_sub}' is a validated functional substitute "
                 f"(fit={substitutes[0]['functional_fit']}) — qualify as backup"
+            )
+        else:
+            sourcing_actions.append(
+                "STRATEGIC_STOCKPILING: Keine valide funktionale Substitution möglich. Empfehlung zum Forward-Buying (Großmengen-Einkauf für 6-12 Monate), um Supply-Chain-Ausfälle zu überbrücken und Volume-Skaleneffekte (Preissenkung) zu nutzen."
             )
 
     # Matrix-validated known substitutes (independent of DB candidates)
@@ -241,7 +245,7 @@ def find_substitutes(sku: str, top_k: int = 5, fg_sku: str | None = None) -> dic
             "e_number": profile.e_number,
             "co2_footprint_kg_per_kg": round(orig_co2, 2),
             "prop65_warning": get_prop65_warning(profile.name),
-            "fda_status": get_fda_status(profile.name, standards),
+            "fda_status": get_fda_status(sku, standards),
             "current_suppliers": current_suppliers,
             "single_source_risk": single_source,
         },
