@@ -4090,6 +4090,22 @@ textarea {
   color: var(--text-secondary);
 }
 
+.decision-source-placeholder {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.decision-section-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.detail-section-spaced {
+  margin-top: 24px;
+}
+
 /* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;

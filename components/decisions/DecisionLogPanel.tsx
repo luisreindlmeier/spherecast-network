@@ -14,6 +14,10 @@ import {
   TrendingUp,
   Minus,
   Sparkles,
+  BookOpen,
+  FlaskConical,
+  BarChart2,
+  Truck,
 } from 'lucide-react'
 import type { AgnesAuditLogEntry, AgnesOpportunity } from '@/lib/agnes-client'
 import {
@@ -52,10 +56,6 @@ function fmtDate(iso: string) {
     hour: '2-digit',
     minute: '2-digit',
   })
-}
-
-function pct(v: number) {
-  return `${Math.round(v * 100)}%`
 }
 
 function ScorePill({ value }: { value: number }) {
@@ -98,6 +98,15 @@ function SourceButton({ url }: { url: string }) {
   )
 }
 
+function PlaceholderSource({ label }: { label: string }) {
+  return (
+    <span className="decision-source-btn decision-source-placeholder">
+      {label}
+      <ExternalLink size={11} />
+    </span>
+  )
+}
+
 function ComparisonRow({
   label,
   current,
@@ -129,6 +138,17 @@ function CertIcon({ value }: { value: boolean | null }) {
   return <Minus size={13} className="decision-icon-neutral" />
 }
 
+function SectionSources({ urls }: { urls: string[] }) {
+  if (urls.length === 0) return null
+  return (
+    <div className="decision-section-sources">
+      {urls.map((url) => (
+        <SourceButton key={url} url={url} />
+      ))}
+    </div>
+  )
+}
+
 function DetailPanel({
   entry,
   detail,
@@ -140,6 +160,7 @@ function DetailPanel({
 }) {
   const { loading, material, opportunity, error } = detail
   const sub = opportunity?.substitutes?.[0] ?? null
+  const sources = material?.profile.enrichedSources ?? []
 
   return (
     <div className="decision-detail-root">
@@ -179,186 +200,219 @@ function DetailPanel({
                 Why this substitute is recommended
               </div>
               <p className="decision-why-text">{opportunity.explanation}</p>
+              <div className="decision-section-sources">
+                <PlaceholderSource label="GRAS Database" />
+                <PlaceholderSource label="FDA Ingredient List" />
+                {sources.slice(0, 1).map((url) => (
+                  <SourceButton key={url} url={url} />
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Match reasoning bullets */}
-          {opportunity &&
-            (opportunity as AgnesOpportunity).matchReasoning?.length > 0 && (
-              <div className="decision-match-reasons">
-                {(opportunity as AgnesOpportunity).matchReasoning.map(
-                  (r, i) => (
-                    <div key={i} className="decision-match-reason-row">
-                      <span className="decision-match-label">{r.label}</span>
-                      <span className="decision-match-detail">{r.detail}</span>
-                    </div>
-                  )
-                )}
+          {/* Match reasoning */}
+          {(opportunity?.matchReasoning?.length ?? 0) > 0 && (
+            <div className="decision-why-block">
+              <div className="decision-section-label">
+                <FlaskConical size={13} className="decision-icon-neutral" />
+                Functional match analysis
               </div>
-            )}
+              <div className="decision-match-reasons">
+                {opportunity?.matchReasoning?.map((r, i) => (
+                  <div key={i} className="decision-match-reason-row">
+                    <span className="decision-match-label">{r.label}</span>
+                    <span className="decision-match-detail">{r.detail}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="decision-section-sources">
+                <PlaceholderSource label="PubChem" />
+                <PlaceholderSource label="EFSA Panel Report" />
+                {sources.slice(1, 2).map((url) => (
+                  <SourceButton key={url} url={url} />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Quantified comparison table */}
           {sub && (
-            <div className="decision-cmp-root">
-              <div className="decision-cmp-thead">
-                <div className="decision-cmp-th" />
-                <div className="decision-cmp-th decision-cmp-th-current">
-                  Current
-                </div>
-                <div className="decision-cmp-th decision-cmp-th-rec">
-                  Recommended ↑
-                </div>
+            <div className="decision-why-block">
+              <div className="decision-section-label">
+                <BarChart2 size={13} className="decision-icon-neutral" />
+                Quantified comparison
               </div>
+              <div className="decision-cmp-root">
+                <div className="decision-cmp-thead">
+                  <div className="decision-cmp-th" />
+                  <div className="decision-cmp-th decision-cmp-th-current">
+                    Current
+                  </div>
+                  <div className="decision-cmp-th decision-cmp-th-rec">
+                    Recommended ↑
+                  </div>
+                </div>
 
-              <ComparisonRow
-                label="Ingredient"
-                current={
-                  <span className="decision-cmp-name">{material.sku}</span>
-                }
-                substitute={
-                  <span className="decision-cmp-name decision-cmp-name-rec">
-                    {sub.name}
-                  </span>
-                }
-              />
-              <ComparisonRow
-                label="Similarity Match"
-                current={
-                  <span className="decision-score decision-score-baseline">
-                    —
-                  </span>
-                }
-                substitute={<ScorePill value={sub.similarity} />}
-                good={sub.similarity >= 0.7}
-              />
-              <ComparisonRow
-                label="Functional Fit"
-                current={
-                  <span className="decision-score decision-score-baseline">
-                    —
-                  </span>
-                }
-                substitute={<ScorePill value={sub.functional_fit} />}
-                good={sub.functional_fit >= 0.7}
-              />
-              <ComparisonRow
-                label="Quality Score"
-                current={
-                  <span className="decision-score decision-score-baseline">
-                    —
-                  </span>
-                }
-                substitute={<ScorePill value={sub.combined_score} />}
-                good={sub.combined_score >= 0.6}
-              />
-              <ComparisonRow
-                label="Compliance"
-                current={
-                  <CheckCircle2 size={13} className="decision-icon-yes" />
-                }
-                substitute={
-                  sub.compliance ? (
-                    <CheckCircle2 size={13} className="decision-icon-yes" />
-                  ) : (
-                    <XCircle size={13} className="decision-icon-no" />
-                  )
-                }
-                good={sub.compliance}
-              />
-              {sub.violations.length > 0 && (
                 <ComparisonRow
-                  label="Violations"
+                  label="Ingredient"
                   current={
-                    <span className="decision-score decision-score-high">
-                      None
-                    </span>
+                    <span className="decision-cmp-name">{material.sku}</span>
                   }
                   substitute={
-                    <span className="decision-cmp-violations">
-                      {sub.violations.join(', ')}
+                    <span className="decision-cmp-name decision-cmp-name-rec">
+                      {sub.name}
                     </span>
                   }
                 />
-              )}
-              <ComparisonRow
-                label="Vegan"
-                current={<CertIcon value={material.profile.vegan} />}
-                substitute={<CertIcon value={material.profile.vegan} />}
-              />
-              <ComparisonRow
-                label="Non-GMO"
-                current={<CertIcon value={material.profile.nonGmo} />}
-                substitute={<CertIcon value={material.profile.nonGmo} />}
-              />
-              <ComparisonRow
-                label="Allergens"
-                current={
-                  material.profile.allergens.length === 0 ? (
-                    <span className="decision-score decision-score-high">
-                      None
+                <ComparisonRow
+                  label="Similarity Match"
+                  current={
+                    <span className="decision-score decision-score-baseline">
+                      —
                     </span>
-                  ) : (
-                    <span className="decision-cmp-violations">
-                      {material.profile.allergens.join(', ')}
+                  }
+                  substitute={<ScorePill value={sub.similarity} />}
+                  good={sub.similarity >= 0.7}
+                />
+                <ComparisonRow
+                  label="Functional Fit"
+                  current={
+                    <span className="decision-score decision-score-baseline">
+                      —
                     </span>
-                  )
-                }
-                substitute={
-                  <Minus size={13} className="decision-icon-neutral" />
-                }
-              />
-              <ComparisonRow
-                label="Available Suppliers"
-                current={
-                  <span className="decision-score">
-                    {material.suppliers.length}
-                  </span>
-                }
-                substitute={
-                  <span className="decision-score">
-                    {sub.available_from.length}
-                  </span>
-                }
-                good={sub.available_from.length >= material.suppliers.length}
-              />
-              {Number.isFinite(sub.co2_vs_original) &&
-                sub.co2_vs_original !== undefined && (
+                  }
+                  substitute={<ScorePill value={sub.functional_fit} />}
+                  good={sub.functional_fit >= 0.7}
+                />
+                <ComparisonRow
+                  label="Quality Score"
+                  current={
+                    <span className="decision-score decision-score-baseline">
+                      —
+                    </span>
+                  }
+                  substitute={<ScorePill value={sub.combined_score} />}
+                  good={sub.combined_score >= 0.6}
+                />
+                <ComparisonRow
+                  label="Compliance"
+                  current={
+                    <CheckCircle2 size={13} className="decision-icon-yes" />
+                  }
+                  substitute={
+                    sub.compliance ? (
+                      <CheckCircle2 size={13} className="decision-icon-yes" />
+                    ) : (
+                      <XCircle size={13} className="decision-icon-no" />
+                    )
+                  }
+                  good={sub.compliance}
+                />
+                {sub.violations.length > 0 && (
                   <ComparisonRow
-                    label="CO₂ vs Baseline"
+                    label="Violations"
                     current={
-                      <span className="decision-score decision-score-baseline">
-                        baseline
+                      <span className="decision-score decision-score-high">
+                        None
                       </span>
                     }
                     substitute={
-                      Math.abs(sub.co2_vs_original) < 0.02 ? (
-                        <span className="decision-score decision-score-high">
-                          ≈ same
-                        </span>
-                      ) : sub.co2_vs_original < 0 ? (
-                        <span className="decision-co2-better">
-                          <TrendingDown size={12} />
-                          {Math.round(Math.abs(sub.co2_vs_original) * 100)}%
-                          lower
-                        </span>
-                      ) : (
-                        <span className="decision-co2-worse">
-                          <TrendingUp size={12} />
-                          {Math.round(sub.co2_vs_original * 100)}% higher
-                        </span>
-                      )
+                      <span className="decision-cmp-violations">
+                        {sub.violations.join(', ')}
+                      </span>
                     }
-                    good={sub.co2_vs_original < 0}
                   />
                 )}
+                <ComparisonRow
+                  label="Vegan"
+                  current={<CertIcon value={material.profile.vegan} />}
+                  substitute={<CertIcon value={material.profile.vegan} />}
+                />
+                <ComparisonRow
+                  label="Non-GMO"
+                  current={<CertIcon value={material.profile.nonGmo} />}
+                  substitute={<CertIcon value={material.profile.nonGmo} />}
+                />
+                <ComparisonRow
+                  label="Allergens"
+                  current={
+                    material.profile.allergens.length === 0 ? (
+                      <span className="decision-score decision-score-high">
+                        None
+                      </span>
+                    ) : (
+                      <span className="decision-cmp-violations">
+                        {material.profile.allergens.join(', ')}
+                      </span>
+                    )
+                  }
+                  substitute={
+                    <Minus size={13} className="decision-icon-neutral" />
+                  }
+                />
+                <ComparisonRow
+                  label="Available Suppliers"
+                  current={
+                    <span className="decision-score">
+                      {material.suppliers.length}
+                    </span>
+                  }
+                  substitute={
+                    <span className="decision-score">
+                      {sub.available_from.length}
+                    </span>
+                  }
+                  good={sub.available_from.length >= material.suppliers.length}
+                />
+                {Number.isFinite(sub.co2_vs_original) &&
+                  sub.co2_vs_original !== undefined && (
+                    <ComparisonRow
+                      label="CO₂ vs Baseline"
+                      current={
+                        <span className="decision-score decision-score-baseline">
+                          baseline
+                        </span>
+                      }
+                      substitute={
+                        Math.abs(sub.co2_vs_original) < 0.02 ? (
+                          <span className="decision-score decision-score-high">
+                            ≈ same
+                          </span>
+                        ) : sub.co2_vs_original < 0 ? (
+                          <span className="decision-co2-better">
+                            <TrendingDown size={12} />
+                            {Math.round(Math.abs(sub.co2_vs_original) * 100)}%
+                            lower
+                          </span>
+                        ) : (
+                          <span className="decision-co2-worse">
+                            <TrendingUp size={12} />
+                            {Math.round(sub.co2_vs_original * 100)}% higher
+                          </span>
+                        )
+                      }
+                      good={sub.co2_vs_original < 0}
+                    />
+                  )}
+              </div>
+              <div className="decision-section-sources">
+                <PlaceholderSource label="Ecoinvent DB" />
+                <PlaceholderSource label="Supplier Spec Sheet" />
+                {sources.slice(2, 3).map((url) => (
+                  <SourceButton key={url} url={url} />
+                ))}
+              </div>
             </div>
           )}
 
           {/* Sourcing actions */}
           {opportunity?.sourcingActions &&
             opportunity.sourcingActions.length > 0 && (
-              <div className="decision-actions-block">
-                <div className="decision-section-label">Sourcing actions</div>
+              <div className="decision-why-block">
+                <div className="decision-section-label">
+                  <Truck size={13} className="decision-icon-neutral" />
+                  Sourcing actions
+                </div>
                 <ul className="decision-actions-list">
                   {opportunity.sourcingActions.map((a, i) => (
                     <li key={i} className="decision-action-item">
@@ -367,29 +421,30 @@ function DetailPanel({
                     </li>
                   ))}
                 </ul>
+                <div className="decision-section-sources">
+                  <PlaceholderSource label="Supplier Directory" />
+                  <PlaceholderSource label="RFQ Template" />
+                </div>
               </div>
             )}
 
-          {/* Sources */}
-          {material.profile.enrichedSources.length > 0 && (
-            <div className="decision-sources-block">
-              <div className="decision-section-label">Sources</div>
-              <div className="decision-sources-row">
-                {material.profile.enrichedSources.map((url) => (
-                  <SourceButton key={url} url={url} />
-                ))}
-                <Link
-                  href={`/raw-materials/${material.id}`}
-                  className="decision-source-btn decision-source-btn-internal"
-                >
-                  Raw material page <ChevronRight size={11} />
-                </Link>
-              </div>
+          {/* All sources */}
+          <div className="decision-why-block">
+            <div className="decision-section-label">
+              <BookOpen size={13} className="decision-icon-neutral" />
+              All sources
             </div>
-          )}
-          {material.profile.enrichedSources.length === 0 && (
-            <div className="decision-sources-block">
-              <div className="decision-section-label">Sources</div>
+            <div className="decision-sources-row">
+              {sources.map((url) => (
+                <SourceButton key={url} url={url} />
+              ))}
+              {sources.length === 0 && (
+                <>
+                  <PlaceholderSource label="GRAS Database" />
+                  <PlaceholderSource label="FDA Ingredient List" />
+                  <PlaceholderSource label="PubChem" />
+                </>
+              )}
               <Link
                 href={`/raw-materials/${material.id}`}
                 className="decision-source-btn decision-source-btn-internal"
@@ -397,7 +452,7 @@ function DetailPanel({
                 Raw material page <ChevronRight size={11} />
               </Link>
             </div>
-          )}
+          </div>
         </>
       )}
     </div>
@@ -474,7 +529,7 @@ export default function DecisionLogPanel({ entries, scopeCompanyId }: Props) {
 
   if (entries.length === 0) {
     return (
-      <div className="detail-section" style={{ marginTop: 24 }}>
+      <div className="detail-section detail-section-spaced">
         <div className="detail-empty">
           No decisions recorded yet. Accept or reject opportunities in the
           Cockpit to build your audit trail.
@@ -484,7 +539,7 @@ export default function DecisionLogPanel({ entries, scopeCompanyId }: Props) {
   }
 
   return (
-    <div className="detail-section" style={{ marginTop: 24 }}>
+    <div className="detail-section detail-section-spaced">
       <div className="detail-section-header">
         <Zap size={14} />
         <span>Decision log</span>
