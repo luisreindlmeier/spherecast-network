@@ -836,6 +836,80 @@ textarea {
   line-height: 1.55;
 }
 
+.page-description-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.page-description-row .page-description {
+  margin-top: 0;
+  flex: 1 1 240px;
+  min-width: 0;
+  max-width: 640px;
+}
+
+.page-description-aside {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.similarity-map-page-root .page-network-map-intro:has(.page-description-row) {
+  max-width: none;
+  width: 100%;
+}
+
+.similarity-map-multi-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.similarity-map-multi-filter {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.similarity-map-multi-filter-trigger {
+  min-width: 132px;
+  max-width: 220px;
+}
+
+.similarity-map-multi-filter-content {
+  padding: 4px;
+  min-width: 200px;
+}
+
+.similarity-map-multi-filter-content--scroll {
+  max-height: min(320px, 52vh);
+  overflow-y: auto;
+}
+
+.similarity-map-multi-filter-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border);
+}
+
+.similarity-map-multi-filter-clear {
+  color: var(--text-secondary);
+}
+
+.similarity-map-multi-filter-item-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .page-actions {
   display: flex;
   align-items: flex-start;
@@ -994,7 +1068,7 @@ textarea {
   display: inline-flex;
   align-items: stretch;
   flex-shrink: 0;
-  min-width: min(100%, 280px);
+  min-width: min(100%, 300px);
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
@@ -1009,7 +1083,7 @@ textarea {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 0;
   margin: 0;
   min-width: 0;
   flex: 1 1 0;
@@ -1035,22 +1109,9 @@ textarea {
   border-right: none;
 }
 
-.map-right-panel-switch__icon {
-  flex-shrink: 0;
-  opacity: 0.88;
-}
-
-.map-right-panel-switch__label {
-  flex-shrink: 0;
-}
-
 .map-right-panel-switch__btn:hover {
   color: var(--text-secondary);
   background: var(--bg-hover);
-}
-
-.map-right-panel-switch__btn:hover .map-right-panel-switch__icon {
-  opacity: 1;
 }
 
 .map-right-panel-switch__btn--selected {
@@ -1058,20 +1119,10 @@ textarea {
   background: var(--accent-soft);
 }
 
-.map-right-panel-switch__btn--selected .map-right-panel-switch__icon {
-  opacity: 1;
-  color: var(--accent);
-}
-
 @media (max-width: 720px) {
-  .map-right-panel-switch__label {
-    display: none;
-  }
-
   .map-right-panel-switch__btn {
     flex: 0 0 auto;
-    padding: 8px 11px;
-    gap: 0;
+    padding: 8px 10px;
   }
 }
 
