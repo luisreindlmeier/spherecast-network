@@ -57,7 +57,8 @@ def main() -> None:
     print("SupplierFacility table ready")
 
     # ── 3. Copy company geocoords ────────────────────────────────────────────
-    companies = sb.table("company").select("id,lat,lng").not_("lat", "is", "null").execute().data
+    all_companies = sb.table("company").select("id,lat,lng").execute().data
+    companies = [r for r in all_companies if r.get("lat") is not None]
     updated = 0
     for row in companies:
         cur.execute("UPDATE Company SET Lat=?, Lng=? WHERE Id=?", (row["lat"], row["lng"], row["id"]))
@@ -65,7 +66,8 @@ def main() -> None:
     print(f"Company geocoords updated: {updated}/{len(companies)}")
 
     # ── 4. Copy supplier geocoords ───────────────────────────────────────────
-    suppliers = sb.table("supplier").select("id,lat,lng").not_("lat", "is", "null").execute().data
+    all_suppliers = sb.table("supplier").select("id,lat,lng").execute().data
+    suppliers = [r for r in all_suppliers if r.get("lat") is not None]
     updated = 0
     for row in suppliers:
         cur.execute("UPDATE Supplier SET Lat=?, Lng=? WHERE Id=?", (row["lat"], row["lng"], row["id"]))
