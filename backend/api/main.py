@@ -74,6 +74,119 @@ class RecommendRequest(BaseModel):
         return v
 
 
+def _clamp01(value: float) -> float:
+    if value < 0:
+        return 0.0
+    if value > 1:
+        return 1.0
+    return value
+
+
+def _build_opportunity_item(
+    raw_material: dict,
+    recommendation: dict,
+    include_explanation: bool,
+) -> dict | None:
+    substitutes = recommendation.get("substitutes") or []
+    if len(substitutes) == 0:
+        return None
+
+    top = substitutes[0]
+    original = recommendation.get("original") or {}
+
+    combined_score = top.get("combined_score")
+    confidence_score = top.get("confidence")
+    similarity_score = top.get("similarity")
+
+    if isinstance(combined_score, (int, float)):
+        confidence = _clamp01(float(combined_score))
+    elif isinstance(confidence_score, (int, float)):
+        confidence = _clamp01(float(confidence_score))
+    elif isinstance(similarity_score, (int, float)):
+        confidence = _clamp01(float(similarity_score))
+    else:
+        confidence = 0.0
+
+    current_suppliers = original.get("current_suppliers")
+    if isinstance(current_suppliers, list) and len(current_suppliers) > 0:
+        current_supplier = str(current_suppliers[0])
+    else:
+        current_supplier = "Unknown"
+
+    is_single_source = bool(original.get("single_source_risk"))
+    top_compliance = bool(top.get("compliance"))
+    if is_single_source:
+        risk = "High (single source)"
+    elif top_compliance:
+        risk = "Moderate"
+    else:
+        risk = "Compliance review"
+
+    company_name = str(raw_material.get("companyName") or "Unknown")
+    used_in_products = int(raw_material.get("usedInProducts") or 0)
+    brand_display = (
+        f"{company_name}+{used_in_products - 1}"
+        if used_in_products > 1
+        else company_name
+    )
+
+    explanation = recommendation.get("explanation") if include_explanation else None
+    sourcing_actions = recommendation.get("sourcing_actions") or []
+
+    return {
+        "id": str(raw_material["id"]),
+        "rawMaterialId": int(raw_material["id"]),
+        "rawMaterialSku": str(raw_material["sku"]),
+        "confidence": confidence,
+        "ingredientName": str(original.get("name") or raw_material["sku"]),
+        "brandsDisplay": brand_display,
+        "currentSupplier": current_supplier,
+        "altSupplier": str(top.get("name") or "Unknown"),
+        "risk": risk,
+        "brandKey": company_name,
+        "category": str(original.get("functional_class") or "Unclassified"),
+        "supplierKey": current_supplier,
+        "status": "open" if is_single_source else "in_review",
+        "matchReasoning": [
+            {
+                "label": "Similarity",
+                "detail": f"{round(_clamp01(float(similarity_score or 0.0)) * 100)}%",
+            },
+            {
+                "label": "Functional fit",
+                "detail": f"{round(_clamp01(float(top.get('functional_fit') or 0.0)) * 100)}%",
+            },
+            {
+                "label": "Compliance",
+                "detail": "Pass" if top_compliance else "Review required",
+            },
+        ],
+        "brandsAffected": [
+            {
+                "name": company_name,
+                "productCount": used_in_products,
+            }
+        ],
+        "consolidation": {
+            "via": f"Primary alternative: {str(top.get('name') or 'Unknown')}",
+            "combinedVolume": (
+                f"Used in {used_in_products} finished product"
+                if used_in_products == 1
+                else f"Used in {used_in_products} finished products"
+            ),
+            "estimatedSavings": (
+                f"CO2 delta: {float(top.get('co2_vs_original')):+.2f} kg/kg"
+                if isinstance(top.get("co2_vs_original"), (int, float))
+                else "Savings estimate pending"
+            ),
+            "supplierRisk": risk,
+        },
+        "explanation": explanation,
+        "sourcingActions": sourcing_actions,
+        "substitutes": substitutes,
+    }
+
+
 @app.get("/")
 def root():
     return {"service": "Agnes", "status": "ok", "index_ready": collection_exists()}
@@ -160,6 +273,58 @@ def recommend(req: RecommendRequest):
         result["evidence_trail"] = []
 
     return result
+
+
+@app.get("/opportunities", dependencies=[_auth])
+def opportunities(
+    scope_company_id: int | None = Query(default=None),
+    raw_material_id: int | None = Query(default=None),
+    limit: int = Query(default=18, ge=1, le=100),
+    top_k: int = Query(default=3, ge=1, le=10),
+    explain: bool = Query(default=False),
+):
+    materials = get_raw_materials(scope_company_id=scope_company_id)
+
+    if raw_material_id is not None:
+        materials = [m for m in materials if int(m.get("id", -1)) == raw_material_id]
+    else:
+        materials = sorted(
+            materials,
+            key=lambda m: (
+                int(m.get("supplierCount", 0)),
+                -int(m.get("usedInProducts", 0)),
+            ),
+        )[:limit]
+
+    items = []
+    for material in materials:
+        rec = find_substitutes(str(material["sku"]), top_k=top_k)
+        if "error" in rec:
+            continue
+
+        if explain:
+            substitutes = rec.get("substitutes") or []
+            if len(substitutes) > 0:
+                top = substitutes[0]
+                rec["explanation"] = explain_substitution(
+                    rec.get("original") or {},
+                    top,
+                    top.get("violations") or [],
+                )
+
+        item = _build_opportunity_item(
+            raw_material=material,
+            recommendation=rec,
+            include_explanation=explain,
+        )
+        if item is not None:
+            items.append(item)
+
+    items.sort(key=lambda row: float(row["confidence"]), reverse=True)
+    return {
+        "items": items,
+        "count": len(items),
+    }
 
 
 @app.get("/consolidate/{functional_class}", dependencies=[_auth])
