@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Blend of botanical extracts and nutrients formulated to support energy metabolism and vitality in food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

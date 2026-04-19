@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Branched-chain amino acids (leucine, isoleucine, valine) are essential amino acids added to nutrition products to support muscle protein synthesis and recovery.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

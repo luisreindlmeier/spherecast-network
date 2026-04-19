@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Provides a bioavailable source of magnesium to fortify foods and beverages and support bodily functions.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

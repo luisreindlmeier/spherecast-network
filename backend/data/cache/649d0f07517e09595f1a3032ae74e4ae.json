@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Provides DHA, an omega-3 fatty acid essential for supporting brain and eye health in fortified foods.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

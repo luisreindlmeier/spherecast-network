@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Plantgel capsules are plant-derived capsule shells used to encapsulate dietary supplements, providing a vegetarian alternative to gelatin.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

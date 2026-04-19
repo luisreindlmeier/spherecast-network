@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Manganese chelate is a bioavailable form of the essential trace mineral manganese used to fortify foods and supplements.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

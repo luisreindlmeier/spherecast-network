@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "A blend of naturally derived extracts and essences used to impart or enhance flavor in food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Chelated boron compound used to deliver the trace mineral boron in a more bioavailable form.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Imparts natural cherry aroma and taste to food and beverage products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

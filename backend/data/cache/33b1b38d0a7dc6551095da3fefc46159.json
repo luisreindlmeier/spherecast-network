@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Chloride provides essential mineral ions that support electrolyte balance and can contribute to flavor and preservation in food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

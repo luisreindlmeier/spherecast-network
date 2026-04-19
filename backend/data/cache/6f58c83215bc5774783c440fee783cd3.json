@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Serves as a source of the trace mineral vanadium in nutritional supplements or fortified foods.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

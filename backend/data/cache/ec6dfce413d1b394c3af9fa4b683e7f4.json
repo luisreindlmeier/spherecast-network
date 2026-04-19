@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Vitamin A acetate is a stable form of vitamin A used to fortify foods and supply essential vitamin A activity for growth and vision.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

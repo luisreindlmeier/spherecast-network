@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Provides intense sweetness to foods and beverages without adding significant calories",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

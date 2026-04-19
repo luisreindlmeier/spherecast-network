@@ -8,8 +8,6 @@
   "e_number": "E441",
   "description": "Provides gelling properties to form a chewy, elastic texture in gummy candies",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

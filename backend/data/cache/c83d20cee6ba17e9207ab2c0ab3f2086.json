@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Sodium selenite is used as a trace mineral fortificant to provide dietary selenium in food products",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

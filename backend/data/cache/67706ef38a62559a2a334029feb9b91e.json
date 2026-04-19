@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "A nutrient-rich solution used to cultivate microorganisms during fermentation in food production",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

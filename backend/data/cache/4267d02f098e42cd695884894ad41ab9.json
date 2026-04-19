@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Organic vanilla flavors are used to impart natural vanilla aroma and taste to food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

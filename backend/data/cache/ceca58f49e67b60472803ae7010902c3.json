@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Bovine gelatin acts as a gelling and stabilizing agent to provide structure and consistency in soft gel capsules.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Concentrated mixtures of food-grade colorants used to impart desired hues to various food products",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

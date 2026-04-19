@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Chromium picolinate is a mineral nutrient used to fortify foods or dietary supplements with bioavailable chromium to support glucose metabolism and macronutrient utilization.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

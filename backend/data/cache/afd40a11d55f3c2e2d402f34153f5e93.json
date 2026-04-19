@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "A yeast-derived postbiotic ingredient that provides nutritional support and immune health benefits in food products",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Provides vitamins, minerals, and dietary fiber as a plant-based nutrient supplement.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

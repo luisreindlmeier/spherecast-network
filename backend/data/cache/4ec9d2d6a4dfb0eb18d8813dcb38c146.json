@@ -8,8 +8,6 @@
   "e_number": "E414",
   "description": "Organic gum acacia serves as a natural thickener and stabilizer, enhancing viscosity and texture in food formulations.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

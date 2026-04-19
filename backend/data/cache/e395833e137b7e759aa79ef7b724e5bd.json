@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "A blend of food-grade acid and bicarbonate base that reacts upon hydration to produce carbon dioxide for effervescence in beverages and tablets.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Digestive enzymes accelerate the hydrolysis of proteins, carbohydrates, and fats in food products to aid digestion and improve nutrient bioavailability.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Organic pomegranate juice powder delivers natural fruit flavor, color, and antioxidant benefits in food formulations.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

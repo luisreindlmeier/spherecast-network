@@ -8,11 +8,7 @@
   "e_number": "E530",
   "description": "Serves as a source of dietary magnesium and functions as an anti-caking agent in food products.",
   "raw_text": "Labels: en:no-gmos, en:non-gmo-project | Labels: en:no-gmos, en:non-gmo-project",
-  "sources": [
-    "openfoodfacts_search"
-  ],
+  "sources": ["openfoodfacts_search"],
   "confidence": 0.9,
-  "synonyms": [
-    "mag oxide"
-  ]
+  "synonyms": ["mag oxide"]
 }

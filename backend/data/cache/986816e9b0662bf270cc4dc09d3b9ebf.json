@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Imparts natural lemon-lime aroma and taste to enhance the flavor profile of the product",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

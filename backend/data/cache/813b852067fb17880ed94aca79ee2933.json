@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Methylcobalamin is a bioactive form of vitamin B12 used to fortify foods with essential B12 for energy metabolism and nervous system support.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

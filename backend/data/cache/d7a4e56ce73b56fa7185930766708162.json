@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "A chelated magnesium compound used to fortify foods and supplements with bioavailable magnesium.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

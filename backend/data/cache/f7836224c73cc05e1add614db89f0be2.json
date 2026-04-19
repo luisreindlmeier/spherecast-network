@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "A plant-derived capsule shell used to encapsulate active ingredients and provide a vegan-friendly delivery format for supplements and food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

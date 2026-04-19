@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Blend of nutrients supplied to support microbial or probiotic growth during fermentation in food and beverage processing",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

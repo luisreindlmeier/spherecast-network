@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Chromium chloride serves as a source of the trace mineral chromium for nutritional fortification in food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

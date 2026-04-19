@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Organic flavor is used to impart or enhance natural taste characteristics in food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

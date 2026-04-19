@@ -8,8 +8,6 @@
   "e_number": "E671",
   "description": "Cholecalciferol (vitamin D3) is used to fortify foods with vitamin D, supporting calcium absorption and bone health.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

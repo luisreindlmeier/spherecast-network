@@ -8,8 +8,6 @@
   "e_number": "E441",
   "description": "Gelatin capsules serve as edible shells to encapsulate and deliver active ingredients in a product.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

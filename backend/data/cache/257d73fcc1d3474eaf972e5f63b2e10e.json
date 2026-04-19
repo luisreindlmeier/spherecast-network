@@ -8,13 +8,7 @@
   "e_number": "E375",
   "description": "Niacinamide is used to fortify foods with vitamin B3, helping to maintain nutritional value.",
   "raw_text": "Labels: en:vegetarian, en:vegan",
-  "sources": [
-    "openfoodfacts_search"
-  ],
+  "sources": ["openfoodfacts_search"],
   "confidence": 0.8,
-  "synonyms": [
-    "nicotinamide",
-    "niacin",
-    "vitamin b3"
-  ]
+  "synonyms": ["nicotinamide", "niacin", "vitamin b3"]
 }

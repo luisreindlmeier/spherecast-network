@@ -8,8 +8,6 @@
   "e_number": "E472a",
   "description": "Vegetable acetoglycerides are acetylated mono- and diglycerides derived from vegetable oils used as emulsifiers to stabilize fat–water mixtures in food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

@@ -8,8 +8,6 @@
   "e_number": "E464",
   "description": "A plant-derived cellulose polymer used to form stable, vegetarian capsule shells for supplements or pharmaceuticals.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

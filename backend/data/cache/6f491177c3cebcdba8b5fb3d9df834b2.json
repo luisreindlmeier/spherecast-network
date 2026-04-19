@@ -8,8 +8,6 @@
   "e_number": "E110",
   "description": "A synthetic orange-yellow food colorant in its lake form used to impart or enhance color in food products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

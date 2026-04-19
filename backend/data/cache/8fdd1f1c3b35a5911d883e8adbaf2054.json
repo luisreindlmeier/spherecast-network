@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Chelated form of magnesium used as a mineral supplement to fortify foods or beverages with bioavailable magnesium.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }

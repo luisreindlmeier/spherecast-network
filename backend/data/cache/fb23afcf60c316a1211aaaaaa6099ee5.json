@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "A blend of vitamins, minerals, amino acids, and other compounds formulated to support physical performance, endurance, and recovery in food or supplement products.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.5
 }

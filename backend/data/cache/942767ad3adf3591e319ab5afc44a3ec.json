@@ -8,8 +8,6 @@
   "e_number": null,
   "description": "Provides a bioavailable complex of boron and calcium for nutritional fortification in functional foods and dietary supplements.",
   "raw_text": "",
-  "sources": [
-    "llm_knowledge"
-  ],
+  "sources": ["llm_knowledge"],
   "confidence": 0.6
 }
