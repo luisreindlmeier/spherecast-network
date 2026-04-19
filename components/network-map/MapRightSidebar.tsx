@@ -16,8 +16,8 @@ const SupplierNetworkMap = dynamic(
   }
 )
 
-const IngredientSimilarityPlot = dynamic(
-  () => import('@/components/similarity-map/IngredientSimilarityPlot'),
+const SimilarityMapTaskpane = dynamic(
+  () => import('@/components/similarity-map/SimilarityMapTaskpane'),
   {
     ssr: false,
     loading: () => (
@@ -123,11 +123,10 @@ export default function MapRightSidebar() {
                 <SupplierNetworkMap
                   key={companyId ?? 'all'}
                   companyId={companyId}
+                  variant="taskpane"
                 />
               ) : (
-                <div className="map-right-sidebar-similarity">
-                  <IngredientSimilarityPlot key={companyId ?? 'all'} />
-                </div>
+                <SimilarityMapTaskpane key={companyId ?? 'all'} />
               )}
             </>
           ) : null}

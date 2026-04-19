@@ -4,30 +4,58 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import {
-  DEMO_OPPORTUNITIES,
-  OPPORTUNITY_BRAND_FILTERS,
-  OPPORTUNITY_CATEGORY_FILTERS,
-  OPPORTUNITY_STATUS_FILTERS,
-  OPPORTUNITY_SUPPLIER_FILTERS,
   type OpportunityRow,
   type OpportunityStatus,
-} from '@/lib/opportunities-demo-data'
+} from '@/lib/agnes-queries'
 
-type MinConf = 'all' | '0.7' | '0.8' | '0.9'
+type OpportunitiesWorkspaceProps = {
+  rows: OpportunityRow[]
+}
+
+const STATUS_OPTIONS: { value: OpportunityStatus | 'all'; label: string }[] = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'open', label: 'Open' },
+  { value: 'in_review', label: 'In review' },
+]
+
+type MinConf = 'all' | '0.5' | '0.7' | '0.8' | '0.9'
 
 const MIN_CONF_OPTIONS: { value: MinConf; label: string }[] = [
   { value: 'all', label: 'All levels' },
   { value: '0.9', label: '90%+' },
   { value: '0.8', label: '80%+' },
   { value: '0.7', label: '70%+' },
+  { value: '0.5', label: '50%+' },
 ]
+
+function withAll(values: string[]): string[] {
+  return ['All', ...values]
+}
+
+function toUniqueSorted(values: string[]): string[] {
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b))
+}
 
 function formatPct(conf: number): string {
   return `${Math.round(conf * 100)}%`
 }
 
-export default function OpportunitiesWorkspace() {
+export default function OpportunitiesWorkspace({ rows }: OpportunitiesWorkspaceProps) {
   const router = useRouter()
+
+  const brandOptions = useMemo(
+    () => withAll(toUniqueSorted(rows.map((row) => row.brandKey))),
+    [rows]
+  )
+  const categoryOptions = useMemo(
+    () => withAll(toUniqueSorted(rows.map((row) => row.category))),
+    [rows]
+  )
+  const supplierOptions = useMemo(
+    () => withAll(toUniqueSorted(rows.map((row) => row.supplierKey))),
+    [rows]
+  )
+
   const [brand, setBrand] = useState<string>('All')
   const [category, setCategory] = useState<string>('All')
   const [minConf, setMinConf] = useState<MinConf>('all')
@@ -35,18 +63,20 @@ export default function OpportunitiesWorkspace() {
   const [status, setStatus] = useState<OpportunityStatus | 'all'>('all')
 
   const filtered = useMemo(() => {
-    return DEMO_OPPORTUNITIES.filter((row) => {
-      if (brand !== 'All' && row.brandKey !== brand) return false
-      if (category !== 'All' && row.category !== category) return false
-      if (status !== 'all' && row.status !== status) return false
-      if (supplier !== 'All' && row.supplierKey !== supplier) return false
-      if (minConf !== 'all') {
-        const floor = Number(minConf)
-        if (row.confidence < floor) return false
-      }
-      return true
-    }).sort((a, b) => b.confidence - a.confidence)
-  }, [brand, category, minConf, supplier, status])
+    return rows
+      .filter((row) => {
+        if (brand !== 'All' && row.brandKey !== brand) return false
+        if (category !== 'All' && row.category !== category) return false
+        if (status !== 'all' && row.status !== status) return false
+        if (supplier !== 'All' && row.supplierKey !== supplier) return false
+        if (minConf !== 'all') {
+          const floor = Number(minConf)
+          if (row.confidence < floor) return false
+        }
+        return true
+      })
+      .sort((a, b) => b.confidence - a.confidence)
+  }, [rows, brand, category, minConf, supplier, status])
 
   return (
     <div className="opportunities-workspace">
@@ -59,7 +89,7 @@ export default function OpportunitiesWorkspace() {
             onChange={(e) => setBrand(e.target.value)}
             aria-label="Filter by brand"
           >
-            {OPPORTUNITY_BRAND_FILTERS.map((b) => (
+            {brandOptions.map((b) => (
               <option key={b} value={b}>
                 {b === 'All' ? 'All brands' : b}
               </option>
@@ -74,7 +104,7 @@ export default function OpportunitiesWorkspace() {
             onChange={(e) => setCategory(e.target.value)}
             aria-label="Filter by category"
           >
-            {OPPORTUNITY_CATEGORY_FILTERS.map((c) => (
+            {categoryOptions.map((c) => (
               <option key={c} value={c}>
                 {c === 'All' ? 'All categories' : c}
               </option>
@@ -104,7 +134,7 @@ export default function OpportunitiesWorkspace() {
             onChange={(e) => setSupplier(e.target.value)}
             aria-label="Filter by supplier"
           >
-            {OPPORTUNITY_SUPPLIER_FILTERS.map((s) => (
+            {supplierOptions.map((s) => (
               <option key={s} value={s}>
                 {s === 'All' ? 'All suppliers' : s}
               </option>
@@ -121,7 +151,7 @@ export default function OpportunitiesWorkspace() {
             }
             aria-label="Filter by status"
           >
-            {OPPORTUNITY_STATUS_FILTERS.map((s) => (
+            {STATUS_OPTIONS.map((s) => (
               <option key={s.value} value={s.value}>
                 {s.label}
               </option>

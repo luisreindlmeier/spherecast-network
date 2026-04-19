@@ -12,7 +12,10 @@ export default function PlaceholderSection({
   icon,
 }: PlaceholderSectionProps) {
   return (
-    <div className="placeholder-section">
+    <div
+      className="placeholder-section hardcoded-zone"
+      data-hardcoded-label="HARDCODED COMING SOON"
+    >
       <div className="placeholder-section-header">
         {icon && <span className="placeholder-section-icon">{icon}</span>}
         <span className="placeholder-section-title">{title}</span>

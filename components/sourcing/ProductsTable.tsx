@@ -57,7 +57,7 @@ export default function ProductsTable({ rows }: Props) {
                 {row.sku}
               </Link>
               <Link
-                href={`/companies/${row.company_id}`}
+                href={`/companies/${row.companyId}`}
                 className="data-name detail-link"
                 onClick={(e) => e.stopPropagation()}
               >

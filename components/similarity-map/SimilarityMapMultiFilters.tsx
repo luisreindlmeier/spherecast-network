@@ -25,11 +25,13 @@ function MultiDropdown({
   ariaLabel,
   summary,
   contentClassName,
+  dropdownAlign = 'end',
   children,
 }: {
   ariaLabel: string
   summary: string
   contentClassName?: string
+  dropdownAlign?: 'start' | 'end'
   children: ReactNode
 }) {
   return (
@@ -59,7 +61,7 @@ function MultiDropdown({
               .filter(Boolean)
               .join(' ')}
             sideOffset={4}
-            align="end"
+            align={dropdownAlign}
           >
             {children}
           </DropdownMenu.Content>
@@ -70,6 +72,8 @@ function MultiDropdown({
 }
 
 type Props = {
+  className?: string
+  dropdownAlign?: 'start' | 'end'
   points: readonly SimilarityPoint[]
   selectedCategories: readonly IngredientCategory[]
   selectedSuppliers: readonly string[]
@@ -78,6 +82,8 @@ type Props = {
 }
 
 export default function SimilarityMapMultiFilters({
+  className,
+  dropdownAlign = 'end',
   points,
   selectedCategories,
   selectedSuppliers,
@@ -117,13 +123,19 @@ export default function SimilarityMapMultiFilters({
 
   return (
     <div
-      className="similarity-map-multi-filters"
+      className={['similarity-map-multi-filters', className]
+        .filter(Boolean)
+        .join(' ')}
       role="toolbar"
       aria-label="Map filters"
     >
       <div className="opportunities-filter">
         <span className="opportunities-filter-label">Category</span>
-        <MultiDropdown ariaLabel="Kategorien filtern" summary={categorySummary}>
+        <MultiDropdown
+          ariaLabel="Kategorien filtern"
+          summary={categorySummary}
+          dropdownAlign={dropdownAlign}
+        >
           {CATEGORY_ORDER.map((cat) => (
             <DropdownMenu.CheckboxItem
               key={cat}
@@ -159,6 +171,7 @@ export default function SimilarityMapMultiFilters({
           ariaLabel="Lieferanten filtern"
           summary={supplierSummary}
           contentClassName="similarity-map-multi-filter-content--scroll"
+          dropdownAlign={dropdownAlign}
         >
           {supplierNames.map((name) => (
             <DropdownMenu.CheckboxItem

@@ -3,11 +3,30 @@ import CockpitPreviewMaps from '@/components/cockpit/CockpitPreviewMaps'
 import CockpitOpportunityFeed from '@/components/cockpit/CockpitOpportunityFeed'
 import PageHeader from '@/components/layout/PageHeader'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { getCockpitStats } from '@/lib/agnes-queries'
+import { getCockpitStats, getOpportunities } from '@/lib/agnes-queries'
 
 export default async function CockpitPage() {
   const scope = await resolveCompanyScopeFilter()
-  const stats = await getCockpitStats(scope)
+  const [stats, opportunities] = await Promise.all([
+    getCockpitStats(scope).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`[cockpit-page] stats fallback: ${message}`)
+      return { finishedGoods: 0, rawMaterials: 0, suppliers: 0, companies: 0 }
+    }),
+    getOpportunities(scope).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`[cockpit-page] opportunities fallback: ${message}`)
+      return []
+    }),
+  ])
+
+  const openCount = opportunities.filter((row) => row.status === 'open').length
+  const inReviewCount = opportunities.filter(
+    (row) => row.status === 'in_review'
+  ).length
+  const withCo2Signal = opportunities.filter((row) =>
+    row.consolidation.estimatedSavings.includes('CO2 delta:')
+  ).length
 
   return (
     <>
@@ -30,18 +49,20 @@ export default async function CockpitPage() {
       <div className="stat-row">
         <div className="stat-card">
           <div className="stat-label">Open opportunities</div>
-          <div className="stat-value">23</div>
-          <div className="stat-delta stat-delta-positive">↑ 3 new</div>
+          <div className="stat-value">{openCount}</div>
+          <div className="stat-delta stat-delta-positive">
+            {opportunities.length} ranked in scope
+          </div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Verified</div>
-          <div className="stat-value">8</div>
-          <div className="stat-delta">Ready to act</div>
+          <div className="stat-value">{inReviewCount}</div>
+          <div className="stat-delta">In review</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Est. savings</div>
-          <div className="stat-value">$2.4M/yr</div>
-          <div className="stat-delta">Est.</div>
+          <div className="stat-label">Impact signal</div>
+          <div className="stat-value">{withCo2Signal}</div>
+          <div className="stat-delta">Rows with CO2 delta</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Network</div>
@@ -51,8 +72,8 @@ export default async function CockpitPage() {
       </div>
 
       <div className="cockpit-mid-grid">
-        <CockpitOpportunityFeed />
-        <CockpitAgentPanel />
+        <CockpitOpportunityFeed rows={opportunities} />
+        <CockpitAgentPanel rows={opportunities} />
       </div>
 
       <section

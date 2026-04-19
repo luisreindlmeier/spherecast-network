@@ -1,4 +1,16 @@
-export default function CockpitAgentPanel() {
+import type { OpportunityRow } from '@/lib/agnes-queries'
+
+type CockpitAgentPanelProps = {
+  rows: OpportunityRow[]
+}
+
+function toTaskLabel(row: OpportunityRow): string {
+  return `Evaluating ${row.ingredientName} via ${row.altSupplier}`
+}
+
+export default function CockpitAgentPanel({ rows }: CockpitAgentPanelProps) {
+  const tasks = rows.slice(0, 3)
+
   return (
     <section className="cockpit-panel" aria-labelledby="cockpit-agent-heading">
       <div className="cockpit-panel-header">
@@ -9,30 +21,29 @@ export default function CockpitAgentPanel() {
       </div>
       <div className="cockpit-panel-body">
         <ul className="cockpit-agent-list">
-          <li className="cockpit-agent-task">
-            <span className="cockpit-agent-task-label">
-              Scraping iHerb FG-iherb-10421…
-            </span>
-            <span className="cockpit-agent-status cockpit-agent-status--active">
-              Active
-            </span>
-          </li>
-          <li className="cockpit-agent-task">
-            <span className="cockpit-agent-task-label">
-              Comparing Vitamin D3 specs…
-            </span>
-            <span className="cockpit-agent-status cockpit-agent-status--active">
-              Active
-            </span>
-          </li>
-          <li className="cockpit-agent-task">
-            <span className="cockpit-agent-task-label">
-              FDA lookup Jost Chemical…
-            </span>
-            <span className="cockpit-agent-status cockpit-agent-status--done">
-              Done ✓
-            </span>
-          </li>
+          {tasks.length === 0 ? (
+            <li className="cockpit-agent-task">
+              <span className="cockpit-agent-task-label">
+                No active recommendation jobs in this scope.
+              </span>
+              <span className="cockpit-agent-status cockpit-agent-status--done">
+                Idle
+              </span>
+            </li>
+          ) : (
+            tasks.map((row, index) => (
+              <li key={row.id} className="cockpit-agent-task">
+                <span className="cockpit-agent-task-label">
+                  {toTaskLabel(row)}
+                </span>
+                <span
+                  className={`cockpit-agent-status ${index < 2 ? 'cockpit-agent-status--active' : 'cockpit-agent-status--done'}`}
+                >
+                  {index < 2 ? 'Active' : 'Queued'}
+                </span>
+              </li>
+            ))
+          )}
         </ul>
       </div>
     </section>
