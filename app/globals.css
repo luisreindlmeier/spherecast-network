@@ -3055,6 +3055,8 @@ textarea {
 }
 
 /* ── Substitute comparison ───────────────────────────────── */
+
+/* Scope chips below page title */
 .substitute-scope-chips {
   display: flex;
   gap: 8px;
@@ -3072,9 +3074,9 @@ textarea {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  background: var(--accent-soft);
-  border: 1px solid var(--accent-border);
-  color: var(--accent);
+  background: color-mix(in srgb, var(--accent-orange) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-orange) 32%, transparent);
+  color: var(--accent-orange);
 }
 
 .substitute-chip-rec {
@@ -3086,15 +3088,15 @@ textarea {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  background: color-mix(in srgb, var(--accent-green) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent-green) 36%, transparent);
+  background: color-mix(in srgb, var(--accent-green) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-green) 32%, transparent);
   color: var(--accent-green);
   text-decoration: none;
   transition: background 0.15s;
 }
 
 .substitute-chip-rec:hover {
-  background: color-mix(in srgb, var(--accent-green) 22%, transparent);
+  background: color-mix(in srgb, var(--accent-green) 20%, transparent);
 }
 
 .substitute-chip-optimal {
@@ -3106,8 +3108,8 @@ textarea {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  background: color-mix(in srgb, var(--accent-green) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent-green) 36%, transparent);
+  background: color-mix(in srgb, var(--accent-green) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-green) 32%, transparent);
   color: var(--accent-green);
 }
 
@@ -3119,8 +3121,8 @@ textarea {
   padding: 16px 20px;
   border-radius: 10px;
   background: color-mix(in srgb, var(--accent-green) 8%, var(--bg-elevated));
-  border: 1px solid color-mix(in srgb, var(--accent-green) 28%, transparent);
-  margin-top: 24px;
+  border: 1px solid color-mix(in srgb, var(--accent-green) 22%, transparent);
+  margin-top: 32px;
 }
 
 .substitute-optimal-icon {
@@ -3142,18 +3144,13 @@ textarea {
   line-height: 1.5;
 }
 
-/* Comparison root */
+/* ── Comparison root — open table, no surrounding box ── */
 .substitute-cmp-root {
-  margin-top: 24px;
-  border: 1px solid var(--border-strong);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--bg-elevated);
+  margin-top: 40px;
 }
 
 .substitute-cmp-header {
-  padding: 16px 20px 14px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
 }
 
 .substitute-cmp-header-label {
@@ -3162,7 +3159,7 @@ textarea {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .substitute-cmp-sub-link-row {
@@ -3176,7 +3173,7 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--accent-green);
   text-decoration: none;
@@ -3187,7 +3184,7 @@ textarea {
 }
 
 .substitute-cmp-sub-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -3199,54 +3196,118 @@ textarea {
 .substitute-cmp-explanation {
   font-size: 12px;
   color: var(--text-secondary);
-  line-height: 1.55;
+  line-height: 1.6;
   margin-top: 8px;
+  max-width: 72ch;
 }
 
-/* Table */
+/* Open table grid — 3 columns: label | current | recommended */
 .substitute-cmp-table {
   width: 100%;
 }
 
-.substitute-cmp-thead {
+.substitute-cmp-thead,
+.substitute-cmp-row {
   display: grid;
-  grid-template-columns: 1fr 120px 140px;
-  padding: 6px 20px;
-  border-bottom: 1px solid var(--border);
+  grid-template-columns: 1fr 160px 180px;
+  align-items: center;
+}
+
+/* Header row */
+.substitute-cmp-thead {
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .substitute-cmp-th {
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--text-muted);
-  text-align: left;
+  padding: 0 12px 0 0;
 }
 
+.substitute-cmp-th-area {
+  padding-left: 0;
+}
+
+/* "Current" column header — orange accent */
+.substitute-cmp-th-current {
+  color: var(--accent-orange);
+  padding-left: 16px;
+  border-left: 2px solid
+    color-mix(in srgb, var(--accent-orange) 28%, transparent);
+}
+
+/* "Recommended" column header — green dashed top + sides start */
 .substitute-cmp-th-rec {
   color: var(--accent-green);
+  padding-left: 16px;
+  border-left: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-right: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-top: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-radius: 6px 6px 0 0;
+  padding-top: 6px;
+  background: color-mix(in srgb, var(--accent-green) 5%, transparent);
 }
 
+/* Data rows */
 .substitute-cmp-row {
-  display: grid;
-  grid-template-columns: 1fr 120px 140px;
-  padding: 7px 20px;
   border-bottom: 1px solid var(--border);
-  align-items: center;
+  min-height: 40px;
 }
 
 .substitute-cmp-row:last-child {
   border-bottom: none;
 }
 
-.substitute-cmp-row:hover {
-  background: var(--bg-hover);
-}
-
 .substitute-cmp-td-label {
   font-size: 12px;
+  font-weight: 500;
   color: var(--text-secondary);
+  padding: 10px 0;
+}
+
+/* Current column cells — subtle orange left accent */
+.substitute-cmp-col-current {
+  padding: 10px 12px 10px 16px;
+  border-left: 2px solid
+    color-mix(in srgb, var(--accent-orange) 20%, transparent);
+  background: color-mix(in srgb, var(--accent-orange) 3%, transparent);
+}
+
+/* Recommended column cells — green dashed sides */
+.substitute-cmp-col-rec {
+  padding: 10px 12px 10px 16px;
+  border-left: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-right: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  background: color-mix(in srgb, var(--accent-green) 5%, transparent);
+}
+
+/* Last row closes the dashed box */
+.substitute-cmp-col-rec-last {
+  border-bottom: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-radius: 0 0 6px 6px;
+}
+
+/* Also close header top (first in thead) */
+.substitute-cmp-col-rec-first {
+  border-top: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-left: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-right: 1px dashed
+    color-mix(in srgb, var(--accent-green) 38%, transparent);
+  border-radius: 6px 6px 0 0;
+  background: color-mix(in srgb, var(--accent-green) 5%, transparent);
 }
 
 .substitute-cmp-td {
@@ -3256,18 +3317,13 @@ textarea {
   color: var(--text-primary);
 }
 
-.substitute-cmp-td-highlight {
-  color: var(--accent-green);
-}
-
+/* Value styles */
 .substitute-cmp-icon-yes {
   color: var(--accent-green);
 }
-
 .substitute-cmp-icon-no {
   color: var(--accent-red);
 }
-
 .substitute-cmp-icon-neutral {
   color: var(--text-faint);
 }
@@ -3286,11 +3342,9 @@ textarea {
 .substitute-cmp-score-high {
   color: var(--accent-green);
 }
-
 .substitute-cmp-score-mid {
   color: var(--accent-yellow);
 }
-
 .substitute-cmp-score-low {
   color: var(--accent-red);
 }
@@ -3316,9 +3370,10 @@ textarea {
   color: var(--accent-red);
 }
 
-/* Sourcing actions */
+/* Sourcing actions below table */
 .substitute-cmp-actions {
-  padding: 14px 20px 16px;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--border);
 }
 

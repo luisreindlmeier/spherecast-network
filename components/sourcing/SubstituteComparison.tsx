@@ -30,13 +30,13 @@ function ScoreCell({
   value: number
   baseline?: boolean
 }) {
-  const pct = Math.round(value * 100)
   if (baseline)
     return (
       <span className="substitute-cmp-score substitute-cmp-score-baseline">
-        reference
+        —
       </span>
     )
+  const pct = Math.round(value * 100)
   const cls =
     pct >= 80
       ? 'substitute-cmp-score-high'
@@ -47,7 +47,7 @@ function ScoreCell({
 }
 
 function Co2Cell({ delta }: { delta: number | undefined }) {
-  if (delta === undefined || delta === null)
+  if (delta === undefined || delta === null || !Number.isFinite(delta))
     return <Minus size={14} className="substitute-cmp-icon-neutral" />
   if (Math.abs(delta) < 0.02)
     return (
@@ -84,7 +84,6 @@ interface Row {
   label: string
   current: React.ReactNode
   substitute: React.ReactNode
-  substituteHighlight?: boolean
 }
 
 interface Props {
@@ -109,19 +108,16 @@ export default function SubstituteComparison({
       label: 'Similarity Match',
       current: <ScoreCell value={1} baseline />,
       substitute: <ScoreCell value={sub.similarity} />,
-      substituteHighlight: sub.similarity >= 0.8,
     },
     {
       label: 'Functional Fit',
       current: <ScoreCell value={1} baseline />,
       substitute: <ScoreCell value={sub.functional_fit} />,
-      substituteHighlight: sub.functional_fit >= 0.8,
     },
     {
       label: 'Quality Score',
       current: <ScoreCell value={1} baseline />,
       substitute: <ScoreCell value={sub.combined_score} />,
-      substituteHighlight: sub.combined_score >= 0.7,
     },
     {
       label: 'Regulatory Compliance',
@@ -131,7 +127,6 @@ export default function SubstituteComparison({
       ) : (
         <XCircle size={14} className="substitute-cmp-icon-no" />
       ),
-      substituteHighlight: sub.compliance,
     },
     ...(sub.violations.length > 0
       ? [
@@ -205,13 +200,8 @@ export default function SubstituteComparison({
       substitute: (
         <span className="substitute-cmp-score">
           {sub.available_from.length}
-          {sub.available_from.length > material.suppliers.length && (
-            <span className="substitute-cmp-score-high"> ↑</span>
-          )}
         </span>
       ),
-      substituteHighlight:
-        sub.available_from.length > material.suppliers.length,
     },
     {
       label: 'CO₂ Impact',
@@ -221,8 +211,6 @@ export default function SubstituteComparison({
         </span>
       ),
       substitute: <Co2Cell delta={sub.co2_vs_original} />,
-      substituteHighlight:
-        sub.co2_vs_original !== undefined && sub.co2_vs_original < 0,
     },
   ]
 
@@ -245,10 +233,11 @@ export default function SubstituteComparison({
 
   return (
     <div className="substitute-cmp-root">
+      {/* Header */}
       <div className="substitute-cmp-header">
         <div className="substitute-cmp-header-label">Substitute Comparison</div>
         <div className="substitute-cmp-sub-link-row">
-          <span className="data-badge data-badge-muted">Recommended</span>
+          <span className="data-badge data-badge-green">Recommended</span>
           {substituteDetail ? (
             <Link
               href={`/raw-materials/${substituteDetail.id}`}
@@ -271,27 +260,38 @@ export default function SubstituteComparison({
         )}
       </div>
 
+      {/* Table */}
       <div className="substitute-cmp-table">
+        {/* Column header row */}
         <div className="substitute-cmp-thead">
-          <div className="substitute-cmp-th substitute-cmp-th-label" />
-          <div className="substitute-cmp-th">Current</div>
-          <div className="substitute-cmp-th substitute-cmp-th-rec">
+          <div className="substitute-cmp-th substitute-cmp-th-area" />
+          <div className="substitute-cmp-th substitute-cmp-th-current">
+            Current
+          </div>
+          <div className="substitute-cmp-th substitute-cmp-th-rec substitute-cmp-col-rec-first">
             Recommended ↑
           </div>
         </div>
-        {rows.map((row) => (
-          <div key={row.label} className="substitute-cmp-row">
-            <div className="substitute-cmp-td-label">{row.label}</div>
-            <div className="substitute-cmp-td">{row.current}</div>
-            <div
-              className={`substitute-cmp-td${row.substituteHighlight ? ' substitute-cmp-td-highlight' : ''}`}
-            >
-              {row.substitute}
+
+        {rows.map((row, i) => {
+          const isLast = i === rows.length - 1
+          return (
+            <div key={row.label} className="substitute-cmp-row">
+              <div className="substitute-cmp-td-label">{row.label}</div>
+              <div className="substitute-cmp-td substitute-cmp-col-current">
+                {row.current}
+              </div>
+              <div
+                className={`substitute-cmp-td substitute-cmp-col-rec${isLast ? ' substitute-cmp-col-rec-last' : ''}`}
+              >
+                {row.substitute}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
+      {/* Sourcing actions */}
       {opportunity.sourcingActions.length > 0 && (
         <div className="substitute-cmp-actions">
           <div className="substitute-cmp-actions-label">Sourcing Actions</div>
