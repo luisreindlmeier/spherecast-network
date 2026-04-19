@@ -33,9 +33,20 @@ export type AgnesCompany = {
   finishedGoods: number
   rawMaterials: number
 }
+export type AgnesCompanyProfile = {
+  type: string | null
+  hqCity: string | null
+  hqState: string | null
+  hqCountry: string | null
+  channels: string[]
+  revenueRange: string | null
+  foundedYear: number | null
+  certifications: string[]
+}
 export type AgnesCompanyDetail = {
   id: number
   name: string
+  profile: AgnesCompanyProfile
   finishedGoods: { id: number; sku: string; ingredientCount: number }[]
   rawMaterials: {
     id: number
@@ -91,6 +102,23 @@ export type AgnesRawMaterialDetail = AgnesRawMaterial & {
   profile: IngredientProfile
 }
 export type AgnesSupplier = { id: number; name: string; materialCount: number }
+export type AgnesSupplierFacility = {
+  id: number
+  name: string
+  address: string | null
+  city: string | null
+  state: string | null
+  country: string
+  fdaRegNumber: string | null
+  lat: number | null
+  lng: number | null
+}
+export type AgnesSupplierRating = {
+  rank: number
+  segment: string
+  revenueBn: string
+  certifications: string[]
+}
 export type AgnesSupplierDetail = {
   id: number
   name: string
@@ -99,16 +127,38 @@ export type AgnesSupplierDetail = {
   materials: {
     productId: number
     sku: string
+    ingredientName: string
     companyName: string
     usedInProducts: number
   }[]
   companies: { id: number; name: string; productCount: number }[]
+  facilities: AgnesSupplierFacility[]
+  rating: AgnesSupplierRating | null
 }
 export type AgnesStats = {
   finishedGoods: number
   rawMaterials: number
   suppliers: number
   companies: number
+}
+export type AgnesSupplierPerformance = {
+  onTimeRate: number
+  rejectionRate: number
+  avgLeadDays: number
+  lastAuditDate: string | null
+  auditScore: number
+  notes: string | null
+}
+export type AgnesAuditLogEntry = {
+  id: number
+  createdAt: string
+  entityType: string
+  entityId: string
+  entityLabel: string | null
+  action: string
+  reasoning: string | null
+  userId: string | null
+  scopeCompanyId: number | null
 }
 export type AgnesSearchItem = {
   kind: 'supplier' | 'company' | 'raw-material' | 'finished-good'
@@ -245,3 +295,27 @@ export const getOpportunities = (scopeCompanyId?: number, limit = 18) =>
     scope_company_id: scopeCompanyId,
     limit,
   })
+
+export const getSupplierPerformance = (supplierId: number) =>
+  get<AgnesSupplierPerformance>(`/suppliers/${supplierId}/performance`)
+
+export const getDecisions = (
+  scopeCompanyId?: number,
+  entityType?: string,
+  limit = 50
+) =>
+  get<AgnesAuditLogEntry[]>('/decisions', {
+    scope_company_id: scopeCompanyId,
+    entity_type: entityType,
+    limit,
+  })
+
+export const postDecision = (entry: {
+  entityType: string
+  entityId: string
+  entityLabel?: string
+  action: string
+  reasoning?: string
+  userId?: string
+  scopeCompanyId?: number
+}) => post<AgnesAuditLogEntry>('/decisions', entry)
