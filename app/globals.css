@@ -1722,6 +1722,17 @@ textarea {
   font-weight: 500;
   color: var(--text-primary);
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cockpit-opp-savings {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--accent-green, #4ade80);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
 
 .cockpit-opp-brands {
@@ -3519,6 +3530,13 @@ textarea {
   gap: 3px;
   font-size: 12px;
   color: var(--accent-red);
+}
+
+.substitute-cmp-savings-highlight {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-green, #4ade80);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Sourcing actions below table */

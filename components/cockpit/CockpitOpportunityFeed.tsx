@@ -3,6 +3,7 @@
 import { useMemo, useState, useCallback } from 'react'
 import type { OpportunityRow } from '@/lib/agnes-queries'
 import { postDecision } from '@/lib/agnes-client'
+import { estimateSavings, fmtSavingsRange } from '@/lib/savings-estimate'
 import { Mail, Clock } from 'lucide-react'
 
 type Confidence = 'high' | 'medium' | 'low'
@@ -141,6 +142,22 @@ export default function CockpitOpportunityFeed({
                   </span>
                   <span className="cockpit-opp-ingredient">
                     {row.ingredientName}
+                    {(() => {
+                      const est = estimateSavings(
+                        row.ingredientName,
+                        row.rawMaterialSku,
+                        row.category,
+                        row.confidence,
+                        row.brandsAffected
+                      )
+                      return (
+                        <span className="cockpit-opp-savings">
+                          {fmtSavingsRange(est.savingsLow, est.savingsHigh)}
+                          {' · '}
+                          {est.minOrderKg}kg+
+                        </span>
+                      )
+                    })()}
                   </span>
                   <span className="cockpit-opp-brands cockpit-opp-row-brands">
                     {row.brandsDisplay}
