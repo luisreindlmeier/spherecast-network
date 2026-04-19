@@ -331,8 +331,8 @@ def search(q: str = Query(default="", max_length=200), scope_company_id: int | N
 
 
 @app.get("/network-map", dependencies=[_auth])
-def network_map():
-    return get_network_map_data()
+def network_map(scope_company_id: int | None = Query(default=None)):
+    return get_network_map_data(scope_company_id=scope_company_id)
 
 
 @app.get("/similarity-map-data", dependencies=[_auth])

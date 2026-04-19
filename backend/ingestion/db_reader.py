@@ -461,11 +461,15 @@ def get_similarity_map_raw_data(path: str | Path | None = None, scope_company_id
     }
 
 
-def get_network_map_data(path: str | Path | None = None) -> dict:
+def get_network_map_data(path: str | Path | None = None, scope_company_id: int | None = None) -> dict:
     dfs = load_db(path)
 
+    companies_df = dfs["Company"]
+    if scope_company_id is not None:
+        companies_df = companies_df[companies_df["Id"] == scope_company_id]
+
     nodes = []
-    for _, co in dfs["Company"].iterrows():
+    for _, co in companies_df.iterrows():
         lat = co.get("Lat")
         lng = co.get("Lng")
         if lat is None or lng is None or pd.isna(lat) or pd.isna(lng):

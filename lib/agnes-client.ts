@@ -53,7 +53,7 @@ export const getCompanies = (scopeCompanyId?: number) =>
   get<AgnesCompany[]>('/companies', { scope_company_id: scopeCompanyId })
 
 export const getCompanyDetail = (id: number) =>
-  get<AgnesCompanyDetail>(`/companies/${id}/detail`)
+  get<AgnesCompanyDetail>(`/companies/${id}`)
 
 export const getProducts = (scopeCompanyId?: number) =>
   get<AgnesProduct[]>('/products', { scope_company_id: scopeCompanyId })
