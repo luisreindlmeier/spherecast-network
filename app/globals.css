@@ -1799,6 +1799,18 @@ textarea {
   color: var(--accent-green);
 }
 
+.cockpit-agent-status--pending {
+  color: var(--accent-yellow);
+}
+
+.cockpit-agent-status--rejected {
+  color: var(--text-muted);
+}
+
+.cockpit-agent-status--queued {
+  color: var(--text-muted);
+}
+
 .cockpit-map-section {
   margin-top: 4px;
 }

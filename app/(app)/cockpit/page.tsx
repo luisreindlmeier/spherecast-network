@@ -3,11 +3,15 @@ import CockpitPreviewMaps from '@/components/cockpit/CockpitPreviewMaps'
 import CockpitOpportunityFeed from '@/components/cockpit/CockpitOpportunityFeed'
 import PageHeader from '@/components/layout/PageHeader'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { getCockpitStats, getOpportunities } from '@/lib/agnes-queries'
+import {
+  getCockpitStats,
+  getOpportunities,
+  getAuditLog,
+} from '@/lib/agnes-queries'
 
 export default async function CockpitPage() {
   const scope = await resolveCompanyScopeFilter()
-  const [stats, opportunities] = await Promise.all([
+  const [stats, opportunities, recentDecisions] = await Promise.all([
     getCockpitStats(scope).catch((error) => {
       const message = error instanceof Error ? error.message : String(error)
       console.warn(`[cockpit-page] stats fallback: ${message}`)
@@ -18,6 +22,7 @@ export default async function CockpitPage() {
       console.warn(`[cockpit-page] opportunities fallback: ${message}`)
       return []
     }),
+    getAuditLog(scope, undefined, 5).catch(() => []),
   ])
 
   const openCount = opportunities.filter((row) => row.status === 'open').length
@@ -73,7 +78,10 @@ export default async function CockpitPage() {
 
       <div className="cockpit-mid-grid">
         <CockpitOpportunityFeed rows={opportunities} />
-        <CockpitAgentPanel rows={opportunities} />
+        <CockpitAgentPanel
+          rows={opportunities}
+          recentDecisions={recentDecisions}
+        />
       </div>
 
       <section
