@@ -1,6 +1,9 @@
-# Spherecast
+# Spherecast Network
 
-Monorepo for the **Spherecast** sourcing and network dashboard.
+Monorepo for the **Spherecast Network** sourcing and network dashboard.
+
+<img width="1700" height="884" alt="github-readme" src="https://github.com/user-attachments/assets/e3f16848-6b29-4c7a-88c3-8ac7f323d3a0" />
+
 
 | Area                    | Stack                                                                                                                                                                                                                               |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
