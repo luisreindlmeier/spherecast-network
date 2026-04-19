@@ -3,6 +3,7 @@ import AppTopNav from '@/components/layout/AppTopNav'
 import MapRightSidebar from '@/components/network-map/MapRightSidebar'
 import { MapSidebarProvider } from '@/components/network-map/map-sidebar-context'
 import { CompanyScopeProvider } from '@/lib/company-scope-context'
+import { MobileNavProvider } from '@/lib/mobile-nav-context'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
 import {
   getCompanyPickerList,
@@ -43,28 +44,30 @@ export default async function AppLayout({
       companies={pickerCompanies}
       initialCompanyId={scopeCompanyId}
     >
-      <MapSidebarProvider>
-        <div className="app-shell">
-          <Sidebar
-            productsBadge={counts.finishedGoods}
-            rawMaterialsBadge={counts.rawMaterials}
-            suppliersBadge={counts.suppliers}
-          />
-          <main className="app-main">
-            <div className="app-main-scroll app-main-chrome-bg">
-              <AppTopNav searchItems={searchItems} />
-              {!agnesAvailable ? (
-                <div className="app-data-source-banner" role="status">
-                  Agnes API offline. Showing fallback values until backend is
-                  reachable.
-                </div>
-              ) : null}
-              <div className="app-main-inner">{children}</div>
-            </div>
-            <MapRightSidebar />
-          </main>
-        </div>
-      </MapSidebarProvider>
+      <MobileNavProvider>
+        <MapSidebarProvider>
+          <div className="app-shell">
+            <Sidebar
+              productsBadge={counts.finishedGoods}
+              rawMaterialsBadge={counts.rawMaterials}
+              suppliersBadge={counts.suppliers}
+            />
+            <main className="app-main">
+              <div className="app-main-scroll app-main-chrome-bg">
+                <AppTopNav searchItems={searchItems} />
+                {!agnesAvailable ? (
+                  <div className="app-data-source-banner" role="status">
+                    Agnes API offline. Showing fallback values until backend is
+                    reachable.
+                  </div>
+                ) : null}
+                <div className="app-main-inner">{children}</div>
+              </div>
+              <MapRightSidebar />
+            </main>
+          </div>
+        </MapSidebarProvider>
+      </MobileNavProvider>
     </CompanyScopeProvider>
   )
 }

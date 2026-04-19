@@ -3031,6 +3031,140 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Mobile navigation ───────────────────────────────────── */
+
+/* Hamburger — hidden on desktop, visible on mobile */
+.app-top-nav-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.app-top-nav-hamburger:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Close button — hidden on desktop */
+.sidebar-mobile-close {
+  display: none;
+}
+
+/* Backdrop — only used on mobile */
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* Show hamburger */
+  .app-top-nav-hamburger {
+    display: flex;
+  }
+
+  /* Sidebar becomes a fixed off-canvas drawer */
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 200;
+    width: min(280px, 80vw);
+    transform: translateX(-100%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+  }
+
+  .sidebar--mobile-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Backdrop */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: rgba(0, 0, 0, 0.55);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    animation: sidebar-backdrop-in 0.18s ease;
+  }
+
+  @keyframes sidebar-backdrop-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Show close button inside drawer */
+  .sidebar-mobile-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    transition:
+      background 0.12s,
+      color 0.12s;
+  }
+
+  .sidebar-mobile-close:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  /* Tighten top nav on mobile */
+  .app-top-nav-inner {
+    padding: 8px 16px;
+    gap: 10px;
+  }
+
+  /* Main content fills full width — no sidebar space */
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .app-main {
+    flex-direction: column;
+  }
+
+  /* Page inner padding reduced on mobile */
+  .app-main-inner {
+    padding: 24px 16px 60px;
+  }
+
+  /* Stat cards stack vertically */
+  .stat-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Detail grid single column */
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Substitute comparison table — tighter columns */
+  .substitute-cmp-thead,
+  .substitute-cmp-row {
+    grid-template-columns: 1fr 90px 110px;
+  }
+}
+
 /* ── Raw material detail profile body ────────────────────── */
 .detail-profile-body {
   display: flex;

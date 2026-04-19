@@ -13,7 +13,9 @@ import {
   Building2,
   FileText,
   ChevronDown,
+  X,
 } from 'lucide-react'
+import { useMobileNav } from '@/lib/mobile-nav-context'
 interface SidebarProps {
   productsBadge?: number
   rawMaterialsBadge?: number
@@ -96,6 +98,7 @@ export default function Sidebar({
   suppliersBadge,
 }: SidebarProps) {
   const pathname = usePathname()
+  const { isOpen, close } = useMobileNav()
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     intelligence: true,
     sourcing: true,
@@ -105,127 +108,143 @@ export default function Sidebar({
     setOpenSections((s) => ({ ...s, [id]: !s[id] }))
 
   return (
-    <aside className="sidebar">
-      {/* Brand */}
-      <Link
-        href="/cockpit"
-        className="sidebar-brand"
-        aria-label="Spherecast home"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/spherecast-network.png"
-          alt="Spherecast"
-          className="sidebar-brand-logo"
-        />
-      </Link>
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div className="sidebar-backdrop" onClick={close} aria-hidden />
+      )}
+      <aside className={`sidebar${isOpen ? ' sidebar--mobile-open' : ''}`}>
+        {/* Mobile close button */}
+        <button
+          className="sidebar-mobile-close"
+          onClick={close}
+          aria-label="Close menu"
+          type="button"
+        >
+          <X size={18} />
+        </button>
 
-      {/* Nav */}
-      <nav className="sidebar-nav">
-        {/* Top-level items (no section header) */}
-        <div className="nav-section-items" style={{ marginTop: 0 }}>
-          {topItems.map((item) => (
-            <NavLink
-              key={item.href}
-              item={item}
-              active={
-                pathname === item.href || pathname.startsWith(item.href + '/')
-              }
-            />
-          ))}
-        </div>
+        {/* Brand */}
+        <Link
+          href="/cockpit"
+          className="sidebar-brand"
+          aria-label="Spherecast home"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/spherecast-network.png"
+            alt="Spherecast"
+            className="sidebar-brand-logo"
+          />
+        </Link>
 
-        {[
-          {
-            id: 'intelligence',
-            label: 'Network Intelligence',
-            collapsible: true,
-            items: [
-              {
-                label: 'Opportunities',
-                href: '/opportunities',
-                icon: <Target size={16} />,
-              },
-              {
-                label: 'Similarity Map',
-                href: '/similarity-map',
-                icon: <Sparkles size={16} />,
-              },
-              {
-                label: 'Network Map',
-                href: '/network-map',
-                icon: <Map size={16} />,
-              },
-            ],
-          },
-          {
-            id: 'sourcing',
-            label: 'Sourcing',
-            collapsible: true,
-            items: [
-              {
-                label: 'Products',
-                href: '/products',
-                icon: <Box size={16} />,
-                badge: productsBadge,
-              },
-              {
-                label: 'Raw Materials',
-                href: '/raw-materials',
-                icon: <Atom size={16} />,
-                badge: rawMaterialsBadge,
-              },
-              {
-                label: 'Companies',
-                href: '/companies',
-                icon: <Building2 size={16} />,
-              },
-              {
-                label: 'Suppliers',
-                href: '/suppliers',
-                icon: <Building2 size={16} />,
-                badge: suppliersBadge,
-              },
-              {
-                label: 'Evidence Trails',
-                href: '/evidence-trails',
-                icon: <FileText size={16} />,
-              },
-            ],
-          },
-        ].map((section) => {
-          const open = openSections[section.id]
-          return (
-            <div key={section.id} className="nav-section">
-              <SectionHeader
-                label={section.label}
-                collapsible={section.collapsible ?? false}
-                open={open}
-                onToggle={() => toggleSection(section.id)}
+        {/* Nav */}
+        <nav className="sidebar-nav">
+          {/* Top-level items (no section header) */}
+          <div className="nav-section-items" style={{ marginTop: 0 }}>
+            {topItems.map((item) => (
+              <NavLink
+                key={item.href}
+                item={item}
+                active={
+                  pathname === item.href || pathname.startsWith(item.href + '/')
+                }
               />
-              {open && (
-                <div className="nav-section-items">
-                  {section.items.map((item) => (
-                    <NavLink
-                      key={item.href}
-                      item={item}
-                      active={
-                        pathname === item.href ||
-                        pathname.startsWith(item.href + '/')
-                      }
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </nav>
+            ))}
+          </div>
 
-      <div className="viewer-footer">
-        <span className="viewer-org">Spherecast</span>
-        <span className="viewer-role">Workspace</span>
-      </div>
-    </aside>
+          {[
+            {
+              id: 'intelligence',
+              label: 'Network Intelligence',
+              collapsible: true,
+              items: [
+                {
+                  label: 'Opportunities',
+                  href: '/opportunities',
+                  icon: <Target size={16} />,
+                },
+                {
+                  label: 'Similarity Map',
+                  href: '/similarity-map',
+                  icon: <Sparkles size={16} />,
+                },
+                {
+                  label: 'Network Map',
+                  href: '/network-map',
+                  icon: <Map size={16} />,
+                },
+              ],
+            },
+            {
+              id: 'sourcing',
+              label: 'Sourcing',
+              collapsible: true,
+              items: [
+                {
+                  label: 'Products',
+                  href: '/products',
+                  icon: <Box size={16} />,
+                  badge: productsBadge,
+                },
+                {
+                  label: 'Raw Materials',
+                  href: '/raw-materials',
+                  icon: <Atom size={16} />,
+                  badge: rawMaterialsBadge,
+                },
+                {
+                  label: 'Companies',
+                  href: '/companies',
+                  icon: <Building2 size={16} />,
+                },
+                {
+                  label: 'Suppliers',
+                  href: '/suppliers',
+                  icon: <Building2 size={16} />,
+                  badge: suppliersBadge,
+                },
+                {
+                  label: 'Evidence Trails',
+                  href: '/evidence-trails',
+                  icon: <FileText size={16} />,
+                },
+              ],
+            },
+          ].map((section) => {
+            const open = openSections[section.id]
+            return (
+              <div key={section.id} className="nav-section">
+                <SectionHeader
+                  label={section.label}
+                  collapsible={section.collapsible ?? false}
+                  open={open}
+                  onToggle={() => toggleSection(section.id)}
+                />
+                {open && (
+                  <div className="nav-section-items">
+                    {section.items.map((item) => (
+                      <NavLink
+                        key={item.href}
+                        item={item}
+                        active={
+                          pathname === item.href ||
+                          pathname.startsWith(item.href + '/')
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </nav>
+
+        <div className="viewer-footer">
+          <span className="viewer-org">Spherecast</span>
+          <span className="viewer-role">Workspace</span>
+        </div>
+      </aside>
+    </>
   )
 }
