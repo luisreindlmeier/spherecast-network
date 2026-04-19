@@ -69,8 +69,22 @@ def find_similar(sku: str, name: str, functional_class: str, top_k: int = 10) ->
     col = client.get_collection(_COLLECTION, embedding_function=_ef)
     # Expand query with synonyms so e.g. "cholecalciferol" also matches "vitamin d3" entries
     all_names = [name] + SYNONYMS.get(name.lower(), [])
-    query_text = f"{' '.join(all_names)} {functional_class}"
-    results = col.query(query_texts=[query_text], n_results=min(top_k + 1, col.count()))
+    query_text = " ".join(all_names)
+    
+    # Use proper metadata filtering instead of polluting the text query
+    # We allow exact match OR "other" to not miss generic candidates
+    where_filter = {
+        "$or": [
+            {"functional_class": functional_class},
+            {"functional_class": "other"}
+        ]
+    }
+    
+    results = col.query(
+        query_texts=[query_text],
+        n_results=min(top_k + 1, col.count()),
+        where=where_filter
+    )
     out = []
     for i, (rid, dist, meta) in enumerate(
         zip(results["ids"][0], results["distances"][0], results["metadatas"][0])

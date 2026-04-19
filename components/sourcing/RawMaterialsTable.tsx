@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useCallback, useMemo, useState } from 'react'
-import type { RawMaterialRow } from '@/lib/queries'
+import type { RawMaterialRow } from '@/lib/agnes-queries'
 import type { SourceViewMode } from '@/components/sourcing/SourceViewToggle'
 import SourcingTableShell from '@/components/sourcing/SourcingTableShell'
 import { useTableQuery } from '@/components/sourcing/useTableQuery'

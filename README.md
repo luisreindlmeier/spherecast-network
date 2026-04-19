@@ -32,7 +32,6 @@ components/
   layout/, cockpit/, network-map/, similarity-map/, sourcing/, opportunities/
 lib/                        # Queries, Supabase, map/plot helpers, utils (`cn`)
 types/                      # e.g. Plotly gl3d ambient types
-```
 
 **Backend** — self-contained under `backend/` (API, data, caches, Python dependencies). It is not wired into the Next.js build; run and deploy it separately until integration work is done.
 
