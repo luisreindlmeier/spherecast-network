@@ -12,7 +12,7 @@ services:
       - key: AGNES_API_KEY
         sync: false
       - key: FRONTEND_URL
-        sync: false
+        value: https://spherecast-network.vercel.app
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: CHROMA_DIR

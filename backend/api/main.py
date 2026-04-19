@@ -40,9 +40,15 @@ app = FastAPI(
 )
 
 _FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+_ALLOWED_ORIGINS = list({
+    _FRONTEND_URL,
+    "http://localhost:3000",
+    "https://spherecast-network.vercel.app",
+})
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[_FRONTEND_URL, "http://localhost:3000"],
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_origin_regex=r"https://spherecast-network(-[a-z0-9]+)?\.vercel\.app",
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type", "X-API-Key"],
 )
