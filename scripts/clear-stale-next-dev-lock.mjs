@@ -2,29 +2,25 @@
  * Removes `.next/dev/lock` when the recorded PID is no longer running
  * (e.g. after a crash). Lets `next dev` start again without manual cleanup.
  */
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import {
+  getNextDevLockPath,
+  isPidAlive,
+  lockFileExists,
+  readLockPid,
+  removeLockFile,
+} from './next-dev-lock-utils.mjs'
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const lockPath = path.join(root, '.next', 'dev', 'lock')
+const lockPath = getNextDevLockPath(import.meta.url)
 
-if (!fs.existsSync(lockPath)) {
+if (!lockFileExists(lockPath)) {
   process.exit(0)
 }
 
 let pid
 try {
-  const parsed = JSON.parse(fs.readFileSync(lockPath, 'utf8'))
-  if (typeof parsed.pid === 'number' && Number.isFinite(parsed.pid)) {
-    pid = parsed.pid
-  }
+  pid = readLockPid(lockPath)
 } catch {
-  try {
-    fs.unlinkSync(lockPath)
-  } catch {
-    /* ignore */
-  }
+  removeLockFile(lockPath)
   process.exit(0)
 }
 
@@ -32,18 +28,8 @@ if (pid === undefined) {
   process.exit(0)
 }
 
-let alive = false
-try {
-  process.kill(pid, 0)
-  alive = true
-} catch {
-  alive = false
-}
+const alive = isPidAlive(pid)
 
 if (!alive) {
-  try {
-    fs.unlinkSync(lockPath)
-  } catch {
-    /* ignore */
-  }
+  removeLockFile(lockPath)
 }
