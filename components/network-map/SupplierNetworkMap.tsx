@@ -75,11 +75,20 @@ const taskpaneViewState = {
 export type SupplierNetworkMapProps = {
   companyId: number | null
   variant?: SupplierNetworkMapVariant
+  /** Controlled filter state — when provided, internal state is ignored. */
+  selectedCategories?: NetworkMapCategory[]
+  onCategoriesChange?: (next: NetworkMapCategory[]) => void
+  selectedSuppliers?: string[]
+  onSuppliersChange?: (next: string[]) => void
 }
 
 export default function SupplierNetworkMap({
   companyId,
   variant = 'default',
+  selectedCategories: controlledCategories,
+  onCategoriesChange: onControlledCategoriesChange,
+  selectedSuppliers: controlledSuppliers,
+  onSuppliersChange: onControlledSuppliersChange,
 }: SupplierNetworkMapProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapRef>(null)
@@ -89,10 +98,21 @@ export default function SupplierNetworkMap({
     'loading'
   )
   const [errorDetail, setErrorDetail] = useState<string | null>(null)
-  const [selectedCategories, setSelectedCategories] = useState<
+  const [internalCategories, setInternalCategories] = useState<
     NetworkMapCategory[]
   >([])
-  const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([])
+  const [internalSuppliers, setInternalSuppliers] = useState<string[]>([])
+
+  const isControlled = controlledCategories !== undefined
+  const selectedCategories = isControlled ? controlledCategories : internalCategories
+  const selectedSuppliers = isControlled ? (controlledSuppliers ?? []) : internalSuppliers
+
+  const setSelectedCategories = isControlled
+    ? (onControlledCategoriesChange ?? (() => {}))
+    : setInternalCategories
+  const setSelectedSuppliers = isControlled
+    ? (onControlledSuppliersChange ?? (() => {}))
+    : setInternalSuppliers
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null)
 
   useEffect(() => {
@@ -400,12 +420,10 @@ export default function SupplierNetworkMap({
                       className="app-top-nav-select-item similarity-map-multi-filter-item"
                       checked={effectiveCategories.includes(option.key)}
                       onCheckedChange={(checked) => {
-                        setSelectedCategories((prev) => {
-                          const next = new Set(prev)
-                          if (checked === true) next.add(option.key)
-                          else next.delete(option.key)
-                          return Array.from(next)
-                        })
+                        const next = new Set(selectedCategories)
+                        if (checked === true) next.add(option.key)
+                        else next.delete(option.key)
+                        setSelectedCategories(Array.from(next))
                       }}
                       onSelect={(event) => event.preventDefault()}
                     >
@@ -459,12 +477,10 @@ export default function SupplierNetworkMap({
                       className="app-top-nav-select-item similarity-map-multi-filter-item"
                       checked={effectiveSuppliers.includes(supplier)}
                       onCheckedChange={(checked) => {
-                        setSelectedSuppliers((prev) => {
-                          const next = new Set(prev)
-                          if (checked === true) next.add(supplier)
-                          else next.delete(supplier)
-                          return Array.from(next)
-                        })
+                        const next = new Set(selectedSuppliers)
+                        if (checked === true) next.add(supplier)
+                        else next.delete(supplier)
+                        setSelectedSuppliers(Array.from(next))
                       }}
                       onSelect={(event) => event.preventDefault()}
                     >
@@ -520,7 +536,10 @@ export default function SupplierNetworkMap({
             if (isPreview) return
             const node = info.object as NetworkMapNode | undefined
             if (node && info.x !== undefined && info.y !== undefined) {
-              setTooltip({ x: info.x, y: info.y, node })
+              const rect = rootRef.current?.getBoundingClientRect()
+              const offsetX = rect ? rect.left : 0
+              const offsetY = rect ? rect.top : 0
+              setTooltip({ x: info.x + offsetX, y: info.y + offsetY, node })
             } else {
               setTooltip(null)
             }
