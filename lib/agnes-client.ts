@@ -296,6 +296,17 @@ export const getOpportunities = (scopeCompanyId?: number, limit = 18) =>
     limit,
   })
 
+export const getOpportunityForMaterial = (
+  rawMaterialId: number,
+  scopeCompanyId?: number
+) =>
+  get<AgnesOpportunitiesResponse>('/opportunities', {
+    raw_material_id: rawMaterialId,
+    top_k: 5,
+    explain: 'true',
+    scope_company_id: scopeCompanyId,
+  })
+
 export const getSupplierPerformance = (supplierId: number) =>
   get<AgnesSupplierPerformance>(`/suppliers/${supplierId}/performance`)
 
