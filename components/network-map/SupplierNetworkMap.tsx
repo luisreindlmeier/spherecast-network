@@ -84,7 +84,6 @@ export default function SupplierNetworkMap({
         }
         return r.json()
       })
->>>>>>> 8f43fbe (fix: harden map data loading with timeouts)
       .then((data: unknown) => {
         if (cancelled) return
         if (
