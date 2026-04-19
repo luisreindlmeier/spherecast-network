@@ -2,11 +2,12 @@
 
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Search, ChevronDown, Check } from 'lucide-react'
+import { Search, ChevronDown, Check, Menu } from 'lucide-react'
 import { Select } from 'radix-ui'
 import type { GlobalSearchItem } from '@/lib/global-search'
 import { parseGlobalSearchItems } from '@/lib/global-search'
 import { useCompanyScope } from '@/lib/company-scope-context'
+import { useMobileNav } from '@/lib/mobile-nav-context'
 
 interface AppTopNavProps {
   searchItems: GlobalSearchItem[]
@@ -31,6 +32,7 @@ function kindBadgeClass(kind: GlobalSearchItem['kind']): string {
 
 export default function AppTopNav({ searchItems }: AppTopNavProps) {
   const router = useRouter()
+  const { toggle: toggleMobileNav } = useMobileNav()
   const { companyId, setCompanyId, companies } = useCompanyScope()
   const items = useMemo(
     () => parseGlobalSearchItems(searchItems),
@@ -113,6 +115,14 @@ export default function AppTopNav({ searchItems }: AppTopNavProps) {
   return (
     <header className="app-top-nav">
       <div className="app-top-nav-inner">
+        <button
+          className="app-top-nav-hamburger"
+          onClick={toggleMobileNav}
+          aria-label="Toggle navigation"
+          type="button"
+        >
+          <Menu size={20} />
+        </button>
         <div className="app-top-nav-search-cell" ref={rootRef}>
           <div className="app-top-nav-search-wrap">
             <Search size={15} className="app-top-nav-search-icon" aria-hidden />

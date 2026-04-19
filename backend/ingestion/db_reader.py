@@ -716,4 +716,10 @@ def get_network_map_data(path: str | Path | None = None, scope_company_id: int |
                 "targetPosition": co_pos,
             })
 
-    return {"nodes": nodes + facility_nodes, "arcs": arcs}
+    # Drop supplier/facility nodes that have no arc — they'd just be noise on the map
+    arc_positions = {tuple(a["sourcePosition"]) for a in arcs} | {tuple(a["targetPosition"]) for a in arcs}
+    connected_facility_nodes = [
+        n for n in facility_nodes if tuple(n["position"]) in arc_positions
+    ]
+
+    return {"nodes": nodes + connected_facility_nodes, "arcs": arcs}
