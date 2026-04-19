@@ -867,19 +867,28 @@ textarea {
 .similarity-map-multi-filters {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 10px 12px;
 }
 
-.similarity-map-multi-filter {
+.similarity-map-multi-filters .opportunities-filter {
   flex: 0 0 auto;
   min-width: 0;
 }
 
-.similarity-map-multi-filter-trigger {
+.similarity-map-multi-filter {
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Match opportunities filter control width (see .opportunities-filter-select). */
+.similarity-map-multi-filters
+  .app-top-nav-select-trigger.similarity-map-multi-filter-trigger {
+  width: 100%;
   min-width: 132px;
-  max-width: 220px;
+  max-width: 180px;
 }
 
 .similarity-map-multi-filter-content {

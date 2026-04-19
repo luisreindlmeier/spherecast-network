@@ -126,10 +126,7 @@ export default function MapRightSidebar() {
                 />
               ) : (
                 <div className="map-right-sidebar-similarity">
-                  <IngredientSimilarityPlot
-                    key={companyId ?? 'all'}
-                    showFilters={false}
-                  />
+                  <IngredientSimilarityPlot key={companyId ?? 'all'} />
                 </div>
               )}
             </>

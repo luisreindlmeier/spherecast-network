@@ -7,37 +7,13 @@ import type { Config, Data, Layout, PlotHoverEvent } from 'plotly.js'
 // Prebuilt gl3d bundle only — full `plotly.js` pulls geo registry → maplibre CSS and breaks Turbopack.
 import PlotlyGL from 'plotly.js/dist/plotly-gl3d'
 import type { SimilarityPoint } from '@/app/api/similarity-map/route'
+import {
+  CATEGORY_LABEL,
+  CATEGORY_ORDER,
+  type IngredientCategory,
+} from '@/components/similarity-map/similarity-map-categories'
 
 const Plot = createPlotlyComponent(PlotlyGL)
-
-type IngredientCategory =
-  | 'vitamins'
-  | 'minerals'
-  | 'proteins'
-  | 'oils'
-  | 'excipients'
-  | 'carbohydrates'
-  | 'botanicals'
-
-const CATEGORY_ORDER: readonly IngredientCategory[] = [
-  'vitamins',
-  'minerals',
-  'proteins',
-  'oils',
-  'excipients',
-  'carbohydrates',
-  'botanicals',
-] as const
-
-const CATEGORY_LABEL: Record<IngredientCategory, string> = {
-  vitamins: 'Vitamins',
-  minerals: 'Minerals',
-  proteins: 'Proteins',
-  oils: 'Oils',
-  excipients: 'Excipients',
-  carbohydrates: 'Carbohydrates',
-  botanicals: 'Botanicals',
-}
 
 const CATEGORY_COLORS: Record<IngredientCategory, string> = {
   vitamins: '#a78bfa',
@@ -454,20 +430,28 @@ function attachSimilarityCameraDebugLog(
 }
 
 type IngredientSimilarityPlotProps = {
-  /** When false (e.g. cockpit tile), filters are hidden and the plot fills the frame. */
-  showFilters?: boolean
+  /** When set, skips internal fetch (full page passes API result + loading). */
+  plotData?: { points: readonly SimilarityPoint[]; loading: boolean }
+  /** Empty = all categories. Otherwise only these categories. */
+  selectedCategories?: readonly IngredientCategory[]
+  /** Empty = all suppliers. Otherwise only these supplier names. */
+  selectedSuppliers?: readonly string[]
 }
 
 export default function IngredientSimilarityPlot({
-  showFilters = true,
+  plotData,
+  selectedCategories = [],
+  selectedSuppliers = [],
 }: IngredientSimilarityPlotProps) {
   const router = useRouter()
-  const [points, setPoints] = useState<SimilarityPoint[]>([])
-  const [categoryFilter, setCategoryFilter] = useState<
-    IngredientCategory | 'all'
-  >('all')
-  const [supplierFilter, setSupplierFilter] = useState<string>('')
-  const [loading, setLoading] = useState(true)
+  const [internalPoints, setInternalPoints] = useState<SimilarityPoint[]>([])
+  const [internalLoading, setInternalLoading] = useState(true)
+
+  const parentMode = plotData !== undefined
+  const points: readonly SimilarityPoint[] = parentMode
+    ? plotData.points
+    : internalPoints
+  const loading = parentMode ? plotData.loading : internalLoading
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastPointerRef = useRef({ x: 0, y: 0 })
@@ -484,24 +468,18 @@ export default function IngredientSimilarityPlot({
   }, [points])
 
   useEffect(() => {
-    if (supplierFilter === '') return
-    if (!points.some((p) => p.supplierName === supplierFilter)) {
-      setSupplierFilter('')
-    }
-  }, [points, supplierFilter])
-
-  useEffect(() => {
-    fetch('/api/similarity-map', {
+    if (parentMode) return
+    void fetch('/api/similarity-map', {
       credentials: 'same-origin',
       cache: 'no-store',
     })
       .then((r) => r.json())
       .then((json: { points?: SimilarityPoint[] }) => {
-        setPoints(json.points ?? [])
+        setInternalPoints(json.points ?? [])
       })
       .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setInternalLoading(false))
+  }, [parentMode])
 
   useEffect(() => {
     return () => {
@@ -590,23 +568,21 @@ export default function IngredientSimilarityPlot({
     graphDivRef.current = null
   }
 
-  const supplierOptions = useMemo(() => {
-    const names = new Set<string>()
-    for (const p of points) {
-      if (p.supplierName.trim() !== '') names.add(p.supplierName)
-    }
-    return Array.from(names).sort((a, b) => a.localeCompare(b))
-  }, [points])
-
   const filteredPoints = useMemo(() => {
     return points.filter((p) => {
-      if (categoryFilter !== 'all' && p.category !== categoryFilter)
+      if (
+        selectedCategories.length > 0 &&
+        !selectedCategories.includes(p.category)
+      )
         return false
-      if (supplierFilter !== '' && p.supplierName !== supplierFilter)
+      if (
+        selectedSuppliers.length > 0 &&
+        !selectedSuppliers.includes(p.supplierName)
+      )
         return false
       return true
     })
-  }, [points, categoryFilter, supplierFilter])
+  }, [points, selectedCategories, selectedSuppliers])
 
   const traces = useMemo(() => buildTraces(filteredPoints), [filteredPoints])
   const plotLayout = useMemo(() => buildPlotLayout(points), [points])
@@ -616,9 +592,7 @@ export default function IngredientSimilarityPlot({
 
   if (loading) {
     return (
-      <div
-        className={`similarity-map-shell${showFilters ? '' : ' similarity-map-shell--plot-only'}`}
-      >
+      <div className="similarity-map-shell similarity-map-shell--plot-only">
         <div className="ingredient-similarity-plot-root ingredient-similarity-plot-loading">
           Loading 3D map…
         </div>
@@ -628,66 +602,7 @@ export default function IngredientSimilarityPlot({
 
   return (
     <>
-      <div
-        className={`similarity-map-shell${showFilters ? '' : ' similarity-map-shell--plot-only'}`}
-      >
-        {showFilters ? (
-          <div
-            className="similarity-map-filters"
-            role="toolbar"
-            aria-label="Map filters"
-          >
-            <div className="similarity-map-filter-field">
-              <label
-                className="similarity-map-filter-label"
-                htmlFor="similarity-map-category"
-              >
-                Category
-              </label>
-              <select
-                id="similarity-map-category"
-                className="similarity-map-filter-select"
-                value={categoryFilter}
-                onChange={(e) => {
-                  const v = e.target.value
-                  setCategoryFilter(
-                    v === 'all' ? 'all' : (v as IngredientCategory)
-                  )
-                }}
-                aria-label="Filter by ingredient category"
-              >
-                <option value="all">All categories</option>
-                {CATEGORY_ORDER.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {CATEGORY_LABEL[cat]}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="similarity-map-filter-field">
-              <label
-                className="similarity-map-filter-label"
-                htmlFor="similarity-map-supplier"
-              >
-                Supplier
-              </label>
-              <select
-                id="similarity-map-supplier"
-                className="similarity-map-filter-select"
-                value={supplierFilter}
-                onChange={(e) => setSupplierFilter(e.target.value)}
-                aria-label="Filter by supplier"
-              >
-                <option value="">All suppliers</option>
-                {supplierOptions.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        ) : null}
+      <div className="similarity-map-shell similarity-map-shell--plot-only">
         <div
           ref={plotShellRef}
           className="ingredient-similarity-plot-root"

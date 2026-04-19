@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
 import { DropdownMenu } from 'radix-ui'
 import type { SimilarityPoint } from '@/app/api/similarity-map/route'
@@ -22,22 +22,23 @@ function summaryList(
 }
 
 function MultiDropdown({
-  label,
+  ariaLabel,
   summary,
+  contentClassName,
   children,
 }: {
-  label: string
+  ariaLabel: string
   summary: string
-  children: React.ReactNode
+  contentClassName?: string
+  children: ReactNode
 }) {
   return (
     <div className="similarity-map-multi-filter">
-      <span className="similarity-map-multi-filter-label">{label}</span>
       <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger
           type="button"
           className="app-top-nav-select-trigger similarity-map-multi-filter-trigger"
-          aria-label={label}
+          aria-label={ariaLabel}
         >
           <span className="similarity-map-multi-filter-trigger-text">
             {summary}
@@ -50,7 +51,13 @@ function MultiDropdown({
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="app-top-nav-select-content similarity-map-multi-filter-content"
+            className={[
+              'app-top-nav-select-content',
+              'similarity-map-multi-filter-content',
+              contentClassName ?? '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
             sideOffset={4}
             align="end"
           >
@@ -66,8 +73,8 @@ type Props = {
   points: readonly SimilarityPoint[]
   selectedCategories: readonly IngredientCategory[]
   selectedSuppliers: readonly string[]
-  onCategoriesChange: (next: readonly IngredientCategory[]) => void
-  onSuppliersChange: (next: readonly string[]) => void
+  onCategoriesChange: (next: IngredientCategory[]) => void
+  onSuppliersChange: (next: string[]) => void
 }
 
 export default function SimilarityMapMultiFilters({
@@ -114,43 +121,45 @@ export default function SimilarityMapMultiFilters({
       role="toolbar"
       aria-label="Map filters"
     >
-      <MultiDropdown label="Category" summary={categorySummary}>
-        <DropdownMenu.Label className="similarity-map-multi-filter-menu-label">
-          Categories
-        </DropdownMenu.Label>
-        {CATEGORY_ORDER.map((cat) => (
-          <DropdownMenu.CheckboxItem
-            key={cat}
-            className="app-top-nav-select-item similarity-map-multi-filter-item"
-            checked={selectedCategories.includes(cat)}
-            onCheckedChange={(c) => toggleCategory(cat, c === true)}
-            onSelect={(e) => e.preventDefault()}
+      <div className="opportunities-filter">
+        <span className="opportunities-filter-label">Category</span>
+        <MultiDropdown ariaLabel="Kategorien filtern" summary={categorySummary}>
+          {CATEGORY_ORDER.map((cat) => (
+            <DropdownMenu.CheckboxItem
+              key={cat}
+              className="app-top-nav-select-item similarity-map-multi-filter-item"
+              checked={selectedCategories.includes(cat)}
+              onCheckedChange={(c) => toggleCategory(cat, c === true)}
+              onSelect={(e) => e.preventDefault()}
+            >
+              <span className="similarity-map-multi-filter-item-text">
+                {CATEGORY_LABEL[cat]}
+              </span>
+              <DropdownMenu.ItemIndicator className="app-top-nav-select-check">
+                <Check size={14} aria-hidden />
+              </DropdownMenu.ItemIndicator>
+            </DropdownMenu.CheckboxItem>
+          ))}
+          <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
+          <DropdownMenu.Item
+            className="app-top-nav-select-item similarity-map-multi-filter-clear"
+            onSelect={(e) => {
+              e.preventDefault()
+              onCategoriesChange([])
+            }}
           >
-            <span className="similarity-map-multi-filter-item-text">
-              {CATEGORY_LABEL[cat]}
-            </span>
-            <DropdownMenu.ItemIndicator className="app-top-nav-select-check">
-              <Check size={14} aria-hidden />
-            </DropdownMenu.ItemIndicator>
-          </DropdownMenu.CheckboxItem>
-        ))}
-        <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
-        <DropdownMenu.Item
-          className="app-top-nav-select-item similarity-map-multi-filter-clear"
-          onSelect={(e) => {
-            e.preventDefault()
-            onCategoriesChange([])
-          }}
-        >
-          Clear category filter
-        </DropdownMenu.Item>
-      </MultiDropdown>
+            Clear category filter
+          </DropdownMenu.Item>
+        </MultiDropdown>
+      </div>
 
-      <MultiDropdown label="Supplier" summary={supplierSummary}>
-        <DropdownMenu.Label className="similarity-map-multi-filter-menu-label">
-          Suppliers
-        </DropdownMenu.Label>
-        <div className="similarity-map-multi-filter-scroll">
+      <div className="opportunities-filter">
+        <span className="opportunities-filter-label">Supplier</span>
+        <MultiDropdown
+          ariaLabel="Lieferanten filtern"
+          summary={supplierSummary}
+          contentClassName="similarity-map-multi-filter-content--scroll"
+        >
           {supplierNames.map((name) => (
             <DropdownMenu.CheckboxItem
               key={name}
@@ -167,18 +176,18 @@ export default function SimilarityMapMultiFilters({
               </DropdownMenu.ItemIndicator>
             </DropdownMenu.CheckboxItem>
           ))}
-        </div>
-        <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
-        <DropdownMenu.Item
-          className="app-top-nav-select-item similarity-map-multi-filter-clear"
-          onSelect={(e) => {
-            e.preventDefault()
-            onSuppliersChange([])
-          }}
-        >
-          Clear supplier filter
-        </DropdownMenu.Item>
-      </MultiDropdown>
+          <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
+          <DropdownMenu.Item
+            className="app-top-nav-select-item similarity-map-multi-filter-clear"
+            onSelect={(e) => {
+              e.preventDefault()
+              onSuppliersChange([])
+            }}
+          >
+            Clear supplier filter
+          </DropdownMenu.Item>
+        </MultiDropdown>
+      </div>
     </div>
   )
 }
