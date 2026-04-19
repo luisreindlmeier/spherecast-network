@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { createServerClient } from '@/lib/supabase-server'
+import { agnesGet } from '@/lib/agnes-server'
 
 export const dynamic = 'force-dynamic'
 
@@ -94,8 +94,6 @@ function computeUmap(
   category: IngredientCategory,
   supplierId: number
 ): [number, number, number] {
-  // Base position from ingredient name — all suppliers of the same ingredient
-  // share the same base so they cluster together
   const baseRng = seededRng(hashString(name))
   const c = CATEGORY_CENTERS[category]
   const spread = 0.65
@@ -105,7 +103,6 @@ function computeUmap(
     c[2] + (baseRng() - 0.5) * 2 * spread,
   ]
 
-  // Small deterministic jitter per supplier so each supplier's dot is distinct
   const jitterRng = seededRng(hashString(name) ^ (supplierId * 2654435761))
   const jitter = 0.14
   return [
@@ -116,7 +113,6 @@ function computeUmap(
 }
 
 function parseIngredientName(sku: string): string {
-  // Format: RM-C{n}-ingredient-name-{8charhex}
   const parts = sku.split('-')
   if (parts.length < 4) return sku
   const withoutPrefix = parts.slice(2)
@@ -128,53 +124,30 @@ function parseIngredientName(sku: string): string {
 
 export async function GET() {
   const scopeCompanyId = await resolveCompanyScopeFilter()
-  const db = createServerClient()
+  const p = new URLSearchParams()
+  if (scopeCompanyId != null) p.set('scope_company_id', String(scopeCompanyId))
 
-  const [
-    { data: products, error: pErr },
-    { data: supplierLinks, error: slErr },
-    { data: supplierRows, error: sErr },
-    { data: bomRows, error: bErr },
-    { data: bomComponents, error: bcErr },
-    { data: finishedGoods, error: fgErr },
-  ] = await Promise.all([
-    db
-      .from('product')
-      .select('id, sku, company_id')
-      .eq('type', 'raw-material')
-      .limit(10000),
-    db.from('supplier_product').select('supplier_id, product_id').limit(10000),
-    db.from('supplier').select('id, name').limit(10000),
-    db.from('bom').select('id, produced_product_id').limit(10000),
-    db.from('bom_component').select('bom_id, consumed_product_id').limit(10000),
-    db
-      .from('product')
-      .select('id, company_id')
-      .eq('type', 'finished-good')
-      .limit(10000),
-  ])
+  const res = await agnesGet('/similarity-map-data', p)
+  if (!res.ok) return NextResponse.json({ error: 'upstream error' }, { status: 502 })
 
-  if (pErr || slErr || sErr || bErr || bcErr || fgErr) {
-    return NextResponse.json({ error: 'DB error' }, { status: 500 })
+  const data = await res.json() as {
+    products: { id: number; sku: string; company_id: number }[]
+    supplier_links: { supplier_id: number; product_id: number }[]
+    suppliers: { id: number; name: string }[]
+    boms: { id: number; produced_product_id: number }[]
+    bom_components: { bom_id: number; consumed_product_id: number }[]
+    finished_goods: { id: number; company_id: number }[]
   }
 
-  type ProductRow = { id: number; sku: string; company_id: number }
-  type SupplierLinkRow = { supplier_id: number; product_id: number }
-  type SupplierRow = { id: number; name: string }
-  type BomRow = { id: number; produced_product_id: number }
-  type BomComponentRow = { bom_id: number; consumed_product_id: number }
-  type FinishedGoodRow = { id: number; company_id: number }
-
-  const rawMaterials = (products ?? []) as ProductRow[]
-  const links = (supplierLinks ?? []) as SupplierLinkRow[]
-  const suppliers = (supplierRows ?? []) as SupplierRow[]
-  const boms = (bomRows ?? []) as BomRow[]
-  const comps = (bomComponents ?? []) as BomComponentRow[]
-  const fgs = (finishedGoods ?? []) as FinishedGoodRow[]
+  const rawMaterials = data.products
+  const links = data.supplier_links
+  const suppliers = data.suppliers
+  const boms = data.boms
+  const comps = data.bom_components
+  const fgs = data.finished_goods
 
   const supplierMap = new Map(suppliers.map((s) => [s.id, s.name]))
 
-  /** Raw-material product IDs that appear in BOMs of this company’s finished goods */
   let rmIdsUsedByScopeCompany: Set<number> | null = null
   if (scopeCompanyId !== null) {
     const fgProductIds = new Set(
@@ -195,14 +168,12 @@ export async function GET() {
     rmIdsUsedByScopeCompany = rmIds
   }
 
-  // product_id → normalized ingredient name
   const productName = new Map<number, string>()
   for (const rm of rawMaterials) {
     const name = parseIngredientName(rm.sku)
     productName.set(rm.id, name)
   }
 
-  // ingredient name → Set<company_id> (companies that own any RM with that name)
   const nameToCompanies = new Map<string, Set<number>>()
   for (const rm of rawMaterials) {
     const name = productName.get(rm.id)
@@ -212,8 +183,6 @@ export async function GET() {
     nameToCompanies.set(name, set)
   }
 
-  // Collect unique (ingredient_name, supplier_id) pairs
-  // key: `{name}||{supplierId}`
   const seen = new Set<string>()
   const points: SimilarityPoint[] = []
 

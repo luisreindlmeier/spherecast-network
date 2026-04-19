@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
 import PlaceholderSection from '@/components/sourcing/PlaceholderSection'
-import { getRawMaterialDetail } from '@/lib/queries'
+import { getRawMaterialDetail } from '@/lib/agnes-queries'
 import { productsUsedInLabel, suppliersCountLabel } from '@/lib/format-labels'
 import { FlaskConical, Package, Building2, ArrowLeft, Tag } from 'lucide-react'
 

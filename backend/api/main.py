@@ -16,7 +16,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger("agnes")
 
-from ingestion.db_reader import build_ingredient_df, get_unique_ingredients
+from ingestion.db_reader import (
+    build_ingredient_df, get_unique_ingredients,
+    get_stats, get_companies, get_company_detail,
+    get_finished_goods, get_finished_good_detail,
+    get_raw_materials, get_raw_material_detail,
+    get_suppliers, get_supplier_detail,
+    get_global_search, get_network_map_data,
+    get_similarity_map_raw_data,
+)
 from ingestion.fda_ratings import get_fda_status, get_standards
 from ingestion.fda_live import layer2_check
 from optimization.carbon import estimate_co2, get_prop65_warning
@@ -244,6 +252,78 @@ def company_sourcing(company_id: int):
         "ingredients": ingredients,
         "top_suppliers": [{"name": s, "ingredient_count": c} for s, c in supplier_summary],
     }
+
+
+@app.get("/stats", dependencies=[_auth])
+def stats(scope_company_id: int | None = Query(default=None)):
+    return get_stats(scope_company_id=scope_company_id)
+
+
+@app.get("/companies", dependencies=[_auth])
+def companies(scope_company_id: int | None = Query(default=None)):
+    return get_companies(scope_company_id=scope_company_id)
+
+
+@app.get("/companies/{company_id}/detail", dependencies=[_auth])
+def company_detail(company_id: int):
+    result = get_company_detail(company_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Company {company_id} not found")
+    return result
+
+
+@app.get("/products", dependencies=[_auth])
+def finished_goods(scope_company_id: int | None = Query(default=None)):
+    return get_finished_goods(scope_company_id=scope_company_id)
+
+
+@app.get("/products/{product_id}", dependencies=[_auth])
+def finished_good_detail(product_id: int):
+    result = get_finished_good_detail(product_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Product {product_id} not found")
+    return result
+
+
+@app.get("/raw-materials", dependencies=[_auth])
+def raw_materials(scope_company_id: int | None = Query(default=None)):
+    return get_raw_materials(scope_company_id=scope_company_id)
+
+
+@app.get("/raw-materials/{product_id}", dependencies=[_auth])
+def raw_material_detail(product_id: int):
+    result = get_raw_material_detail(product_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Raw material {product_id} not found")
+    return result
+
+
+@app.get("/suppliers", dependencies=[_auth])
+def suppliers(scope_company_id: int | None = Query(default=None)):
+    return get_suppliers(scope_company_id=scope_company_id)
+
+
+@app.get("/suppliers/{supplier_id}", dependencies=[_auth])
+def supplier_detail(supplier_id: int):
+    result = get_supplier_detail(supplier_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Supplier {supplier_id} not found")
+    return result
+
+
+@app.get("/search", dependencies=[_auth])
+def search(q: str = Query(default="", max_length=200), scope_company_id: int | None = Query(default=None)):
+    return get_global_search(q, scope_company_id=scope_company_id)
+
+
+@app.get("/network-map", dependencies=[_auth])
+def network_map():
+    return get_network_map_data()
+
+
+@app.get("/similarity-map-data", dependencies=[_auth])
+def similarity_map_data(scope_company_id: int | None = Query(default=None)):
+    return get_similarity_map_raw_data(scope_company_id=scope_company_id)
 
 
 @app.get("/roadmap")
