@@ -9,7 +9,6 @@ export default function NetworkMapPage() {
           eyebrow="Network Intelligence"
           title="Network Map"
           description="Supplier and customer locations with connection arcs — same interactive map as in sourcing, shown edge-to-edge below."
-          descriptionAside={<div id="network-map-filters-portal" />}
         />
       </div>
       <NetworkMapFullPage />

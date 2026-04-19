@@ -133,7 +133,7 @@ export default function SupplierNetworkMap({
     }
   }
 
-  const scheduleHide = (delay = 200) => {
+  const scheduleHide = (delay = 300) => {
     clearHideTimer()
     hideTimer.current = setTimeout(() => setTooltip(null), delay)
   }
@@ -415,134 +415,125 @@ export default function SupplierNetworkMap({
       }
     >
       {status === 'live' && !isPreview ? (
-        (() => {
-          const content = (
-            <div
-              className={(portalNode && !isTaskpane) ? 'similarity-map-multi-filters' : `network-map-filters${isTaskpane ? ' network-map-filters--taskpane' : ''}`}
-              role="toolbar"
-              aria-label="Map filters"
-            >
-              <div className="opportunities-filter">
-                <span className="opportunities-filter-label">Category</span>
-                <DropdownMenu.Root modal={false}>
-                  <DropdownMenu.Trigger
-                    type="button"
-                    className="app-top-nav-select-trigger similarity-map-multi-filter-trigger"
-                    aria-label="Kategorien filtern"
-                  >
-                    <span>{categorySummary}</span>
-                    <ChevronDown
-                      size={14}
-                      className="app-top-nav-select-chevron"
-                      aria-hidden
-                    />
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Portal>
-                    <DropdownMenu.Content
-                      className="app-top-nav-select-content similarity-map-multi-filter-content"
-                      sideOffset={4}
-                      align="start"
+        <div
+          className={`network-map-filters${isTaskpane ? ' network-map-filters--taskpane' : ''}`}
+          role="toolbar"
+          aria-label="Map filters"
+        >
+          <div className="opportunities-filter">
+            <span className="opportunities-filter-label">Category</span>
+            <DropdownMenu.Root modal={false}>
+              <DropdownMenu.Trigger
+                type="button"
+                className="app-top-nav-select-trigger similarity-map-multi-filter-trigger"
+                aria-label="Kategorien filtern"
+              >
+                <span>{categorySummary}</span>
+                <ChevronDown
+                  size={14}
+                  className="app-top-nav-select-chevron"
+                  aria-hidden
+                />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className="app-top-nav-select-content similarity-map-multi-filter-content"
+                  sideOffset={4}
+                  align="start"
+                >
+                  {categoryOptions.map((option) => (
+                    <DropdownMenu.CheckboxItem
+                      key={option.key}
+                      className="app-top-nav-select-item similarity-map-multi-filter-item"
+                      checked={effectiveCategories.includes(option.key)}
+                      onCheckedChange={(checked) => {
+                        const next = new Set(selectedCategories)
+                        if (checked === true) next.add(option.key)
+                        else next.delete(option.key)
+                        setSelectedCategories(Array.from(next))
+                      }}
+                      onSelect={(event) => event.preventDefault()}
                     >
-                      {categoryOptions.map((option) => (
-                        <DropdownMenu.CheckboxItem
-                          key={option.key}
-                          className="app-top-nav-select-item similarity-map-multi-filter-item"
-                          checked={effectiveCategories.includes(option.key)}
-                          onCheckedChange={(checked) => {
-                            const next = new Set(selectedCategories)
-                            if (checked === true) next.add(option.key)
-                            else next.delete(option.key)
-                            setSelectedCategories(Array.from(next))
-                          }}
-                          onSelect={(event) => event.preventDefault()}
-                        >
-                          <span className="similarity-map-multi-filter-item-text">
-                            {option.label}
-                          </span>
-                          <DropdownMenu.ItemIndicator className="app-top-nav-select-check">
-                            <Check size={14} aria-hidden />
-                          </DropdownMenu.ItemIndicator>
-                        </DropdownMenu.CheckboxItem>
-                      ))}
-                      <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
-                      <DropdownMenu.Item
-                        className="app-top-nav-select-item similarity-map-multi-filter-clear"
-                        onSelect={(event) => {
-                          event.preventDefault()
-                          setSelectedCategories([])
-                        }}
-                      >
-                        Clear category filter
-                      </DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Portal>
-                </DropdownMenu.Root>
-              </div>
-
-              <div className="opportunities-filter">
-                <span className="opportunities-filter-label">Supplier</span>
-                <DropdownMenu.Root modal={false}>
-                  <DropdownMenu.Trigger
-                    type="button"
-                    className="app-top-nav-select-trigger similarity-map-multi-filter-trigger"
-                    aria-label="Lieferanten filtern"
+                      <span className="similarity-map-multi-filter-item-text">
+                        {option.label}
+                      </span>
+                      <DropdownMenu.ItemIndicator className="app-top-nav-select-check">
+                        <Check size={14} aria-hidden />
+                      </DropdownMenu.ItemIndicator>
+                    </DropdownMenu.CheckboxItem>
+                  ))}
+                  <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
+                  <DropdownMenu.Item
+                    className="app-top-nav-select-item similarity-map-multi-filter-clear"
+                    onSelect={(event) => {
+                      event.preventDefault()
+                      setSelectedCategories([])
+                    }}
                   >
-                    <span>{supplierSummary}</span>
-                    <ChevronDown
-                      size={14}
-                      className="app-top-nav-select-chevron"
-                      aria-hidden
-                    />
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Portal>
-                    <DropdownMenu.Content
-                      className="app-top-nav-select-content similarity-map-multi-filter-content similarity-map-multi-filter-content--scroll"
-                      sideOffset={4}
-                      align="start"
-                    >
-                      {supplierOptions.map((supplier) => (
-                        <DropdownMenu.CheckboxItem
-                          key={supplier}
-                          className="app-top-nav-select-item similarity-map-multi-filter-item"
-                          checked={effectiveSuppliers.includes(supplier)}
-                          onCheckedChange={(checked) => {
-                            const next = new Set(selectedSuppliers)
-                            if (checked === true) next.add(supplier)
-                            else next.delete(supplier)
-                            setSelectedSuppliers(Array.from(next))
-                          }}
-                          onSelect={(event) => event.preventDefault()}
-                        >
-                          <span className="similarity-map-multi-filter-item-text">
-                            {supplier}
-                          </span>
-                          <DropdownMenu.ItemIndicator className="app-top-nav-select-check">
-                            <Check size={14} aria-hidden />
-                          </DropdownMenu.ItemIndicator>
-                        </DropdownMenu.CheckboxItem>
-                      ))}
-                      <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
-                      <DropdownMenu.Item
-                        className="app-top-nav-select-item similarity-map-multi-filter-clear"
-                        onSelect={(event) => {
-                          event.preventDefault()
-                          setSelectedSuppliers([])
-                        }}
-                      >
-                        Clear supplier filter
-                      </DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Portal>
-                </DropdownMenu.Root>
-              </div>
-            </div>
-          )
+                    Clear category filter
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          </div>
 
-          if (portalNode && !isTaskpane) {
-            return createPortal(content, portalNode)
-          }
-          return content
-        })()
+          <div className="opportunities-filter">
+            <span className="opportunities-filter-label">Supplier</span>
+            <DropdownMenu.Root modal={false}>
+              <DropdownMenu.Trigger
+                type="button"
+                className="app-top-nav-select-trigger similarity-map-multi-filter-trigger"
+                aria-label="Lieferanten filtern"
+              >
+                <span>{supplierSummary}</span>
+                <ChevronDown
+                  size={14}
+                  className="app-top-nav-select-chevron"
+                  aria-hidden
+                />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className="app-top-nav-select-content similarity-map-multi-filter-content similarity-map-multi-filter-content--scroll"
+                  sideOffset={4}
+                  align="start"
+                >
+                  {supplierOptions.map((supplier) => (
+                    <DropdownMenu.CheckboxItem
+                      key={supplier}
+                      className="app-top-nav-select-item similarity-map-multi-filter-item"
+                      checked={effectiveSuppliers.includes(supplier)}
+                      onCheckedChange={(checked) => {
+                        const next = new Set(selectedSuppliers)
+                        if (checked === true) next.add(supplier)
+                        else next.delete(supplier)
+                        setSelectedSuppliers(Array.from(next))
+                      }}
+                      onSelect={(event) => event.preventDefault()}
+                    >
+                      <span className="similarity-map-multi-filter-item-text">
+                        {supplier}
+                      </span>
+                      <DropdownMenu.ItemIndicator className="app-top-nav-select-check">
+                        <Check size={14} aria-hidden />
+                      </DropdownMenu.ItemIndicator>
+                    </DropdownMenu.CheckboxItem>
+                  ))}
+                  <DropdownMenu.Separator className="similarity-map-multi-filter-sep" />
+                  <DropdownMenu.Item
+                    className="app-top-nav-select-item similarity-map-multi-filter-clear"
+                    onSelect={(event) => {
+                      event.preventDefault()
+                      setSelectedSuppliers([])
+                    }}
+                  >
+                    Clear supplier filter
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          </div>
+        </div>
       ) : null}
 
       <Map
@@ -578,7 +569,7 @@ export default function SupplierNetworkMap({
               clearHideTimer()
               setTooltip({ x: info.x + offsetX, y: info.y + offsetY, node })
             } else {
-              scheduleHide(150)
+              scheduleHide(300)
             }
           }}
         />
@@ -643,7 +634,8 @@ export default function SupplierNetworkMap({
             '--tip-y': `${tooltip.y - 8}px`,
           } as React.CSSProperties}
           onMouseEnter={clearHideTimer}
-          onMouseLeave={() => scheduleHide(150)}
+          onMouseMove={clearHideTimer}
+          onMouseLeave={() => scheduleHide(300)}
         >
           <div className="similarity-map-tooltip-name">{tooltip.node.name}</div>
           <div className="similarity-map-tooltip-meta">

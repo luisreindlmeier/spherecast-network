@@ -559,7 +559,7 @@ export default function IngredientSimilarityPlot({
     }
   }
 
-  const scheduleHide = (delay = 220) => {
+  const scheduleHide = (delay = 300) => {
     clearHideTimer()
     hideTimer.current = setTimeout(() => setTooltip(null), delay)
   }
@@ -752,7 +752,8 @@ export default function IngredientSimilarityPlot({
             } as React.CSSProperties
           }
           onMouseEnter={clearHideTimer}
-          onMouseLeave={() => scheduleHide(120)}
+          onMouseMove={clearHideTimer}
+          onMouseLeave={() => scheduleHide(300)}
         >
           <div className="similarity-map-tooltip-name">{tooltip.name}</div>
           <div className="similarity-map-tooltip-meta">
