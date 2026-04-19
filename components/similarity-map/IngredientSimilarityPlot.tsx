@@ -91,9 +91,12 @@ type GraphDiv = HTMLElement & {
   _fullLayout?: Partial<Layout>
 }
 
+/** Marker radius in px: stronger spread by `companyCount` (more companies → larger). */
 function sizeForCount(count: number, minC: number, maxC: number): number {
-  if (maxC <= minC) return 8
-  return 4 + ((count - minC) / (maxC - minC)) * 14
+  if (maxC <= minC) return 16
+  const minSize = 3
+  const maxSize = 30
+  return minSize + ((count - minC) / (maxC - minC)) * (maxSize - minSize)
 }
 
 function buildTraces(points: SimilarityPoint[]): Data[] {
