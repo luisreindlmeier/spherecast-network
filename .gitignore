@@ -37,6 +37,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# claude code (project-local agent config, not source)
+.claude/
+
+# compiled output
+mcp-server/dist/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -25,7 +25,6 @@ This project was created during the [TUM.ai Makeathon 2026](https://makeathon.tu
 Challenge given by [Spherecast](https://www.spherecast.ai). Pitch Deck: [spherecast-network.pdf](https://github.com/user-attachments/files/26874988/Spherecast.Network.pdf)
 
 
-
 ---
 
 ## Stack
