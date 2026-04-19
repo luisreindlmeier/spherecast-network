@@ -39,8 +39,8 @@ function DeckGLOverlay({
 }
 
 const initialViewState = {
-  longitude: -20,
-  latitude: 48,
+  longitude: -30,
+  latitude: 30,
   zoom: 1.8,
   pitch: 40,
   bearing: -8,
@@ -138,6 +138,9 @@ export default function SupplierNetworkMap({
     hideTimer.current = setTimeout(() => setTooltip(null), delay)
   }
 
+  const portalNode = typeof document !== 'undefined'
+      ? document.getElementById('network-map-filters-portal')
+      : null
 
   useEffect(() => {
     let cancelled = false
@@ -552,7 +555,7 @@ export default function SupplierNetworkMap({
         reuseMaps
         attributionControl={false}
         maplibreLogo={false}
-        style={{ width: '100%', height: '100%', flex: 1, minHeight: 0 }}
+        style={{ width: '100%', height: '100%' }}
       >
         <DeckGLOverlay
           layers={layers}

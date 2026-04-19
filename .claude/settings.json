@@ -1,10 +1,4 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(sqlite3 /Users/luisreindlmeier/Desktop/spherecast/backend/data/db.sqlite \"SELECT * FROM SupplierRating LIMIT 2;\")",
-      "Bash(sqlite3 /Users/luisreindlmeier/Desktop/spherecast/backend/data/db.sqlite \"SELECT * FROM FdaStandard LIMIT 1;\")"
-    ]
-  },
   "hooks": {
     "PostToolUse": [
       {
