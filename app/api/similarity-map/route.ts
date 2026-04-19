@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { createServerClient } from '@/lib/supabase-server'
-import { dbErrorResponse } from '@/lib/api-errors'
+import { agnesGet } from '@/lib/agnes-server'
 import {
   computeSimilarityUmap,
   inferIngredientCategory,
@@ -19,49 +18,38 @@ import type {
 
 export const dynamic = 'force-dynamic'
 
+type SimilarityRawPayload = {
+  products: SimilarityRawMaterialProductRow[]
+  supplier_links: SimilaritySupplierLinkRow[]
+  suppliers: SimilaritySupplierRow[]
+  boms: SimilarityBomRow[]
+  bom_components: SimilarityBomComponentRow[]
+  finished_goods: SimilarityFinishedGoodRow[]
+}
+
 export async function GET() {
   const scopeCompanyId = await resolveCompanyScopeFilter()
-  const db = createServerClient()
-
-  const [
-    { data: products, error: pErr },
-    { data: supplierLinks, error: slErr },
-    { data: supplierRows, error: sErr },
-    { data: bomRows, error: bErr },
-    { data: bomComponents, error: bcErr },
-    { data: finishedGoods, error: fgErr },
-  ] = await Promise.all([
-    db
-      .from('product')
-      .select('id, sku, company_id')
-      .eq('type', 'raw-material')
-      .limit(10000),
-    db.from('supplier_product').select('supplier_id, product_id').limit(10000),
-    db.from('supplier').select('id, name').limit(10000),
-    db.from('bom').select('id, produced_product_id').limit(10000),
-    db.from('bom_component').select('bom_id, consumed_product_id').limit(10000),
-    db
-      .from('product')
-      .select('id, company_id')
-      .eq('type', 'finished-good')
-      .limit(10000),
-  ])
-
-  if (pErr || slErr || sErr || bErr || bcErr || fgErr) {
-    return dbErrorResponse('similarity-map', pErr, slErr, sErr, bErr, bcErr, fgErr)
+  const searchParams = new URLSearchParams()
+  if (scopeCompanyId !== null) {
+    searchParams.set('scope_company_id', String(scopeCompanyId))
   }
 
-  const rawMaterials =
-    (products ?? []) as SimilarityRawMaterialProductRow[]
-  const links = (supplierLinks ?? []) as SimilaritySupplierLinkRow[]
-  const suppliers = (supplierRows ?? []) as SimilaritySupplierRow[]
-  const boms = (bomRows ?? []) as SimilarityBomRow[]
-  const comps = (bomComponents ?? []) as SimilarityBomComponentRow[]
-  const fgs = (finishedGoods ?? []) as SimilarityFinishedGoodRow[]
+  const res = await agnesGet('/similarity-map-data', searchParams)
+  if (!res.ok) {
+    return NextResponse.json({ points: [] })
+  }
+
+  const payload = (await res.json()) as SimilarityRawPayload
+
+  const rawMaterials = payload.products ?? []
+  const links = payload.supplier_links ?? []
+  const suppliers = payload.suppliers ?? []
+  const boms = payload.boms ?? []
+  const comps = payload.bom_components ?? []
+  const fgs = payload.finished_goods ?? []
 
   const supplierMap = new Map(suppliers.map((s) => [s.id, s.name]))
 
-  /** Raw-material product IDs that appear in BOMs of this company’s finished goods */
   let rmIdsUsedByScopeCompany: Set<number> | null = null
   if (scopeCompanyId !== null) {
     const fgProductIds = new Set(
@@ -82,25 +70,21 @@ export async function GET() {
     rmIdsUsedByScopeCompany = rmIds
   }
 
-  // product_id → normalized ingredient name
   const productName = new Map<number, string>()
   for (const rm of rawMaterials) {
     const name = parseIngredientNameFromSku(rm.sku)
     productName.set(rm.id, name)
   }
 
-  // ingredient name → Set<company_id> (companies that own any RM with that name)
   const nameToCompanies = new Map<string, Set<number>>()
   for (const rm of rawMaterials) {
     const name = productName.get(rm.id)
     if (!name) continue
-    const set = nameToCompanies.get(name) ?? new Set()
+    const set = nameToCompanies.get(name) ?? new Set<number>()
     set.add(rm.company_id)
     nameToCompanies.set(name, set)
   }
 
-  // Collect unique (ingredient_name, supplier_id) pairs
-  // key: `{name}||{supplierId}`
   const seen = new Set<string>()
   const points: SimilarityPoint[] = []
 
@@ -120,11 +104,9 @@ export async function GET() {
     seen.add(key)
 
     const category = inferIngredientCategory(name)
-    const supplierName =
-      supplierMap.get(link.supplier_id) ?? `Supplier ${link.supplier_id}`
+    const supplierName = supplierMap.get(link.supplier_id) ?? `Supplier ${link.supplier_id}`
     const umap = computeSimilarityUmap(name, category, link.supplier_id)
     const companyCount = nameToCompanies.get(name)?.size ?? 0
-    const productId = String(link.product_id)
 
     points.push({
       id: `rm-${link.product_id}-sup-${link.supplier_id}`,
@@ -133,7 +115,7 @@ export async function GET() {
       supplierName,
       umap,
       companyCount,
-      productId,
+      productId: String(link.product_id),
     })
   }
 

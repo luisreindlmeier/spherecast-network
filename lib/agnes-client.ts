@@ -44,7 +44,87 @@ export type AgnesSupplierDetail = {
   companies: { id: number; name: string; productCount: number }[]
 }
 export type AgnesStats = { finishedGoods: number; rawMaterials: number; suppliers: number; companies: number }
-export type AgnesSearchItem = { kind: string; id: number; label: string; subtitle: string; href: string }
+export type AgnesSearchItem = {
+  kind: 'supplier' | 'company' | 'raw-material' | 'finished-good'
+  id: number
+  label: string
+  subtitle: string
+  href: string
+}
+
+export type AgnesRecommendationOriginal = {
+  sku: string
+  name: string
+  functional_class?: string
+  current_suppliers: string[]
+  single_source_risk: boolean
+}
+
+export type AgnesRecommendationSubstitute = {
+  sku: string
+  name: string
+  similarity: number
+  confidence: number
+  combined_score: number
+  functional_fit: number
+  compliance: boolean
+  violations: string[]
+  available_from: string[]
+  co2_vs_original?: number
+}
+
+export type AgnesRecommendation = {
+  original: AgnesRecommendationOriginal
+  substitutes: AgnesRecommendationSubstitute[]
+  explanation: string | null
+  sourcing_actions: string[]
+}
+
+export type AgnesOpportunityStatus = 'open' | 'in_review'
+
+export type AgnesOpportunityMatchLine = {
+  label: string
+  detail: string
+}
+
+export type AgnesOpportunityBrandAffected = {
+  name: string
+  productCount: number
+}
+
+export type AgnesOpportunityConsolidation = {
+  via: string
+  combinedVolume: string
+  estimatedSavings: string
+  supplierRisk: string
+}
+
+export type AgnesOpportunity = {
+  id: string
+  rawMaterialId: number
+  rawMaterialSku: string
+  confidence: number
+  ingredientName: string
+  brandsDisplay: string
+  currentSupplier: string
+  altSupplier: string
+  risk: string
+  brandKey: string
+  category: string
+  supplierKey: string
+  status: AgnesOpportunityStatus
+  matchReasoning: AgnesOpportunityMatchLine[]
+  brandsAffected: AgnesOpportunityBrandAffected[]
+  consolidation: AgnesOpportunityConsolidation
+  explanation: string | null
+  sourcingActions: string[]
+  substitutes: AgnesRecommendationSubstitute[]
+}
+
+export type AgnesOpportunitiesResponse = {
+  items: AgnesOpportunity[]
+  count: number
+}
 
 export const getStats = (scopeCompanyId?: number) =>
   get<AgnesStats>('/stats', { scope_company_id: scopeCompanyId })
