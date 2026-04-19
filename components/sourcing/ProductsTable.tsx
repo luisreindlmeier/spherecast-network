@@ -1,71 +1,53 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import type { FinishedGoodRow } from '@/lib/agnes-queries'
-import SourceViewToggle, {
-  type SourceViewMode,
-} from '@/components/sourcing/SourceViewToggle'
+import { useCallback, useState } from 'react'
+import type { FinishedGoodRow } from '@/lib/queries'
+import type { SourceViewMode } from '@/components/sourcing/SourceViewToggle'
+import SourcingTableShell from '@/components/sourcing/SourcingTableShell'
+import { useTableQuery } from '@/components/sourcing/useTableQuery'
 
 interface Props {
   rows: FinishedGoodRow[]
 }
 
 export default function ProductsTable({ rows }: Props) {
-  const [query, setQuery] = useState('')
   const [view, setView] = useState<SourceViewMode>('row')
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim()
-    if (!q) return rows
-    return rows.filter(
-      (r) =>
-        r.sku.toLowerCase().includes(q) ||
-        r.companyName.toLowerCase().includes(q)
-    )
-  }, [rows, query])
+  const matchProduct = useCallback(
+    (row: FinishedGoodRow, normalizedQuery: string) =>
+      row.sku.toLowerCase().includes(normalizedQuery) ||
+      row.companyName.toLowerCase().includes(normalizedQuery),
+    []
+  )
+
+  const { query, setQuery, filtered, countLabel } = useTableQuery(
+    rows,
+    matchProduct
+  )
 
   return (
-    <div className="data-table-card">
-      <div className="data-table-toolbar">
-        <input
-          className="data-search"
-          type="search"
-          placeholder="Search by SKU or brand…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        <SourceViewToggle value={view} onChange={setView} />
-        <span className="data-count">
-          {filtered.length !== rows.length
-            ? `${filtered.length} of ${rows.length}`
-            : `${rows.length} products`}
-        </span>
-      </div>
-
-      {view === 'row' && (
+    <SourcingTableShell
+      ariaLabel="Products table"
+      query={query}
+      onQueryChange={setQuery}
+      queryPlaceholder="Search by SKU or brand…"
+      view={view}
+      onViewChange={setView}
+      countLabel={countLabel}
+      countSuffix="products"
+      head={
         <div className="data-table-head data-grid-products">
           <span>SKU</span>
           <span>Brand</span>
           <span className="data-col-right">Ingredients</span>
         </div>
-      )}
-
-      <div
-        className={
-          view === 'tiles'
-            ? 'data-table-body data-table-body--tiles'
-            : 'data-table-body'
-        }
-      >
-        {filtered.length === 0 ? (
-          <div className="data-empty">
-            No products match &ldquo;{query}&rdquo;
-          </div>
-        ) : view === 'row' ? (
-          filtered.map((row) => (
+      }
+      isEmpty={filtered.length === 0}
+      emptyMessage={`No products match "${query}"`}
+      rowContent={
+        <>
+          {filtered.map((row) => (
             <div key={row.id} className="data-row data-grid-products">
               <Link
                 href={`/products/${row.id}`}
@@ -75,7 +57,7 @@ export default function ProductsTable({ rows }: Props) {
                 {row.sku}
               </Link>
               <Link
-                href={`/companies/${row.companyId}`}
+                href={`/companies/${row.company_id}`}
                 className="data-name detail-link"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -89,9 +71,12 @@ export default function ProductsTable({ rows }: Props) {
                 )}
               </span>
             </div>
-          ))
-        ) : (
-          filtered.map((row) => (
+          ))}
+        </>
+      }
+      tileContent={
+        <>
+          {filtered.map((row) => (
             <Link
               key={row.id}
               href={`/products/${row.id}`}
@@ -108,9 +93,9 @@ export default function ProductsTable({ rows }: Props) {
                 )}
               </div>
             </Link>
-          ))
-        )}
-      </div>
-    </div>
+          ))}
+        </>
+      }
+    />
   )
 }

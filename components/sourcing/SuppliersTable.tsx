@@ -1,65 +1,51 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import type { SupplierRow } from '@/lib/agnes-queries'
-import SourceViewToggle, {
-  type SourceViewMode,
-} from '@/components/sourcing/SourceViewToggle'
+import { useCallback, useState } from 'react'
+import type { SupplierRow } from '@/lib/queries'
+import type { SourceViewMode } from '@/components/sourcing/SourceViewToggle'
+import SourcingTableShell from '@/components/sourcing/SourcingTableShell'
+import { useTableQuery } from '@/components/sourcing/useTableQuery'
 
 interface Props {
   rows: SupplierRow[]
 }
 
 export default function SuppliersTable({ rows }: Props) {
-  const [query, setQuery] = useState('')
   const [view, setView] = useState<SourceViewMode>('row')
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim()
-    return q ? rows.filter((r) => r.name.toLowerCase().includes(q)) : rows
-  }, [rows, query])
+  const matchSupplier = useCallback(
+    (supplier: SupplierRow, normalizedQuery: string) =>
+      supplier.name.toLowerCase().includes(normalizedQuery),
+    []
+  )
+
+  const { query, setQuery, filtered, countLabel } = useTableQuery(
+    rows,
+    matchSupplier
+  )
 
   return (
-    <div className="data-table-card">
-      <div className="data-table-toolbar">
-        <input
-          className="data-search"
-          type="search"
-          placeholder="Search supplier…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        <SourceViewToggle value={view} onChange={setView} />
-        <span className="data-count">
-          {filtered.length !== rows.length
-            ? `${filtered.length} of ${rows.length}`
-            : `${rows.length} suppliers`}
-        </span>
-      </div>
-
-      {view === 'row' && (
+    <SourcingTableShell
+      ariaLabel="Suppliers table"
+      query={query}
+      onQueryChange={setQuery}
+      queryPlaceholder="Search supplier…"
+      view={view}
+      onViewChange={setView}
+      countLabel={countLabel}
+      countSuffix="suppliers"
+      head={
         <div className="data-table-head data-grid-suppliers">
           <span>Supplier</span>
           <span className="data-col-right">Linked SKUs</span>
         </div>
-      )}
-
-      <div
-        className={
-          view === 'tiles'
-            ? 'data-table-body data-table-body--tiles'
-            : 'data-table-body'
-        }
-      >
-        {filtered.length === 0 ? (
-          <div className="data-empty">
-            No suppliers match &ldquo;{query}&rdquo;
-          </div>
-        ) : view === 'row' ? (
-          filtered.map((row) => (
+      }
+      isEmpty={filtered.length === 0}
+      emptyMessage={`No suppliers match "${query}"`}
+      rowContent={
+        <>
+          {filtered.map((row) => (
             <Link
               key={row.id}
               href={`/suppliers/${row.id}`}
@@ -71,9 +57,12 @@ export default function SuppliersTable({ rows }: Props) {
                 <span className="data-cell-num">{row.materialCount}</span>
               </span>
             </Link>
-          ))
-        ) : (
-          filtered.map((row) => (
+          ))}
+        </>
+      }
+      tileContent={
+        <>
+          {filtered.map((row) => (
             <Link
               key={row.id}
               href={`/suppliers/${row.id}`}
@@ -86,9 +75,9 @@ export default function SuppliersTable({ rows }: Props) {
                 <span className="data-cell-num">{row.materialCount}</span>
               </div>
             </Link>
-          ))
-        )}
-      </div>
-    </div>
+          ))}
+        </>
+      }
+    />
   )
 }

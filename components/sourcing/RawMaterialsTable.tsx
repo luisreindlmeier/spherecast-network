@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import type { RawMaterialRow } from '@/lib/agnes-queries'
-import SourceViewToggle, {
-  type SourceViewMode,
-} from '@/components/sourcing/SourceViewToggle'
+import { useCallback, useMemo, useState } from 'react'
+import type { RawMaterialRow } from '@/lib/queries'
+import type { SourceViewMode } from '@/components/sourcing/SourceViewToggle'
+import SourcingTableShell from '@/components/sourcing/SourcingTableShell'
+import { useTableQuery } from '@/components/sourcing/useTableQuery'
 
 interface Props {
   rows: RawMaterialRow[]
@@ -37,48 +37,42 @@ function RawMaterialsColHeader({
 }
 
 export default function RawMaterialsTable({ rows }: Props) {
-  const [query, setQuery] = useState('')
   const [sort, setSort] = useState<RawMaterialsSortKey>('sku')
   const [view, setView] = useState<SourceViewMode>('row')
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim()
-    const base = q
-      ? rows.filter(
-          (r) =>
-            r.sku.toLowerCase().includes(q) ||
-            r.companyName.toLowerCase().includes(q)
-        )
-      : rows
+  const matchRawMaterial = useCallback(
+    (row: RawMaterialRow, normalizedQuery: string) =>
+      row.sku.toLowerCase().includes(normalizedQuery) ||
+      row.companyName.toLowerCase().includes(normalizedQuery),
+    []
+  )
 
-    return [...base].sort((a, b) => {
+  const {
+    query,
+    setQuery,
+    filtered: filteredWithoutSort,
+    countLabel,
+  } = useTableQuery(rows, matchRawMaterial)
+
+  const filtered = useMemo(() => {
+    return [...filteredWithoutSort].sort((a, b) => {
       if (sort === 'suppliers') return b.supplierCount - a.supplierCount
       if (sort === 'usage') return b.usedInProducts - a.usedInProducts
       return a.sku.localeCompare(b.sku)
     })
-  }, [rows, query, sort])
+  }, [filteredWithoutSort, sort])
 
   return (
-    <div className="data-table-card">
-      <div className="data-table-toolbar">
-        <input
-          className="data-search"
-          type="search"
-          placeholder="Search by SKU or brand…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        <SourceViewToggle value={view} onChange={setView} />
-        <span className="data-count">
-          {filtered.length !== rows.length
-            ? `${filtered.length} of ${rows.length}`
-            : `${rows.length} materials`}
-        </span>
-      </div>
-
-      {view === 'row' && (
+    <SourcingTableShell
+      ariaLabel="Raw materials table"
+      query={query}
+      onQueryChange={setQuery}
+      queryPlaceholder="Search by SKU or brand…"
+      view={view}
+      onViewChange={setView}
+      countLabel={countLabel}
+      countSuffix="materials"
+      head={
         <div className="data-table-head data-grid-materials">
           <RawMaterialsColHeader
             label="SKU"
@@ -100,21 +94,12 @@ export default function RawMaterialsTable({ rows }: Props) {
             setSort={setSort}
           />
         </div>
-      )}
-
-      <div
-        className={
-          view === 'tiles'
-            ? 'data-table-body data-table-body--tiles'
-            : 'data-table-body'
-        }
-      >
-        {filtered.length === 0 ? (
-          <div className="data-empty">
-            No materials match &ldquo;{query}&rdquo;
-          </div>
-        ) : view === 'row' ? (
-          filtered.map((row) => (
+      }
+      isEmpty={filtered.length === 0}
+      emptyMessage={`No materials match "${query}"`}
+      rowContent={
+        <>
+          {filtered.map((row) => (
             <Link
               key={row.id}
               href={`/raw-materials/${row.id}`}
@@ -134,9 +119,12 @@ export default function RawMaterialsTable({ rows }: Props) {
                 )}
               </span>
             </Link>
-          ))
-        ) : (
-          filtered.map((row) => (
+          ))}
+        </>
+      }
+      tileContent={
+        <>
+          {filtered.map((row) => (
             <Link
               key={row.id}
               href={`/raw-materials/${row.id}`}
@@ -159,9 +147,9 @@ export default function RawMaterialsTable({ rows }: Props) {
                 </span>
               </div>
             </Link>
-          ))
-        )}
-      </div>
-    </div>
+          ))}
+        </>
+      }
+    />
   )
 }

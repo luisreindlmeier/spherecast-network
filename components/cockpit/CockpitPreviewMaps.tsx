@@ -3,15 +3,10 @@
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCompanyScope } from '@/lib/company-scope-context'
+import { createSupplierNetworkMapDynamic } from '@/components/network-map/SupplierNetworkMapDynamic'
 
-const SupplierNetworkMap = dynamic(
-  () => import('@/components/network-map/SupplierNetworkMap'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="cockpit-preview-map-loading">Loading map…</div>
-    ),
-  }
+const SupplierNetworkMap = createSupplierNetworkMapDynamic(
+  'cockpit-preview-map-loading'
 )
 
 const IngredientSimilarityPlot = dynamic(

@@ -153,6 +153,6 @@ export type BomComponent = Database['public']['Tables']['bom_component']['Row']
 export type Supplier = Database['public']['Tables']['supplier']['Row']
 export type SupplierProduct =
   Database['public']['Tables']['supplier_product']['Row']
-export type ProductType = 'finished-good' | 'raw-material'
+export type ProductType = Database['public']['Tables']['product']['Row']['type']
 export type SupplierFacility =
   Database['public']['Tables']['supplier_facility']['Row']

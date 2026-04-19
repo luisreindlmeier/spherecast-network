@@ -2,58 +2,40 @@
  * Stops the Next.js dev server that holds `.next/dev/lock` (same PID Next prints).
  * Run: `pnpm dev:stop` then `pnpm dev` if you see "Another next dev server is already running".
  */
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import {
+  getNextDevLockPath,
+  isPidAlive,
+  lockFileExists,
+  readLockPid,
+  removeLockFile,
+} from './next-dev-lock-utils.mjs'
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const lockPath = path.join(root, '.next', 'dev', 'lock')
+const lockPath = getNextDevLockPath(import.meta.url)
 
-if (!fs.existsSync(lockPath)) {
+if (!lockFileExists(lockPath)) {
   console.log('No .next/dev/lock — nothing to stop.')
   process.exit(0)
 }
 
 let pid
 try {
-  const parsed = JSON.parse(fs.readFileSync(lockPath, 'utf8'))
-  if (typeof parsed.pid === 'number' && Number.isFinite(parsed.pid)) {
-    pid = parsed.pid
-  }
+  pid = readLockPid(lockPath)
 } catch {
   console.log('Removing unreadable lock file.')
-  try {
-    fs.unlinkSync(lockPath)
-  } catch {
-    /* ignore */
-  }
+  removeLockFile(lockPath)
   process.exit(0)
 }
 
 if (pid === undefined) {
-  try {
-    fs.unlinkSync(lockPath)
-  } catch {
-    /* ignore */
-  }
+  removeLockFile(lockPath)
   process.exit(0)
 }
 
-let alive = false
-try {
-  process.kill(pid, 0)
-  alive = true
-} catch {
-  alive = false
-}
+const alive = isPidAlive(pid)
 
 if (!alive) {
   console.log(`PID ${pid} is not running; removing stale lock.`)
-  try {
-    fs.unlinkSync(lockPath)
-  } catch {
-    /* ignore */
-  }
+  removeLockFile(lockPath)
   process.exit(0)
 }
 
@@ -84,10 +66,6 @@ try {
   /* exited */
 }
 
-try {
-  fs.unlinkSync(lockPath)
-} catch {
-  /* lock may already be gone */
-}
+removeLockFile(lockPath)
 
 console.log('Done. You can run `pnpm dev` again.')

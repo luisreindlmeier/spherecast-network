@@ -49,13 +49,15 @@ type MapBundle = { nodes: NetworkMapNode[]; arcs: NetworkMapArc[] }
 
 export type SupplierNetworkMapVariant = 'default' | 'preview'
 
+export type SupplierNetworkMapProps = {
+  companyId: number | null
+  variant?: SupplierNetworkMapVariant
+}
+
 export default function SupplierNetworkMap({
   companyId,
   variant = 'default',
-}: {
-  companyId: number | null
-  variant?: SupplierNetworkMapVariant
-}) {
+}: SupplierNetworkMapProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapRef>(null)
 
@@ -63,6 +65,7 @@ export default function SupplierNetworkMap({
   const [status, setStatus] = useState<'loading' | 'live' | 'empty' | 'error'>(
     'loading'
   )
+  const [errorDetail, setErrorDetail] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -91,17 +94,20 @@ export default function SupplierNetworkMap({
           typeof data !== 'object' ||
           !Array.isArray((data as MapBundle).nodes)
         ) {
+          setBundle(null)
           setStatus('error')
+          setErrorDetail('network-map response shape invalid')
           return
         }
         const bundleData = data as MapBundle
         if (bundleData.nodes.length === 0) {
           setBundle(null)
           setStatus('empty')
-        } else {
-          setBundle(bundleData)
-          setStatus('live')
+          return
         }
+        setBundle(bundleData)
+        setErrorDetail(null)
+        setStatus('live')
       })
       .catch((error: unknown) => {
         if (cancelled) return
@@ -109,11 +115,13 @@ export default function SupplierNetworkMap({
           if (timedOut) {
             setBundle(null)
             setStatus('error')
+            setErrorDetail('Timed out while loading /api/network-map')
           }
           return
         }
         setBundle(null)
         setStatus('error')
+        setErrorDetail('API request failed for /api/network-map')
       })
       .finally(() => {
         window.clearTimeout(timeoutId)
@@ -230,39 +238,36 @@ export default function SupplierNetworkMap({
         )}
       </Map>
 
-      {/* Status overlay */}
-      {status === 'loading' && (
-        <div className="map-overlay-status">Loading…</div>
-      )}
+      {status === 'loading' && <div className="map-overlay-status">Loading…</div>}
       {status === 'empty' && (
         <div className="map-overlay-status">
-          Geocoding pending — run
-          <code
-            style={{ margin: '0 4px', fontFamily: 'var(--font-secondary)' }}
-          >
-            pnpm tsx scripts/geocode-entities.ts
-          </code>
+          {companyId === null ? (
+            <>
+              Geocoding pending - run
+              <code className="map-overlay-code">
+                pnpm tsx scripts/geocode-entities.ts
+              </code>
+            </>
+          ) : (
+            'No network links found for the selected company scope.'
+          )}
         </div>
       )}
       {status === 'error' && (
-        <div className="map-overlay-status">Failed to load map data</div>
+        <div className="map-overlay-status">
+          Failed to load map data
+          {errorDetail ? ` (${errorDetail})` : ''}
+        </div>
       )}
 
-      {/* Legend */}
       {status === 'live' && !isPreview && (
         <div className="map-legend">
           <div className="map-legend-row">
-            <span
-              className="map-legend-dot"
-              style={{ background: 'rgb(103,232,249)' }}
-            />
+            <span className="map-legend-dot map-legend-dot-company" />
             <span>{companyCount} brands</span>
           </div>
           <div className="map-legend-row">
-            <span
-              className="map-legend-dot"
-              style={{ background: 'rgb(167,139,250)' }}
-            />
+            <span className="map-legend-dot map-legend-dot-supplier" />
             <span>{supplierCount} suppliers</span>
           </div>
           <div className="map-legend-row">
