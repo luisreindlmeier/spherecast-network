@@ -3118,14 +3118,14 @@ textarea {
     }
   }
 
-  /* Show close button inside drawer */
+  /* Show close button inside drawer — top-left with breathing room */
   .sidebar-mobile-close {
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 20px;
+    left: 20px;
     width: 32px;
     height: 32px;
     border-radius: 8px;
@@ -3138,6 +3138,11 @@ textarea {
   .sidebar-mobile-close:hover {
     background: var(--bg-hover);
     color: var(--text-primary);
+  }
+
+  /* Push brand down so it clears the close button */
+  .sidebar-brand {
+    padding-top: 64px;
   }
 
   /* Tighten top nav on mobile */
