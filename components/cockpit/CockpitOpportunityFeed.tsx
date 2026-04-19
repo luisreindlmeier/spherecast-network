@@ -21,7 +21,9 @@ function confidenceBand(value: number): Confidence {
   return 'low'
 }
 
-export default function CockpitOpportunityFeed({ rows }: CockpitOpportunityFeedProps) {
+export default function CockpitOpportunityFeed({
+  rows,
+}: CockpitOpportunityFeedProps) {
   const [hidden, setHidden] = useState<Set<string>>(() => new Set())
 
   const visible = useMemo(
@@ -55,11 +57,15 @@ export default function CockpitOpportunityFeed({ rows }: CockpitOpportunityFeedP
                 >
                   {confidenceLabel(confidenceBand(row.confidence))}
                 </span>
-                <span className="cockpit-opp-ingredient">{row.ingredientName}</span>
+                <span className="cockpit-opp-ingredient">
+                  {row.ingredientName}
+                </span>
                 <span className="cockpit-opp-brands cockpit-opp-row-brands">
                   {row.brandsDisplay}
                 </span>
-                <span className="cockpit-opp-supplier">{row.currentSupplier}</span>
+                <span className="cockpit-opp-supplier">
+                  {row.currentSupplier}
+                </span>
                 <span className="cockpit-opp-impact">
                   {Math.round(row.confidence * 100)}%
                 </span>

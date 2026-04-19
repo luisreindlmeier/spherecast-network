@@ -1,7 +1,10 @@
 import json
+import logging
 import os
 
 from openai import OpenAI
+
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel, field_validator
 
 _client: OpenAI | None = None
@@ -168,5 +171,6 @@ Set confidence lower (0.4-0.7) since this is based on general knowledge, not ver
             parsed["non_gmo"] = None
 
         return IngredientProfile(name=name, raw_text=raw_text, sources=used_sources, **parsed)
-    except Exception:
+    except Exception as exc:
+        logger.warning("LLM extraction failed for %r: %s", name, exc)
         return IngredientProfile(name=name, raw_text=raw_text, sources=used_sources, confidence=0.1)

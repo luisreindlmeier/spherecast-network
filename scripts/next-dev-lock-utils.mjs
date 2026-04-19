@@ -3,7 +3,10 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export function getNextDevLockPath(fromImportMetaUrl) {
-  const root = path.resolve(path.dirname(fileURLToPath(fromImportMetaUrl)), '..')
+  const root = path.resolve(
+    path.dirname(fileURLToPath(fromImportMetaUrl)),
+    '..'
+  )
   return path.join(root, '.next', 'dev', 'lock')
 }
 

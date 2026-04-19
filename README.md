@@ -20,7 +20,7 @@ Monorepo for the **Spherecast** sourcing and network dashboard.
 
 **Frontend (Next.js)** — project root:
 
-```
+````
 app/
   layout.tsx, page.tsx, globals.css
   (app)/layout.tsx          # App shell, navigation, CompanyScopeProvider
@@ -43,7 +43,7 @@ cp .env.example .env.local   # set values
 pnpm dev                     # may run predev to clear stale dev locks
 pnpm build && pnpm start
 pnpm tsc --noEmit
-```
+````
 
 ## Backend
 

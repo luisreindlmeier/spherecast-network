@@ -56,7 +56,8 @@ export default async function AppLayout({
               <AppTopNav searchItems={searchItems} />
               {!agnesAvailable ? (
                 <div className="app-data-source-banner" role="status">
-                  Agnes API offline. Showing fallback values until backend is reachable.
+                  Agnes API offline. Showing fallback values until backend is
+                  reachable.
                 </div>
               ) : null}
               <div className="app-main-inner">{children}</div>

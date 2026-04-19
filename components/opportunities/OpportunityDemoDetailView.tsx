@@ -7,7 +7,9 @@ function formatPct(conf: number): string {
   return `${Math.round(conf * 100)}%`
 }
 
-function buildSubstituteLines(detail: OpportunityDetail): OpportunityMatchLine[] {
+function buildSubstituteLines(
+  detail: OpportunityDetail
+): OpportunityMatchLine[] {
   const first = detail.allSubstitutes[0]
   if (!first) return detail.row.matchReasoning as OpportunityMatchLine[]
 
@@ -16,7 +18,9 @@ function buildSubstituteLines(detail: OpportunityDetail): OpportunityMatchLine[]
     { label: 'Functional fit', detail: formatPct(first.functional_fit) },
     {
       label: 'Compliance',
-      detail: first.compliance ? 'Pass' : `Review (${first.violations.join(', ') || 'violations'})`,
+      detail: first.compliance
+        ? 'Pass'
+        : `Review (${first.violations.join(', ') || 'violations'})`,
     },
     {
       label: 'Supplier options',
@@ -42,7 +46,10 @@ export default function OpportunityDetailView({
         <div>
           <h2 className="opportunities-detail-title">
             {row.ingredientName}
-            <span className="opportunities-detail-sub"> / {row.rawMaterialSku}</span>
+            <span className="opportunities-detail-sub">
+              {' '}
+              / {row.rawMaterialSku}
+            </span>
           </h2>
         </div>
         <span className="opportunities-detail-conf">

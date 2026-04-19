@@ -4,17 +4,11 @@ import { z } from 'zod'
 import PageHeader from '@/components/layout/PageHeader'
 import OpportunityDetailView from '@/components/opportunities/OpportunityDemoDetailView'
 import { ArrowLeft } from 'lucide-react'
-import {
-  getOpportunityDetail,
-} from '@/lib/agnes-queries'
+import { getOpportunityDetail } from '@/lib/agnes-queries'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
 
 const paramsSchema = z.object({
-  opportunityId: z
-    .string()
-    .min(1)
-    .max(200)
-    .regex(/^\d+$/),
+  opportunityId: z.string().min(1).max(200).regex(/^\d+$/),
 })
 
 export default async function OpportunityDetailPage({

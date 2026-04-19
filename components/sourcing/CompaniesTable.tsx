@@ -89,7 +89,9 @@ export default function CompaniesTable({ companies }: Props) {
                 <span>
                   <span className="data-source-tile-meta-k">FG</span>{' '}
                   {company.finishedGoods > 0 ? (
-                    <span className="data-cell-num">{company.finishedGoods}</span>
+                    <span className="data-cell-num">
+                      {company.finishedGoods}
+                    </span>
                   ) : (
                     <span className="data-cell-num data-cell-num-muted">—</span>
                   )}
@@ -97,7 +99,9 @@ export default function CompaniesTable({ companies }: Props) {
                 <span>
                   <span className="data-source-tile-meta-k">RM</span>{' '}
                   {company.rawMaterials > 0 ? (
-                    <span className="data-cell-num">{company.rawMaterials}</span>
+                    <span className="data-cell-num">
+                      {company.rawMaterials}
+                    </span>
                   ) : (
                     <span className="data-cell-num data-cell-num-muted">—</span>
                   )}

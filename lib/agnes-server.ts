@@ -7,16 +7,20 @@ async function safeFetch(input: string, init?: RequestInit): Promise<Response> {
   try {
     return await fetch(input, init)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown fetch error'
+    const message =
+      error instanceof Error ? error.message : 'Unknown fetch error'
     console.error(`[agnes] upstream fetch failed for ${input}: ${message}`)
     return new Response(
       JSON.stringify({ error: 'Agnes unavailable', detail: message }),
-      { status: 503, headers: JSON_HEADERS },
+      { status: 503, headers: JSON_HEADERS }
     )
   }
 }
 
-export async function agnesGet(path: string, params?: URLSearchParams): Promise<Response> {
+export async function agnesGet(
+  path: string,
+  params?: URLSearchParams
+): Promise<Response> {
   const url = `${AGNES_URL}${path}${params?.toString() ? `?${params}` : ''}`
   return safeFetch(url, {
     headers: { 'X-API-Key': AGNES_KEY },
@@ -24,7 +28,10 @@ export async function agnesGet(path: string, params?: URLSearchParams): Promise<
   })
 }
 
-export async function agnesPost(path: string, body: unknown): Promise<Response> {
+export async function agnesPost(
+  path: string,
+  body: unknown
+): Promise<Response> {
   return safeFetch(`${AGNES_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-API-Key': AGNES_KEY },
@@ -34,10 +41,10 @@ export async function agnesPost(path: string, body: unknown): Promise<Response> 
 
 export function proxyResponse(res: Response): Response {
   if (!res.ok) {
-    return new Response(
-      JSON.stringify({ error: 'Agnes unavailable' }),
-      { status: res.status, headers: JSON_HEADERS },
-    )
+    return new Response(JSON.stringify({ error: 'Agnes unavailable' }), {
+      status: res.status,
+      headers: JSON_HEADERS,
+    })
   }
   return res
 }

@@ -1341,7 +1341,9 @@ textarea {
   max-width: none;
 }
 
-.supplier-network-map-root .network-map-filters--taskpane .opportunities-filter {
+.supplier-network-map-root
+  .network-map-filters--taskpane
+  .opportunities-filter {
   display: block;
   min-width: 0;
   max-width: none;
@@ -2602,20 +2604,20 @@ textarea {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-.app-error-card {
-  margin-top: 16px;
-}
-.app-error-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-.app-error-description {
-  margin-top: 8px;
-  color: var(--text-secondary);
-}
-.app-error-retry {
-  margin-top: 12px;
-}
+  .app-error-card {
+    margin-top: 16px;
+  }
+  .app-error-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .app-error-description {
+    margin-top: 8px;
+    color: var(--text-secondary);
+  }
+  .app-error-retry {
+    margin-top: 12px;
+  }
   border-bottom: 1px solid var(--border);
 }
 
@@ -2707,6 +2709,12 @@ textarea {
 
 .data-grid-materials {
   grid-template-columns: 200px 1fr minmax(120px, auto) minmax(120px, auto);
+}
+
+.data-grid-materials-with-profile {
+  grid-template-columns:
+    180px 1fr minmax(240px, 280px) minmax(100px, auto)
+    minmax(100px, auto);
 }
 
 .data-grid-suppliers {

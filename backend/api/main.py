@@ -24,7 +24,9 @@ from ingestion.db_reader import (
     get_suppliers, get_supplier_detail,
     get_global_search, get_network_map_data,
     get_similarity_map_raw_data,
+    parse_name_from_sku,
 )
+from ingestion.db_writer import get_enrichment_stats
 from ingestion.fda_ratings import get_fda_status, get_standards
 from ingestion.fda_live import layer2_check
 from optimization.carbon import estimate_co2, get_prop65_warning
@@ -437,6 +439,12 @@ def company_sourcing(company_id: int):
         "ingredients": ingredients,
         "top_suppliers": [{"name": s, "ingredient_count": c} for s, c in supplier_summary],
     }
+
+
+@app.get("/enrichment/stats", dependencies=[_auth])
+def enrichment_stats():
+    """Returns how many raw materials have been enriched with vegan/allergen/regulatory data."""
+    return get_enrichment_stats(_DB_PATH)
 
 
 @app.get("/stats", dependencies=[_auth])

@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useCallback, useMemo, useState } from 'react'
 import type { RawMaterialRow } from '@/lib/agnes-queries'
 import type { SourceViewMode } from '@/components/sourcing/SourceViewToggle'
+import { IngredientProfileBadges } from '@/components/sourcing/IngredientProfileBadges'
 import SourcingTableShell from '@/components/sourcing/SourcingTableShell'
 import { useTableQuery } from '@/components/sourcing/useTableQuery'
+import { useIngredientProfiles } from '@/components/sourcing/useIngredientProfiles'
 
 interface Props {
   rows: RawMaterialRow[]
@@ -62,6 +64,18 @@ export default function RawMaterialsTable({ rows }: Props) {
     })
   }, [filteredWithoutSort, sort])
 
+  const materialIds = useMemo(() => filtered.map((r) => r.id), [filtered])
+  const { profiles } = useIngredientProfiles(materialIds)
+
+  const filteredWithProfiles = useMemo(
+    () =>
+      filtered.map((row) => ({
+        ...row,
+        profile: profiles[row.id],
+      })),
+    [filtered, profiles]
+  )
+
   return (
     <SourcingTableShell
       ariaLabel="Raw materials table"
@@ -73,7 +87,7 @@ export default function RawMaterialsTable({ rows }: Props) {
       countLabel={countLabel}
       countSuffix="materials"
       head={
-        <div className="data-table-head data-grid-materials">
+        <div className="data-table-head data-grid-materials-with-profile">
           <RawMaterialsColHeader
             label="SKU"
             value="sku"
@@ -81,6 +95,7 @@ export default function RawMaterialsTable({ rows }: Props) {
             setSort={setSort}
           />
           <span>Brand</span>
+          <span>Profile</span>
           <RawMaterialsColHeader
             label="Suppliers"
             value="suppliers"
@@ -99,15 +114,25 @@ export default function RawMaterialsTable({ rows }: Props) {
       emptyMessage={`No materials match "${query}"`}
       rowContent={
         <>
-          {filtered.map((row) => (
+          {filteredWithProfiles.map((row) => (
             <Link
               key={row.id}
               href={`/raw-materials/${row.id}`}
-              className="data-row data-grid-materials"
+              className="data-row data-grid-materials-with-profile"
               style={{ textDecoration: 'none' }}
             >
               <span className="data-sku">{row.sku}</span>
               <span className="data-name">{row.companyName}</span>
+              <div
+                className="text-xs overflow-hidden"
+                style={{ minHeight: '24px' }}
+              >
+                {row.profile ? (
+                  <IngredientProfileBadges profile={row.profile} compact />
+                ) : (
+                  <span className="text-gray-500 italic">—</span>
+                )}
+              </div>
               <span className="data-col-right">
                 <span className="data-cell-num">{row.supplierCount}</span>
               </span>
@@ -124,7 +149,7 @@ export default function RawMaterialsTable({ rows }: Props) {
       }
       tileContent={
         <>
-          {filtered.map((row) => (
+          {filteredWithProfiles.map((row) => (
             <Link
               key={row.id}
               href={`/raw-materials/${row.id}`}
@@ -132,6 +157,11 @@ export default function RawMaterialsTable({ rows }: Props) {
             >
               <span className="data-sku">{row.sku}</span>
               <span className="data-source-tile-title">{row.companyName}</span>
+              {row.profile && (
+                <div className="mt-2 mb-2">
+                  <IngredientProfileBadges profile={row.profile} compact />
+                </div>
+              )}
               <div className="data-source-tile-meta">
                 <span>
                   <span className="data-source-tile-meta-k">Suppliers</span>{' '}

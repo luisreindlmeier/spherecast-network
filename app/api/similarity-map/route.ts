@@ -104,7 +104,8 @@ export async function GET() {
     seen.add(key)
 
     const category = inferIngredientCategory(name)
-    const supplierName = supplierMap.get(link.supplier_id) ?? `Supplier ${link.supplier_id}`
+    const supplierName =
+      supplierMap.get(link.supplier_id) ?? `Supplier ${link.supplier_id}`
     const umap = computeSimilarityUmap(name, category, link.supplier_id)
     const companyCount = nameToCompanies.get(name)?.size ?? 0
 

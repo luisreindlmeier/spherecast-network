@@ -1,13 +1,18 @@
 const BASE = '/api/agnes'
 
-async function get<T>(path: string, params?: Record<string, string | number | undefined>): Promise<T> {
+async function get<T>(
+  path: string,
+  params?: Record<string, string | number | undefined>
+): Promise<T> {
   const url = new URL(path, 'http://localhost')
   if (params) {
     for (const [k, v] of Object.entries(params)) {
       if (v !== undefined) url.searchParams.set(k, String(v))
     }
   }
-  const res = await fetch(`${BASE}${url.pathname}${url.search}`, { cache: 'no-store' })
+  const res = await fetch(`${BASE}${url.pathname}${url.search}`, {
+    cache: 'no-store',
+  })
   if (!res.ok) throw new Error(`Agnes ${path} failed: ${res.status}`)
   return res.json() as Promise<T>
 }
@@ -22,28 +27,89 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>
 }
 
-export type AgnesCompany = { id: number; name: string; finishedGoods: number; rawMaterials: number }
-export type AgnesCompanyDetail = {
-  id: number; name: string
-  finishedGoods: { id: number; sku: string; ingredientCount: number }[]
-  rawMaterials: { id: number; sku: string; supplierCount: number; usedInProducts: number }[]
+export type AgnesCompany = {
+  id: number
+  name: string
+  finishedGoods: number
+  rawMaterials: number
 }
-export type AgnesProduct = { id: number; sku: string; companyId: number; companyName: string; ingredientCount: number }
+export type AgnesCompanyDetail = {
+  id: number
+  name: string
+  finishedGoods: { id: number; sku: string; ingredientCount: number }[]
+  rawMaterials: {
+    id: number
+    sku: string
+    supplierCount: number
+    usedInProducts: number
+  }[]
+}
+export type AgnesProduct = {
+  id: number
+  sku: string
+  companyId: number
+  companyName: string
+  ingredientCount: number
+}
 export type AgnesProductDetail = AgnesProduct & {
   ingredients: { id: number; sku: string; companyName: string; type: string }[]
 }
-export type AgnesRawMaterial = { id: number; sku: string; companyId: number; companyName: string; supplierCount: number; usedInProducts: number }
+export type IngredientProfile = {
+  functionalClass: string | null
+  allergens: string[]
+  vegan: boolean | null
+  kosher: boolean | null
+  halal: boolean | null
+  nonGmo: boolean | null
+  eNumber: string | null
+  confidence: number | null
+  description: string | null
+  synonyms: string[]
+  enrichedSources: string[]
+}
+
+export type AgnesEnrichmentStats = {
+  total_raw_materials: number
+  enriched: number
+  enrichment_rate: number
+  vegan_known: number
+  vegan_true: number
+  by_functional_class: { class: string; count: number }[]
+}
+
+export type AgnesRawMaterial = {
+  id: number
+  sku: string
+  companyId: number
+  companyName: string
+  supplierCount: number
+  usedInProducts: number
+}
 export type AgnesRawMaterialDetail = AgnesRawMaterial & {
   suppliers: { id: number; name: string }[]
   foundIn: { productId: number; sku: string; companyName: string }[]
+  profile: IngredientProfile
 }
 export type AgnesSupplier = { id: number; name: string; materialCount: number }
 export type AgnesSupplierDetail = {
-  id: number; name: string; materialCount: number; companiesReached: number
-  materials: { productId: number; sku: string; companyName: string; usedInProducts: number }[]
+  id: number
+  name: string
+  materialCount: number
+  companiesReached: number
+  materials: {
+    productId: number
+    sku: string
+    companyName: string
+    usedInProducts: number
+  }[]
   companies: { id: number; name: string; productCount: number }[]
 }
-export type AgnesStats = { finishedGoods: number; rawMaterials: number; suppliers: number; companies: number }
+export type AgnesStats = {
+  finishedGoods: number
+  rawMaterials: number
+  suppliers: number
+  companies: number
+}
 export type AgnesSearchItem = {
   kind: 'supplier' | 'company' | 'raw-material' | 'finished-good'
   id: number
@@ -142,7 +208,9 @@ export const getProductDetail = (id: number) =>
   get<AgnesProductDetail>(`/products/${id}`)
 
 export const getRawMaterials = (scopeCompanyId?: number) =>
-  get<AgnesRawMaterial[]>('/raw-materials', { scope_company_id: scopeCompanyId })
+  get<AgnesRawMaterial[]>('/raw-materials', {
+    scope_company_id: scopeCompanyId,
+  })
 
 export const getRawMaterialDetail = (id: number) =>
   get<AgnesRawMaterialDetail>(`/raw-materials/${id}`)
@@ -160,7 +228,20 @@ export const getNetworkMap = () =>
   get<{ nodes: unknown[]; arcs: unknown[] }>('/network-map')
 
 export const getRecommendations = (sku: string, topK = 5) =>
-  post<unknown>('/recommend', { ingredient_sku: sku, top_k: topK, explain: true })
+  post<unknown>('/recommend', {
+    ingredient_sku: sku,
+    top_k: topK,
+    explain: true,
+  })
 
 export const getSingleSupplierRisk = (minBoms = 1) =>
   get<unknown>('/risk', { min_boms: minBoms })
+
+export const getEnrichmentStats = () =>
+  get<AgnesEnrichmentStats>('/enrichment/stats')
+
+export const getOpportunities = (scopeCompanyId?: number, limit = 18) =>
+  get<AgnesOpportunitiesResponse>('/opportunities', {
+    scope_company_id: scopeCompanyId,
+    limit,
+  })

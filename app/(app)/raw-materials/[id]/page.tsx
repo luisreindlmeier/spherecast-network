@@ -2,9 +2,20 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
 import PlaceholderSection from '@/components/sourcing/PlaceholderSection'
+import {
+  IngredientProfileBadges,
+  IngredientConfidenceBar,
+} from '@/components/sourcing/IngredientProfileBadges'
 import { getRawMaterialDetail } from '@/lib/agnes-queries'
 import { productsUsedInLabel, suppliersCountLabel } from '@/lib/format-labels'
-import { FlaskConical, Package, Building2, ArrowLeft, Tag } from 'lucide-react'
+import {
+  FlaskConical,
+  Package,
+  Building2,
+  ArrowLeft,
+  Tag,
+  ShieldCheck,
+} from 'lucide-react'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -127,12 +138,41 @@ export default async function RawMaterialDetailPage({ params }: Props) {
           )}
         </div>
 
-        {/* Placeholder: Specifications */}
-        <PlaceholderSection
-          title="Specifications"
-          description="CAS number, INCI name, purity grade, particle size and regulatory status."
-          icon={<FlaskConical size={14} />}
-        />
+        {/* Ingredient profile — certifications, allergens, functional class */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            <ShieldCheck size={14} />
+            <span>Ingredient Profile</span>
+            {material.profile.confidence !== null && (
+              <span className="detail-section-count">
+                <IngredientConfidenceBar
+                  confidence={material.profile.confidence}
+                />
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col gap-3 px-1 py-2">
+            <IngredientProfileBadges profile={material.profile} />
+            {material.profile.description && (
+              <p className="text-xs text-gray-500 leading-relaxed">
+                {material.profile.description}
+              </p>
+            )}
+            {material.profile.synonyms.length > 0 && (
+              <div className="text-xs text-gray-400">
+                Also known as:{' '}
+                <span className="text-gray-600">
+                  {material.profile.synonyms.join(', ')}
+                </span>
+              </div>
+            )}
+            {material.profile.enrichedSources.length > 0 && (
+              <div className="text-xs text-gray-400">
+                Sources: {material.profile.enrichedSources.join(', ')}
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Placeholder: Pricing & Lead Time */}
         <PlaceholderSection

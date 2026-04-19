@@ -4,6 +4,8 @@ import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import { type OpportunityRow } from '@/lib/agnes-queries'
+import { IngredientProfileBadges } from '@/components/sourcing/IngredientProfileBadges'
+import { useIngredientProfiles } from '@/components/sourcing/useIngredientProfiles'
 
 type OpportunitiesWorkspaceProps = {
   rows: OpportunityRow[]
@@ -13,17 +15,32 @@ function formatPct(conf: number): string {
   return `${Math.round(conf * 100)}%`
 }
 
-export default function OpportunitiesWorkspace({ rows }: OpportunitiesWorkspaceProps) {
+export default function OpportunitiesWorkspace({
+  rows,
+}: OpportunitiesWorkspaceProps) {
   const router = useRouter()
 
   const filtered = useMemo(() => {
     return [...rows].sort((a, b) => b.confidence - a.confidence)
   }, [rows])
 
+  const materialIds = useMemo(
+    () => filtered.map((r) => r.rawMaterialId),
+    [filtered]
+  )
+  const { profiles } = useIngredientProfiles(materialIds)
+
+  const filteredWithProfiles = useMemo(
+    () =>
+      filtered.map((row) => ({
+        ...row,
+        profile: profiles[row.rawMaterialId],
+      })),
+    [filtered, profiles]
+  )
+
   return (
     <div className="opportunities-workspace">
-
-
       <div className="opportunities-table-shell">
         <div className="opportunities-table-scroll">
           <table className="opportunities-table">
@@ -31,6 +48,7 @@ export default function OpportunitiesWorkspace({ rows }: OpportunitiesWorkspaceP
               <tr>
                 <th className="opportunities-th-num">Conf.</th>
                 <th>Ingredient</th>
+                <th>Profile</th>
                 <th>Brands</th>
                 <th>Current sup.</th>
                 <th>Alt. sup.</th>
@@ -43,12 +61,12 @@ export default function OpportunitiesWorkspace({ rows }: OpportunitiesWorkspaceP
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="opportunities-td-empty">
+                  <td colSpan={8} className="opportunities-td-empty">
                     No opportunities match these filters.
                   </td>
                 </tr>
               ) : (
-                filtered.map((row) => (
+                filteredWithProfiles.map((row) => (
                   <OpportunityTableRow
                     key={row.id}
                     row={row}
@@ -87,6 +105,13 @@ function OpportunityTableRow({
       <td className="opportunities-td-num">{formatPct(row.confidence)}</td>
       <td>
         <span className="opportunities-ing">{row.ingredientName}</span>
+      </td>
+      <td className="opportunities-td-muted" style={{ minWidth: '240px' }}>
+        {row.profile ? (
+          <IngredientProfileBadges profile={row.profile} compact />
+        ) : (
+          <span className="text-gray-500 italic">—</span>
+        )}
       </td>
       <td className="opportunities-td-muted">{row.brandsDisplay}</td>
       <td className="opportunities-td-muted">{row.currentSupplier}</td>

@@ -320,6 +320,39 @@ def get_raw_material_detail(product_id: int, path: str | Path | None = None) -> 
             "companyName": company_map.get(fg["CompanyId"], ""),
         })
 
+    import json as _json
+
+    def _col(name: str):
+        val = p.get(name)
+        return None if (val is None or (isinstance(val, float) and pd.isna(val))) else val
+
+    def _json_col(name: str) -> list:
+        raw = _col(name)
+        if raw is None:
+            return []
+        try:
+            return _json.loads(raw)
+        except Exception:
+            return []
+
+    def _bool_col(name: str) -> bool | None:
+        val = _col(name)
+        return None if val is None else bool(val)
+
+    profile = {
+        "functionalClass": _col("functional_class"),
+        "allergens": _json_col("allergens"),
+        "vegan": _bool_col("vegan"),
+        "kosher": _bool_col("kosher"),
+        "halal": _bool_col("halal"),
+        "nonGmo": _bool_col("non_gmo"),
+        "eNumber": _col("e_number"),
+        "confidence": _col("confidence"),
+        "description": _col("description"),
+        "synonyms": _json_col("synonyms"),
+        "enrichedSources": _json_col("enriched_sources"),
+    }
+
     return {
         "id": int(p["Id"]),
         "sku": p["SKU"],
@@ -329,6 +362,7 @@ def get_raw_material_detail(product_id: int, path: str | Path | None = None) -> 
         "usedInProducts": len(found_in),
         "suppliers": suppliers,
         "foundIn": found_in,
+        "profile": profile,
     }
 
 
