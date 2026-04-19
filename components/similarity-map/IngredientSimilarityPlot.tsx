@@ -6,12 +6,12 @@ import createPlotlyComponent from 'react-plotly.js/factory'
 import type { Config, Data, Layout, PlotHoverEvent } from 'plotly.js'
 // Prebuilt gl3d bundle only — full `plotly.js` pulls geo registry → maplibre CSS and breaks Turbopack.
 import PlotlyGL from 'plotly.js/dist/plotly-gl3d'
-import type { SimilarityPoint } from '@/app/api/similarity-map/route'
 import {
   CATEGORY_LABEL,
   CATEGORY_ORDER,
   type IngredientCategory,
 } from '@/components/similarity-map/similarity-map-categories'
+import type { SimilarityPoint } from '@/types/similarity-map'
 
 const Plot = createPlotlyComponent(PlotlyGL)
 
@@ -81,8 +81,15 @@ function buildTraces(points: SimilarityPoint[]): Data[] {
   const minC = Math.min(...counts)
   const maxC = Math.max(...counts)
 
+  const pointsByCategory = new Map<IngredientCategory, SimilarityPoint[]>()
+  for (const point of points) {
+    const current = pointsByCategory.get(point.category) ?? []
+    current.push(point)
+    pointsByCategory.set(point.category, current)
+  }
+
   return CATEGORY_ORDER.map((category) => {
-    const catPoints = points.filter((p) => p.category === category)
+    const catPoints = pointsByCategory.get(category) ?? []
     return {
       type: 'scatter3d',
       mode: 'markers',
@@ -186,6 +193,24 @@ type SceneCamera = {
   up: { x: number; y: number; z: number }
 }
 
+type SceneCameraFlatPatch = {
+  'scene.camera.center.x': number
+  'scene.camera.center.y': number
+  'scene.camera.center.z': number
+  'scene.camera.eye.x': number
+  'scene.camera.eye.y': number
+  'scene.camera.eye.z': number
+  'scene.camera.up.x': number
+  'scene.camera.up.y': number
+  'scene.camera.up.z': number
+}
+
+type SceneCameraEyeFlatPatch = {
+  'scene.camera.eye.x': number
+  'scene.camera.eye.y': number
+  'scene.camera.eye.z': number
+}
+
 function computeSceneCamera(points: readonly SimilarityPoint[]): SceneCamera {
   if (points.length === 0) {
     return {
@@ -209,7 +234,7 @@ function buildSceneCameraFlatPatch(
   points: readonly SimilarityPoint[]
 ): Partial<Layout> {
   const cam = computeSceneCamera(points)
-  return {
+  const patch: SceneCameraFlatPatch = {
     'scene.camera.center.x': cam.center.x,
     'scene.camera.center.y': cam.center.y,
     'scene.camera.center.z': cam.center.z,
@@ -219,7 +244,9 @@ function buildSceneCameraFlatPatch(
     'scene.camera.up.x': cam.up.x,
     'scene.camera.up.y': cam.up.y,
     'scene.camera.up.z': cam.up.z,
-  } as unknown as Partial<Layout>
+  }
+
+  return patch as Partial<Layout>
 }
 
 function buildPlotLayout(points: readonly SimilarityPoint[]): Partial<Layout> {
@@ -300,13 +327,13 @@ function applyStrongWheelZoom(
   /* Flat keys only: a nested `scene: { camera: … }` object replaces the whole
    * `scene` container and drops x/y/zaxis, so Plotly re-applies default grids
    * and x/y/z labels after zoom. */
-  const eyePatch = {
+  const eyePatch: SceneCameraEyeFlatPatch = {
     'scene.camera.eye.x': newEye.x,
     'scene.camera.eye.y': newEye.y,
     'scene.camera.eye.z': newEye.z,
-  } as unknown as Partial<Layout>
+  }
 
-  void PlotlyGL.relayout(gd, eyePatch)
+  void PlotlyGL.relayout(gd, eyePatch as Partial<Layout>)
 }
 
 /**

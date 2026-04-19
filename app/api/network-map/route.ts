@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
 import { createServerClient } from '@/lib/supabase-server'
+import { dbErrorResponse } from '@/lib/api-errors'
 import type { NetworkMapNode, NetworkMapArc } from '@/lib/network-map-data'
+import {
+  buildFacilityMap,
+  buildFacilityNodes,
+  findClosestFacility,
+  type GeoCompany,
+  type GeoFacility,
+  type GeoSupplier,
+  type ProductRow,
+  type SupplierLinkRow,
+} from '@/lib/network-map-route-utils'
 
 export const revalidate = 300 // 5 min cache
 
@@ -37,22 +48,8 @@ export async function GET() {
   ])
 
   if (cErr || fErr || sfErr || pErr || slErr) {
-    return NextResponse.json({ error: 'DB error' }, { status: 500 })
+    return dbErrorResponse('network-map', cErr, fErr, sfErr, pErr, slErr)
   }
-
-  type GeoCompany = { id: number; name: string; lat: number; lng: number }
-  type GeoFacility = {
-    id: number
-    supplier_id: number
-    facility_name: string | null
-    city: string | null
-    state: string | null
-    lat: number
-    lng: number
-  }
-  type GeoSupplier = { id: number; name: string; lat: number; lng: number }
-  type ProductRow = { id: number; company_id: number; type: string }
-  type SupplierLinkRow = { supplier_id: number; product_id: number }
 
   const typedCompanies = (companies ?? []) as GeoCompany[]
   const typedFacilities = (facilities ?? []) as GeoFacility[]
@@ -60,13 +57,7 @@ export async function GET() {
   const typedProducts = (products ?? []) as ProductRow[]
   const typedLinks = (supplierLinks ?? []) as SupplierLinkRow[]
 
-  // supplier_id → [facilities with coords]
-  const facilityMap = new Map<number, GeoFacility[]>()
-  for (const f of typedFacilities) {
-    const arr = facilityMap.get(f.supplier_id) ?? []
-    arr.push(f)
-    facilityMap.set(f.supplier_id, arr)
-  }
+  const facilityMap = buildFacilityMap(typedFacilities)
 
   // HQ fallback lookup
   const fallbackMap = new Map(typedFallbacks.map((s) => [s.id, s]))
@@ -79,24 +70,6 @@ export async function GET() {
 
   // company lookup
   const companyMap = new Map(typedCompanies.map((c) => [c.id, c]))
-
-  // Pick the facility geographically closest to the target company.
-  // This guarantees every arc originates exactly at a visible node.
-  function closestFacility(
-    facs: GeoFacility[],
-    company: GeoCompany
-  ): GeoFacility {
-    let best = facs[0]
-    let bestDist = Infinity
-    for (const f of facs) {
-      const d = (f.lat - company.lat) ** 2 + (f.lng - company.lng) ** 2
-      if (d < bestDist) {
-        bestDist = d
-        best = f
-      }
-    }
-    return best
-  }
 
   // Build arcs — one per unique company→supplier pair.
   // Source = closest facility (or HQ fallback) so the arc always starts at a node.
@@ -120,7 +93,7 @@ export async function GET() {
 
     const facs = facilityMap.get(link.supplier_id)
     if (facs && facs.length > 0) {
-      const f = closestFacility(facs, company)
+      const f = findClosestFacility(facs, company)
       usedFacilityIds.add(f.id)
       arcs.push({
         id: `arc-${key}`,
@@ -158,53 +131,14 @@ export async function GET() {
       })
     )
 
-  // Facility nodes (purple) — only those used as an arc source
-  const addedFacilitySuppliers = new Set<number>()
-  const facilityNodes: NetworkMapNode[] = []
-
-  for (const [sid, facs] of facilityMap) {
-    // In scoped mode: only include facilities used in arcs
-    if (scopeCompanyId !== null) {
-      const usedFacs = facs.filter((f) => usedFacilityIds.has(f.id))
-      if (usedFacs.length === 0) continue
-      for (const f of usedFacs) {
-        const label =
-          f.facility_name?.trim() ||
-          fallbackMap.get(sid)?.name ||
-          `Supplier ${sid}`
-        const sublabel = [f.city, f.state].filter(Boolean).join(', ')
-        facilityNodes.push({
-          id: `facility-${f.id}`,
-          name: sublabel ? `${label} (${sublabel})` : label,
-          kind: 'supplier',
-          position: [f.lng, f.lat],
-        })
-      }
-    } else {
-      // Unscoped: show only facilities that are arc sources
-      const usedFacs = facs.filter((f) => usedFacilityIds.has(f.id))
-      for (const f of usedFacs) {
-        const label =
-          f.facility_name?.trim() ||
-          fallbackMap.get(sid)?.name ||
-          `Supplier ${sid}`
-        const sublabel = [f.city, f.state].filter(Boolean).join(', ')
-        facilityNodes.push({
-          id: `facility-${f.id}`,
-          name: sublabel ? `${label} (${sublabel})` : label,
-          kind: 'supplier',
-          position: [f.lng, f.lat],
-        })
-      }
-    }
-    addedFacilitySuppliers.add(sid)
-  }
+  const { nodes: facilityNodes, supplierIdsWithFacilities } =
+    buildFacilityNodes(facilityMap, usedFacilityIds, fallbackMap)
 
   // HQ fallback nodes — only for suppliers that appear as arc sources
   const fallbackNodes = typedFallbacks
     .filter(
       (s) =>
-        !addedFacilitySuppliers.has(s.id) && usedFallbackSupplierIds.has(s.id)
+        !supplierIdsWithFacilities.has(s.id) && usedFallbackSupplierIds.has(s.id)
     )
     .map(
       (s): NetworkMapNode => ({

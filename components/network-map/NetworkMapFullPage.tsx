@@ -1,16 +1,10 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useCompanyScope } from '@/lib/company-scope-context'
+import { createSupplierNetworkMapDynamic } from '@/components/network-map/SupplierNetworkMapDynamic'
 
-const SupplierNetworkMap = dynamic(
-  () => import('@/components/network-map/SupplierNetworkMap'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="network-map-fullpage-loading">Loading map…</div>
-    ),
-  }
+const SupplierNetworkMap = createSupplierNetworkMapDynamic(
+  'network-map-fullpage-loading'
 )
 
 /** Full-area map (same Deck.gl view as the sourcing task pane). */

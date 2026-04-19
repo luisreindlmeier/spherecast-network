@@ -3,12 +3,12 @@
 import { useMemo, type ReactNode } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
 import { DropdownMenu } from 'radix-ui'
-import type { SimilarityPoint } from '@/app/api/similarity-map/route'
 import {
   CATEGORY_LABEL,
   CATEGORY_ORDER,
   type IngredientCategory,
 } from '@/components/similarity-map/similarity-map-categories'
+import type { SimilarityPoint } from '@/types/similarity-map'
 
 function summaryList(
   labels: string[],

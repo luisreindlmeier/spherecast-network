@@ -1,12 +1,12 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import PageHeader from '@/components/layout/PageHeader'
-import type { SimilarityPoint } from '@/app/api/similarity-map/route'
 import type { IngredientCategory } from '@/components/similarity-map/similarity-map-categories'
 import SimilarityMapMultiFilters from '@/components/similarity-map/SimilarityMapMultiFilters'
 import { useCompanyScope } from '@/lib/company-scope-context'
+import type { SimilarityPoint } from '@/types/similarity-map'
 
 const IngredientSimilarityPlot = dynamic(
   () => import('@/components/similarity-map/IngredientSimilarityPlot'),
@@ -26,33 +26,65 @@ export default function SimilarityMapFullPage() {
   const { companyId } = useCompanyScope()
   const [points, setPoints] = useState<SimilarityPoint[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [selectedCategories, setSelectedCategories] = useState<
     IngredientCategory[]
   >([])
   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([])
 
   useEffect(() => {
-    setLoading(true)
-    void fetch('/api/similarity-map', {
-      credentials: 'same-origin',
-      cache: 'no-store',
-    })
-      .then((r) => r.json())
-      .then((json: { points?: SimilarityPoint[] }) => {
-        setPoints(json.points ?? [])
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false))
+    let cancelled = false
+
+    async function loadPoints() {
+      // Yield once so state updates happen asynchronously, not in effect body.
+      await Promise.resolve()
+      if (cancelled) return
+
+      setLoading(true)
+      setLoadError(null)
+
+      try {
+        const response = await fetch('/api/similarity-map', {
+          credentials: 'same-origin',
+          cache: 'no-store',
+        })
+        if (!response.ok) {
+          const text = await response.text()
+          throw new Error(text || `HTTP ${response.status}`)
+        }
+        const json = (await response.json()) as { points?: SimilarityPoint[] }
+
+        if (!cancelled) {
+          setPoints(json.points ?? [])
+        }
+      } catch (error) {
+        console.error(error)
+        if (!cancelled) {
+          setLoadError('Failed to load similarity-map data.')
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadPoints()
+
+    return () => {
+      cancelled = true
+    }
   }, [companyId])
 
-  useEffect(() => {
-    setSelectedSuppliers((prev) => {
-      if (prev.length === 0) return prev
-      const valid = new Set(points.map((p) => p.supplierName))
-      const next = prev.filter((s) => valid.has(s))
-      return next.length === prev.length ? prev : next
-    })
+  const validSuppliers = useMemo(() => {
+    return new Set(points.map((point) => point.supplierName))
   }, [points])
+
+  const effectiveSelectedSuppliers = useMemo(() => {
+    return selectedSuppliers.filter((supplier) => validSuppliers.has(supplier))
+  }, [selectedSuppliers, validSuppliers])
+
+  const noData = !loading && points.length === 0 && loadError === null
 
   return (
     <>
@@ -65,7 +97,7 @@ export default function SimilarityMapFullPage() {
             <SimilarityMapMultiFilters
               points={points}
               selectedCategories={selectedCategories}
-              selectedSuppliers={selectedSuppliers}
+              selectedSuppliers={effectiveSelectedSuppliers}
               onCategoriesChange={setSelectedCategories}
               onSuppliersChange={setSelectedSuppliers}
             />
@@ -76,8 +108,20 @@ export default function SimilarityMapFullPage() {
         key={companyId ?? 'all'}
         plotData={{ points, loading }}
         selectedCategories={selectedCategories}
-        selectedSuppliers={selectedSuppliers}
+        selectedSuppliers={effectiveSelectedSuppliers}
       />
+      {loadError ? (
+        <div className="similarity-map-empty-state" role="status">
+          {loadError}
+        </div>
+      ) : null}
+      {noData ? (
+        <div className="similarity-map-empty-state" role="status">
+          {companyId === null
+            ? 'No similarity points available yet.'
+            : 'No similarity points found for the selected company scope.'}
+        </div>
+      ) : null}
     </>
   )
 }
