@@ -3,7 +3,7 @@ import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
 import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
-import { getFinishedGoodDetail } from '@/lib/queries'
+import { getFinishedGoodDetail } from '@/lib/agnes-queries'
 import { bomLinesCount } from '@/lib/format-labels'
 import { ArrowLeft, Atom, Package } from 'lucide-react'
 

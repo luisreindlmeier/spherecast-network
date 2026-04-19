@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
 import PlaceholderSection from '@/components/sourcing/PlaceholderSection'
-import { getSupplierDetail } from '@/lib/queries'
+import { getSupplierDetail } from '@/lib/agnes-queries'
 import {
   brandsLinkedCount,
   linkedSkusLabel,

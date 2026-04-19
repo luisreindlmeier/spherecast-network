@@ -3,7 +3,7 @@ import MapSidebarToggle from '@/components/network-map/MapSidebarToggle'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
 import ProductsTable from '@/components/sourcing/ProductsTable'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { getFinishedGoods } from '@/lib/queries'
+import { getFinishedGoods } from '@/lib/agnes-queries'
 
 export default async function ProductsPage() {
   const scope = await resolveCompanyScopeFilter()

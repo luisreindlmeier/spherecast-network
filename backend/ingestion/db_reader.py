@@ -439,6 +439,28 @@ def get_global_search(query: str, path: str | Path | None = None, scope_company_
     return results[:50]
 
 
+def get_similarity_map_raw_data(path: str | Path | None = None, scope_company_id: int | None = None) -> dict:
+    dfs = load_db(path)
+    raw = dfs["Product"][dfs["Product"]["Type"] == "raw-material"]
+    fgs = dfs["Product"][dfs["Product"]["Type"] == "finished-good"]
+
+    products = [{"id": int(r["Id"]), "sku": r["SKU"], "company_id": int(r["CompanyId"])} for _, r in raw.iterrows()]
+    supplier_links = [{"supplier_id": int(r["SupplierId"]), "product_id": int(r["ProductId"])} for _, r in dfs["Supplier_Product"].iterrows()]
+    suppliers = [{"id": int(r["Id"]), "name": r["Name"]} for _, r in dfs["Supplier"].iterrows()]
+    boms = [{"id": int(r["Id"]), "produced_product_id": int(r["ProducedProductId"])} for _, r in dfs["BOM"].iterrows()]
+    bom_components = [{"bom_id": int(r["BOMId"]), "consumed_product_id": int(r["ConsumedProductId"])} for _, r in dfs["BOM_Component"].iterrows()]
+    finished_goods = [{"id": int(r["Id"]), "company_id": int(r["CompanyId"])} for _, r in fgs.iterrows()]
+
+    return {
+        "products": products,
+        "supplier_links": supplier_links,
+        "suppliers": suppliers,
+        "boms": boms,
+        "bom_components": bom_components,
+        "finished_goods": finished_goods,
+    }
+
+
 def get_network_map_data(path: str | Path | None = None) -> dict:
     dfs = load_db(path)
 

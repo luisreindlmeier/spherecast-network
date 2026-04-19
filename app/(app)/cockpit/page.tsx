@@ -3,7 +3,7 @@ import CockpitPreviewMaps from '@/components/cockpit/CockpitPreviewMaps'
 import CockpitOpportunityFeed from '@/components/cockpit/CockpitOpportunityFeed'
 import PageHeader from '@/components/layout/PageHeader'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { getCockpitStats } from '@/lib/queries'
+import { getCockpitStats } from '@/lib/agnes-queries'
 
 export default async function CockpitPage() {
   const scope = await resolveCompanyScopeFilter()

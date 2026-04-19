@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import type { FinishedGoodRow } from '@/lib/queries'
+import type { FinishedGoodRow } from '@/lib/agnes-queries'
 import SourceViewToggle, {
   type SourceViewMode,
 } from '@/components/sourcing/SourceViewToggle'
@@ -75,7 +75,7 @@ export default function ProductsTable({ rows }: Props) {
                 {row.sku}
               </Link>
               <Link
-                href={`/companies/${row.company_id}`}
+                href={`/companies/${row.companyId}`}
                 className="data-name detail-link"
                 onClick={(e) => e.stopPropagation()}
               >

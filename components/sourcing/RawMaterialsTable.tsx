@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import type { RawMaterialRow } from '@/lib/queries'
+import type { RawMaterialRow } from '@/lib/agnes-queries'
 import SourceViewToggle, {
   type SourceViewMode,
 } from '@/components/sourcing/SourceViewToggle'

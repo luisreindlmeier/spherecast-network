@@ -23,6 +23,7 @@ from ingestion.db_reader import (
     get_raw_materials, get_raw_material_detail,
     get_suppliers, get_supplier_detail,
     get_global_search, get_network_map_data,
+    get_similarity_map_raw_data,
 )
 from ingestion.fda_ratings import get_fda_status, get_standards
 from ingestion.fda_live import layer2_check
@@ -311,13 +312,18 @@ def supplier_detail(supplier_id: int):
 
 
 @app.get("/search", dependencies=[_auth])
-def search(q: str = Query(..., min_length=1, max_length=200), scope_company_id: int | None = Query(default=None)):
+def search(q: str = Query(default="", max_length=200), scope_company_id: int | None = Query(default=None)):
     return get_global_search(q, scope_company_id=scope_company_id)
 
 
 @app.get("/network-map", dependencies=[_auth])
 def network_map():
     return get_network_map_data()
+
+
+@app.get("/similarity-map-data", dependencies=[_auth])
+def similarity_map_data(scope_company_id: int | None = Query(default=None)):
+    return get_similarity_map_raw_data(scope_company_id=scope_company_id)
 
 
 @app.get("/roadmap")
