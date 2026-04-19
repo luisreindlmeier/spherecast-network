@@ -2713,7 +2713,7 @@ textarea {
 
 .data-grid-materials-with-profile {
   grid-template-columns:
-    180px 1fr minmax(240px, 280px) minmax(100px, auto)
+    180px 140px 1fr minmax(100px, auto)
     minmax(100px, auto);
 }
 
@@ -2967,9 +2967,22 @@ textarea {
 /* ── Ingredient profile badges ───────────────────────────── */
 .ingredient-profile-badges {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
   align-items: center;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.ingredient-profile-badges > * {
+  flex-shrink: 0;
+}
+
+.ingredient-profile-overflow {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .ingredient-profile-badge-mono {

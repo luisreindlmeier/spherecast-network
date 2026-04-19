@@ -20,10 +20,7 @@ const FUNCTIONAL_CLASS_BADGE: Record<string, string> = {
   other: 'data-badge data-badge-muted',
 }
 
-function CertBadge({ value, label }: { value: boolean | null; label: string }) {
-  if (value !== true) return null
-  return <span className="data-badge data-badge-green">{label} ✓</span>
-}
+const COMPACT_MAX = 4
 
 interface Props {
   profile: IngredientProfile
@@ -43,9 +40,13 @@ export function IngredientProfileBadges({ profile, compact = false }: Props) {
     return <span className="data-cell-num data-cell-num-muted">—</span>
   }
 
-  return (
-    <div className="ingredient-profile-badges">
-      {profile.functionalClass && (
+  type Badge = { key: string; node: React.ReactNode }
+  const badges: Badge[] = []
+
+  if (profile.functionalClass) {
+    badges.push({
+      key: 'fc',
+      node: (
         <span
           className={
             FUNCTIONAL_CLASS_BADGE[profile.functionalClass] ??
@@ -54,30 +55,72 @@ export function IngredientProfileBadges({ profile, compact = false }: Props) {
         >
           {profile.functionalClass}
         </span>
-      )}
+      ),
+    })
+  }
 
-      {profile.eNumber && (
+  if (profile.eNumber) {
+    badges.push({
+      key: 'en',
+      node: (
         <span className="data-badge data-badge-muted ingredient-profile-badge-mono">
           {profile.eNumber}
         </span>
-      )}
+      ),
+    })
+  }
 
-      <CertBadge value={profile.vegan} label="Vegan" />
-      <CertBadge value={profile.kosher} label="Kosher" />
-      <CertBadge value={profile.halal} label="Halal" />
-      <CertBadge value={profile.nonGmo} label="Non-GMO" />
+  if (profile.vegan === true)
+    badges.push({
+      key: 'vegan',
+      node: <span className="data-badge data-badge-green">Vegan ✓</span>,
+    })
+  if (profile.kosher === true)
+    badges.push({
+      key: 'kosher',
+      node: <span className="data-badge data-badge-green">Kosher ✓</span>,
+    })
+  if (profile.halal === true)
+    badges.push({
+      key: 'halal',
+      node: <span className="data-badge data-badge-green">Halal ✓</span>,
+    })
+  if (profile.nonGmo === true)
+    badges.push({
+      key: 'nongmo',
+      node: <span className="data-badge data-badge-green">Non-GMO ✓</span>,
+    })
 
-      {!compact &&
-        profile.allergens.map((a) => (
-          <span key={a} className="data-badge data-badge-red">
-            ⚠ {a}
+  if (compact) {
+    if (profile.allergens.length > 0) {
+      badges.push({
+        key: 'allergens',
+        node: (
+          <span className="data-badge data-badge-red">
+            ⚠ {profile.allergens.length}
           </span>
-        ))}
+        ),
+      })
+    }
+  } else {
+    profile.allergens.forEach((a) => {
+      badges.push({
+        key: `a-${a}`,
+        node: <span className="data-badge data-badge-red">⚠ {a}</span>,
+      })
+    })
+  }
 
-      {compact && profile.allergens.length > 0 && (
-        <span className="data-badge data-badge-red">
-          ⚠ {profile.allergens.length}
-        </span>
+  const visible = compact ? badges.slice(0, COMPACT_MAX) : badges
+  const overflow = compact ? badges.length - COMPACT_MAX : 0
+
+  return (
+    <div className="ingredient-profile-badges">
+      {visible.map((b) => (
+        <span key={b.key}>{b.node}</span>
+      ))}
+      {overflow > 0 && (
+        <span className="ingredient-profile-overflow">+{overflow} more</span>
       )}
     </div>
   )
