@@ -66,8 +66,25 @@ export default function SupplierNetworkMap({
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/network-map', { credentials: 'same-origin' })
-      .then((r) => r.json())
+    let timedOut = false
+    const abortController = new AbortController()
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true
+      abortController.abort()
+    }, 15000)
+
+    fetch('/api/network-map', {
+      credentials: 'same-origin',
+      signal: abortController.signal,
+    })
+      .then(async (r) => {
+        if (!r.ok) {
+          const text = await r.text()
+          throw new Error(text || `HTTP ${r.status}`)
+        }
+        return r.json()
+      })
+>>>>>>> 8f43fbe (fix: harden map data loading with timeouts)
       .then((data: unknown) => {
         if (cancelled) return
         if (
@@ -80,17 +97,33 @@ export default function SupplierNetworkMap({
         }
         const bundleData = data as MapBundle
         if (bundleData.nodes.length === 0) {
+          setBundle(null)
           setStatus('empty')
         } else {
           setBundle(bundleData)
           setStatus('live')
         }
       })
-      .catch(() => {
-        if (!cancelled) setStatus('error')
+      .catch((error: unknown) => {
+        if (cancelled) return
+        if (error instanceof Error && error.name === 'AbortError') {
+          if (timedOut) {
+            setBundle(null)
+            setStatus('error')
+          }
+          return
+        }
+        setBundle(null)
+        setStatus('error')
       })
+      .finally(() => {
+        window.clearTimeout(timeoutId)
+      })
+
     return () => {
       cancelled = true
+      window.clearTimeout(timeoutId)
+      abortController.abort()
     }
   }, [companyId])
 

@@ -32,17 +32,47 @@ export default function SimilarityMapFullPage() {
   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([])
 
   useEffect(() => {
+    let cancelled = false
+    const abortController = new AbortController()
+    const timeoutId = window.setTimeout(() => {
+      abortController.abort()
+    }, 15000)
+
     setLoading(true)
     void fetch('/api/similarity-map', {
       credentials: 'same-origin',
       cache: 'no-store',
+      signal: abortController.signal,
     })
-      .then((r) => r.json())
-      .then((json: { points?: SimilarityPoint[] }) => {
-        setPoints(json.points ?? [])
+      .then(async (response) => {
+        if (!response.ok) {
+          const text = await response.text()
+          throw new Error(text || `HTTP ${response.status}`)
+        }
+        return response.json() as Promise<{ points?: SimilarityPoint[] }>
       })
-      .catch(console.error)
-      .finally(() => setLoading(false))
+      .then((json) => {
+        if (!cancelled) {
+          setPoints(json.points ?? [])
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.error(error)
+        }
+      })
+      .finally(() => {
+        window.clearTimeout(timeoutId)
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timeoutId)
+      abortController.abort()
+    }
   }, [companyId])
 
   useEffect(() => {
