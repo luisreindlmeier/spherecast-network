@@ -62,18 +62,13 @@ function relativeTime(date: Date): string {
   return `${diffH} hours ago`
 }
 
-type ToastType = 'info' | 'scan'
-
-type Toast =
-  | { type: 'info'; message: string }
-  | { type: 'scan'; agents: Agent[] }
+type Popover = { type: 'export' } | { type: 'scan'; agents: Agent[] }
 
 export default function CockpitActions() {
   const { lastRun, save } = useLastRun()
-  const [toast, setToast] = useState<Toast | null>(null)
+  const [popover, setPopover] = useState<Popover | null>(null)
   const [, setTick] = useState(0)
 
-  // Re-render every minute so relative time stays fresh
   useEffect(() => {
     if (!lastRun) return
     const id = setInterval(() => setTick((t) => t + 1), 60000)
@@ -81,115 +76,111 @@ export default function CockpitActions() {
   }, [lastRun])
 
   const handleExport = useCallback(() => {
-    setToast({ type: 'info', message: 'Export is coming soon — stay tuned.' })
-    setTimeout(() => setToast(null), 3500)
+    setPopover({ type: 'export' })
+    setTimeout(() => setPopover(null), 3000)
   }, [])
 
   const handleScan = useCallback(() => {
     const initial: Agent[] = AGENTS.map((a) => ({ ...a, status: 'idle' }))
-    setToast({ type: 'scan', agents: initial })
+    setPopover({ type: 'scan', agents: initial })
 
-    // Stagger agent start: 0ms, 500ms, 1100ms
-    // Each runs for ~1200ms then marks done
-    const delays = [0, 500, 1100]
-
+    const delays = [0, 500, 1000]
     delays.forEach((startDelay, i) => {
       setTimeout(() => {
-        setToast((prev) => {
+        setPopover((prev) => {
           if (!prev || prev.type !== 'scan') return prev
-          const next = prev.agents.map((a, j) =>
-            j === i ? { ...a, status: 'running' as AgentStatus } : a
-          )
-          return { type: 'scan', agents: next }
+          return {
+            type: 'scan',
+            agents: prev.agents.map((a, j) =>
+              j === i ? { ...a, status: 'running' } : a
+            ),
+          }
         })
-
         setTimeout(
           () => {
-            setToast((prev) => {
+            setPopover((prev) => {
               if (!prev || prev.type !== 'scan') return prev
-              const next = prev.agents.map((a, j) =>
-                j === i ? { ...a, status: 'done' as AgentStatus } : a
-              )
-              return { type: 'scan', agents: next }
+              return {
+                type: 'scan',
+                agents: prev.agents.map((a, j) =>
+                  j === i ? { ...a, status: 'done' } : a
+                ),
+              }
             })
           },
-          1200 + i * 100
+          1100 + i * 80
         )
       }, startDelay)
     })
 
-    // All done at ~0 + 1200 + 1100 + 1200 + 100 = ~2.6s, dismiss at 3s
     setTimeout(() => {
-      setToast(null)
+      setPopover(null)
       save()
-    }, 3200)
+    }, 3000)
   }, [save])
 
   return (
-    <div className="cockpit-actions-root">
-      <div className="cockpit-actions-buttons">
-        <button type="button" className="btn btn-ghost" onClick={handleExport}>
-          Export
-        </button>
-        <div className="cockpit-scan-wrap">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleScan}
-            disabled={toast?.type === 'scan'}
-          >
-            Run Agnes scan
-          </button>
-          {lastRun && !toast && (
-            <span className="cockpit-last-run">
-              Last run {relativeTime(lastRun)}
-            </span>
-          )}
-        </div>
-      </div>
+    <>
+      {/* Buttons — identical layout to before */}
+      <button type="button" className="btn btn-ghost" onClick={handleExport}>
+        Export
+      </button>
 
-      {toast && (
-        <div
-          className={`cockpit-toast cockpit-toast--${toast.type}`}
-          role="status"
-          aria-live="polite"
+      {/* Scan button in relative wrapper so popover can anchor to it */}
+      <div className="cockpit-scan-anchor">
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={handleScan}
+          disabled={popover?.type === 'scan'}
         >
-          {toast.type === 'info' && (
-            <span className="cockpit-toast-msg">{toast.message}</span>
-          )}
-          {toast.type === 'scan' && (
-            <div className="cockpit-scan-panel">
-              <div className="cockpit-scan-panel-title">Starting Agnes…</div>
-              <ul className="cockpit-scan-agent-list">
-                {toast.agents.map((agent) => (
-                  <li key={agent.id} className="cockpit-scan-agent">
-                    <span
-                      className={`cockpit-scan-agent-dot cockpit-scan-agent-dot--${agent.status}`}
-                    >
-                      {agent.status === 'done'
-                        ? '✓'
-                        : agent.status === 'running'
-                          ? ''
-                          : '·'}
-                    </span>
-                    <span className="cockpit-scan-agent-info">
-                      <span className="cockpit-scan-agent-name">
-                        {agent.name}
+          Run Agnes scan
+        </button>
+        {lastRun && !popover && (
+          <span className="cockpit-last-run">
+            Last run {relativeTime(lastRun)}
+          </span>
+        )}
+
+        {/* Floating popover anchored above the button */}
+        {popover && (
+          <div className="cockpit-popover" role="status" aria-live="polite">
+            {popover.type === 'export' && (
+              <p className="cockpit-popover-msg">
+                Export is coming soon — stay tuned.
+              </p>
+            )}
+
+            {popover.type === 'scan' && (
+              <>
+                <div className="cockpit-popover-title">Starting Agnes…</div>
+                <ul className="cockpit-scan-agent-list">
+                  {popover.agents.map((agent) => (
+                    <li key={agent.id} className="cockpit-scan-agent">
+                      <span
+                        className={`cockpit-scan-agent-dot cockpit-scan-agent-dot--${agent.status}`}
+                      >
+                        {agent.status === 'done' ? '✓' : ''}
                       </span>
-                      <span className="cockpit-scan-agent-desc">
-                        {agent.description}
+                      <span className="cockpit-scan-agent-info">
+                        <span className="cockpit-scan-agent-name">
+                          {agent.name}
+                        </span>
+                        <span className="cockpit-scan-agent-desc">
+                          {agent.description}
+                        </span>
                       </span>
-                    </span>
-                    {agent.status === 'running' && (
-                      <span className="cockpit-scan-spinner" aria-hidden />
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+                      {agent.status === 'running' && (
+                        <span className="cockpit-scan-spinner" aria-hidden />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </>
   )
 }
