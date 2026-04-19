@@ -1,6 +1,7 @@
 import CockpitAgentPanel from '@/components/cockpit/CockpitAgentPanel'
 import CockpitPreviewMaps from '@/components/cockpit/CockpitPreviewMaps'
 import CockpitOpportunityFeed from '@/components/cockpit/CockpitOpportunityFeed'
+import CockpitActions from '@/components/cockpit/CockpitActions'
 import PageHeader from '@/components/layout/PageHeader'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
 import {
@@ -39,16 +40,7 @@ export default async function CockpitPage() {
         eyebrow="Overview"
         title="Cockpit"
         description="Prioritized consolidation opportunities, verified supplier actions, and a live read on your sourcing network."
-        actions={
-          <>
-            <button type="button" className="btn btn-ghost">
-              Export
-            </button>
-            <button type="button" className="btn btn-primary">
-              Run Agnes scan
-            </button>
-          </>
-        }
+        actions={<CockpitActions />}
       />
 
       <div className="stat-row">
