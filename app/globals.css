@@ -870,7 +870,8 @@ textarea {
   margin-left: auto;
 }
 
-.similarity-map-page-root .page-network-map-intro:has(.page-description-row) {
+.similarity-map-page-root .page-network-map-intro:has(.page-description-row),
+.page-network-map .page-network-map-intro:has(.page-description-row) {
   max-width: none;
   width: 100%;
 }
@@ -991,9 +992,9 @@ textarea {
 }
 
 /* MapLibre / react-map-gl inject a wrapper div — stretch it so the canvas gets height */
-.network-map-fullpage > .supplier-network-map-root > div:first-of-type,
-.map-right-sidebar-map .supplier-network-map-root > div:first-of-type,
-.cockpit-preview-map-frame .supplier-network-map-root > div:first-of-type {
+.network-map-fullpage > .supplier-network-map-root .maplibregl-map,
+.map-right-sidebar-map .supplier-network-map-root .maplibregl-map,
+.cockpit-preview-map-frame .supplier-network-map-root .maplibregl-map {
   flex: 1;
   min-height: 0;
   min-width: 0;
@@ -1305,14 +1306,13 @@ textarea {
 .network-map-filters {
   position: absolute;
   top: 12px;
-  left: 12px;
+  right: 12px;
+  left: auto;
   z-index: 5;
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 8px 10px;
-  max-width: min(100%, 560px);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
 }
 
 .network-map-filters .opportunities-filter {
@@ -1329,6 +1329,7 @@ textarea {
 }
 
 .supplier-network-map-root .network-map-filters--taskpane {
+  position: absolute !important;
   top: 12px;
   right: 12px;
   left: auto;
