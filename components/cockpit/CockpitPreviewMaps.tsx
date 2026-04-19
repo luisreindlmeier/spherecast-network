@@ -55,7 +55,10 @@ export default function CockpitPreviewMaps() {
         aria-label="Open full similarity map"
       >
         <div className="cockpit-preview-map-frame cockpit-preview-map-frame--similarity">
-          <IngredientSimilarityPlot key={companyId ?? 'all'} />
+          <IngredientSimilarityPlot
+            key={companyId ?? 'all'}
+            showFilters={false}
+          />
         </div>
         <span className="cockpit-mini-map-hit" aria-hidden />
         <div className="cockpit-mini-map-overlay cockpit-mini-map-overlay--dual">

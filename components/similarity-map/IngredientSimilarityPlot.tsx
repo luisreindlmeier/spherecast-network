@@ -100,6 +100,7 @@ function sizeForCount(count: number, minC: number, maxC: number): number {
 }
 
 function buildTraces(points: SimilarityPoint[]): Data[] {
+  if (points.length === 0) return []
   const counts = points.map((p) => p.companyCount)
   const minC = Math.min(...counts)
   const maxC = Math.max(...counts)
@@ -274,17 +275,7 @@ function buildPlotLayout(points: readonly SimilarityPoint[]): Partial<Layout> {
         up: cam.up,
       },
     },
-    showlegend: true,
-    legend: {
-      x: 0.99,
-      y: 0.99,
-      xanchor: 'right',
-      yanchor: 'top',
-      bgcolor: 'rgba(20, 23, 32, 0.82)',
-      bordercolor: 'rgba(255,255,255,0.06)',
-      borderwidth: 1,
-      traceorder: 'normal',
-    },
+    showlegend: false,
   }
 }
 
@@ -462,9 +453,20 @@ function attachSimilarityCameraDebugLog(
   }
 }
 
-export default function IngredientSimilarityPlot() {
+type IngredientSimilarityPlotProps = {
+  /** When false (e.g. cockpit tile), filters are hidden and the plot fills the frame. */
+  showFilters?: boolean
+}
+
+export default function IngredientSimilarityPlot({
+  showFilters = true,
+}: IngredientSimilarityPlotProps) {
   const router = useRouter()
   const [points, setPoints] = useState<SimilarityPoint[]>([])
+  const [categoryFilter, setCategoryFilter] = useState<
+    IngredientCategory | 'all'
+  >('all')
+  const [supplierFilter, setSupplierFilter] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -479,6 +481,13 @@ export default function IngredientSimilarityPlot() {
   useLayoutEffect(() => {
     pointsRef.current = points
   }, [points])
+
+  useEffect(() => {
+    if (supplierFilter === '') return
+    if (!points.some((p) => p.supplierName === supplierFilter)) {
+      setSupplierFilter('')
+    }
+  }, [points, supplierFilter])
 
   useEffect(() => {
     fetch('/api/similarity-map', {
@@ -576,13 +585,38 @@ export default function IngredientSimilarityPlot() {
     graphDivRef.current = null
   }
 
-  const traces = useMemo(() => buildTraces(points), [points])
+  const supplierOptions = useMemo(() => {
+    const names = new Set<string>()
+    for (const p of points) {
+      if (p.supplierName.trim() !== '') names.add(p.supplierName)
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b))
+  }, [points])
+
+  const filteredPoints = useMemo(() => {
+    return points.filter((p) => {
+      if (categoryFilter !== 'all' && p.category !== categoryFilter)
+        return false
+      if (supplierFilter !== '' && p.supplierName !== supplierFilter)
+        return false
+      return true
+    })
+  }, [points, categoryFilter, supplierFilter])
+
+  const traces = useMemo(() => buildTraces(filteredPoints), [filteredPoints])
   const plotLayout = useMemo(() => buildPlotLayout(points), [points])
+
+  const filterNoMatch =
+    filteredPoints.length === 0 && points.length > 0 && !loading
 
   if (loading) {
     return (
-      <div className="ingredient-similarity-plot-root ingredient-similarity-plot-loading">
-        Loading 3D map…
+      <div
+        className={`similarity-map-shell${showFilters ? '' : ' similarity-map-shell--plot-only'}`}
+      >
+        <div className="ingredient-similarity-plot-root ingredient-similarity-plot-loading">
+          Loading 3D map…
+        </div>
       </div>
     )
   }
@@ -590,45 +624,118 @@ export default function IngredientSimilarityPlot() {
   return (
     <>
       <div
-        ref={plotShellRef}
-        className="ingredient-similarity-plot-root"
-        onMouseMove={(e) => {
-          lastPointerRef.current = { x: e.clientX, y: e.clientY }
-        }}
+        className={`similarity-map-shell${showFilters ? '' : ' similarity-map-shell--plot-only'}`}
       >
-        <Plot
-          data={traces}
-          layout={plotLayout}
-          config={config}
-          onInitialized={(_figure, el) => {
-            const gd = el as GraphDiv
-            graphDivRef.current = gd
-            logSimilarityCameraDebugBanner()
-            attachWheelZoom(gd)
-            cameraDebugCleanupRef.current?.()
-            cameraDebugCleanupRef.current =
-              attachSimilarityCameraDebugLog(gd) ?? null
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
+        {showFilters ? (
+          <div
+            className="similarity-map-filters"
+            role="toolbar"
+            aria-label="Map filters"
+          >
+            <div className="similarity-map-filter-field">
+              <label
+                className="similarity-map-filter-label"
+                htmlFor="similarity-map-category"
+              >
+                Category
+              </label>
+              <select
+                id="similarity-map-category"
+                className="similarity-map-filter-select"
+                value={categoryFilter}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setCategoryFilter(
+                    v === 'all' ? 'all' : (v as IngredientCategory)
+                  )
+                }}
+                aria-label="Filter by ingredient category"
+              >
+                <option value="all">All categories</option>
+                {CATEGORY_ORDER.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {CATEGORY_LABEL[cat]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="similarity-map-filter-field">
+              <label
+                className="similarity-map-filter-label"
+                htmlFor="similarity-map-supplier"
+              >
+                Supplier
+              </label>
+              <select
+                id="similarity-map-supplier"
+                className="similarity-map-filter-select"
+                value={supplierFilter}
+                onChange={(e) => setSupplierFilter(e.target.value)}
+                aria-label="Filter by supplier"
+              >
+                <option value="">All suppliers</option>
+                {supplierOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : null}
+        <div
+          ref={plotShellRef}
+          className="ingredient-similarity-plot-root"
+          onMouseMove={(e) => {
+            lastPointerRef.current = { x: e.clientX, y: e.clientY }
+          }}
+        >
+          {filterNoMatch ? (
+            <div className="similarity-map-filter-empty">
+              No ingredients match the selected filters.
+            </div>
+          ) : (
+            <Plot
+              data={traces}
+              layout={plotLayout}
+              config={config}
+              onInitialized={(_figure, el) => {
+                const gd = el as GraphDiv
+                graphDivRef.current = gd
+                logSimilarityCameraDebugBanner()
+                attachWheelZoom(gd)
+                cameraDebugCleanupRef.current?.()
+                cameraDebugCleanupRef.current =
+                  attachSimilarityCameraDebugLog(gd) ?? null
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    trySyncSceneCamera(
+                      gd,
+                      pointsRef.current,
+                      appliedCameraSigRef
+                    )
+                    if (CAMERA_DEBUG_LOG) logSimilaritySceneCameraNow(gd)
+                  })
+                })
+              }}
+              onAfterPlot={() => {
+                const gd = graphDivRef.current
+                if (gd === null) return
                 trySyncSceneCamera(gd, pointsRef.current, appliedCameraSigRef)
-                if (CAMERA_DEBUG_LOG) logSimilaritySceneCameraNow(gd)
-              })
-            })
-          }}
-          onAfterPlot={() => {
-            const gd = graphDivRef.current
-            if (gd === null) return
-            trySyncSceneCamera(gd, pointsRef.current, appliedCameraSigRef)
-          }}
-          onPurge={handlePlotPurge}
-          onHover={handleHover}
-          onUnhover={handleUnhover}
-          useResizeHandler
-          style={{ width: '100%', height: '100%' }}
-        />
-        <p className="similarity-map-zoom-hint">
-          Scroll to zoom · drag to orbit
-        </p>
+              }}
+              onPurge={handlePlotPurge}
+              onHover={handleHover}
+              onUnhover={handleUnhover}
+              useResizeHandler
+              style={{ width: '100%', height: '100%' }}
+            />
+          )}
+          {!filterNoMatch ? (
+            <p className="similarity-map-zoom-hint">
+              Scroll to zoom · drag to orbit
+            </p>
+          ) : null}
+        </div>
       </div>
 
       {tooltip && (

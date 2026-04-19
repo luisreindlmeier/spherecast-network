@@ -913,43 +913,93 @@ textarea {
   background: #141720;
 }
 
-/* Segmented control: Off | Network | Similarity (sourcing page headers) */
+/*
+ * Right taskpane mode — same interaction model as `.source-view-toggle`
+ * (one continuous rail, segment borders, no reliance on inter-button gap).
+ */
 .map-right-panel-switch {
   display: inline-flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  padding: 3px;
-  border-radius: 10px;
+  align-items: stretch;
+  flex-shrink: 0;
+  min-width: min(100%, 280px);
   border: 1px solid var(--border);
-  background: rgba(10, 12, 16, 0.55);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .map-right-panel-switch__btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   margin: 0;
-  padding: 5px 9px;
-  border-radius: 7px;
-  border: 1px solid transparent;
+  min-width: 0;
+  flex: 1 1 0;
+  padding: 8px 12px;
+  border: none;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
   background: transparent;
+  font-family: inherit;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--text-muted);
   cursor: pointer;
+  white-space: nowrap;
   transition:
-    background 0.12s,
-    color 0.12s,
-    border-color 0.12s;
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.map-right-panel-switch__btn:last-child {
+  border-right: none;
+}
+
+.map-right-panel-switch__icon {
+  flex-shrink: 0;
+  opacity: 0.88;
+}
+
+.map-right-panel-switch__label {
+  flex-shrink: 0;
 }
 
 .map-right-panel-switch__btn:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.map-right-panel-switch__btn:hover .map-right-panel-switch__icon {
+  opacity: 1;
 }
 
 .map-right-panel-switch__btn--selected {
   color: var(--accent);
   background: var(--accent-soft);
-  border-color: var(--accent-border);
+}
+
+.map-right-panel-switch__btn--selected .map-right-panel-switch__icon {
+  opacity: 1;
+  color: var(--accent);
+}
+
+@media (max-width: 720px) {
+  .map-right-panel-switch__label {
+    display: none;
+  }
+
+  .map-right-panel-switch__btn {
+    flex: 0 0 auto;
+    padding: 8px 11px;
+    gap: 0;
+  }
 }
 
 .map-right-sidebar-similarity {
@@ -958,17 +1008,31 @@ textarea {
   min-width: 0;
   position: relative;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-right-sidebar-similarity .similarity-map-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+}
+
+.map-right-sidebar-similarity .similarity-map-filters {
+  flex-shrink: 0;
+  padding: 0 2px 6px 0;
 }
 
 .map-right-sidebar-similarity .ingredient-similarity-plot-root,
 .map-right-sidebar-similarity
   .ingredient-similarity-plot-root.ingredient-similarity-plot-loading {
-  position: absolute;
-  inset: 0;
-  margin-top: 0;
-  height: 100%;
+  position: relative;
+  flex: 1;
   min-height: 0;
-  flex: none;
+  height: auto;
+  margin-top: 0;
   border-radius: 0;
   border-width: 0;
   cursor: grab;
@@ -1555,6 +1619,81 @@ textarea {
 }
 
 /* ── Ingredient similarity map (Plotly) ─────────────────── */
+.similarity-map-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  flex: 0 0 auto;
+  margin-top: 6px;
+}
+
+.similarity-map-shell--plot-only {
+  margin-top: 0;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.similarity-map-shell > .ingredient-similarity-plot-root {
+  margin-top: 0;
+}
+
+.similarity-map-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 20px;
+  flex-shrink: 0;
+}
+
+.similarity-map-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 160px;
+  min-width: min(100%, 140px);
+  max-width: 320px;
+}
+
+.similarity-map-filter-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.similarity-map-filter-select {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  line-height: 1.35;
+  font-family: var(--font-primary, system-ui, sans-serif);
+  color: var(--text-primary);
+  background: rgba(10, 12, 16, 0.82);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.similarity-map-filter-select:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.similarity-map-filter-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+  padding: 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 /* Frame matches .network-map-fullpage (same height / insets as Network Map) */
 .ingredient-similarity-plot-root {
   position: relative;
@@ -1582,13 +1721,21 @@ textarea {
 }
 
 /* Cockpit preview tile: square frame, ignore full-page plot height */
-.cockpit-preview-map-frame--similarity .ingredient-similarity-plot-root {
+.cockpit-preview-map-frame--similarity .similarity-map-shell {
   position: absolute;
   inset: 0;
   margin-top: 0;
   height: 100%;
   min-height: 0;
-  flex: none;
+}
+
+.cockpit-preview-map-frame--similarity .ingredient-similarity-plot-root {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  margin-top: 0;
+  inset: auto;
   border-radius: 0;
   border-width: 0;
   cursor: default;

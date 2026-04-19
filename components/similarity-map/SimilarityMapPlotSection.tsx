@@ -8,8 +8,10 @@ const IngredientSimilarityPlot = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="ingredient-similarity-plot-root ingredient-similarity-plot-loading">
-        Loading 3D map…
+      <div className="similarity-map-shell">
+        <div className="ingredient-similarity-plot-root ingredient-similarity-plot-loading">
+          Loading 3D map…
+        </div>
       </div>
     ),
   }
