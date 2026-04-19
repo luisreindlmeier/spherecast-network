@@ -26,7 +26,3 @@ Built initially as a **Spherecast-internal tool**, designed to extend to custome
 | **Backend** | Python · FastAPI · ChromaDB · OpenAI o4-mini · See [`backend/README.md`](./backend/README.md) |
 | **Data** | Supabase (Postgres + pgvector) · Deck.gl · Plotly gl3d · MapLibre |
 | **MCP** | Agnes MCP server — direct access to sourcing intelligence · See [`backend/MCP.md`](./backend/MCP.md) |
-
-## Conventions
-
-Agent and Git/PR workflow notes: **`CLAUDE.md`** · **`AGENTS.md`**
