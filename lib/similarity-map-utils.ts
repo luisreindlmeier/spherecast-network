@@ -1,4 +1,4 @@
-import type { IngredientCategory } from '@/lib/ingredient-similarity-data'
+import type { IngredientCategory } from '@/components/similarity-map/similarity-map-categories'
 
 const CATEGORY_CENTERS: Record<IngredientCategory, [number, number, number]> = {
   vitamins: [2.5, -0.4, 1.0],

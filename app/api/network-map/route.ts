@@ -10,7 +10,8 @@ export async function GET() {
   if (scopeCompanyId != null) p.set('scope_company_id', String(scopeCompanyId))
   const res = await agnesGet('/network-map', p)
   if (!res.ok) {
-    return NextResponse.json({ error: 'Failed to fetch network map from Agnes' }, { status: 500 })
+    return NextResponse.json({ nodes: [], arcs: [] })
   }
-  return NextResponse.json(await res.json())
+  const json = (await res.json()) as unknown
+  return NextResponse.json(json)
 }

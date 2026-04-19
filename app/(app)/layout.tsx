@@ -8,20 +8,34 @@ import {
   getCompanyPickerList,
   getGlobalSearchItems,
   getNavCounts,
+  isAgnesAvailable,
 } from '@/lib/agnes-queries'
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const [scopeCompanyId, pickerCompanies] = await Promise.all([
+  const [scopeCompanyId, pickerCompanies, agnesAvailable] = await Promise.all([
     resolveCompanyScopeFilter(),
-    getCompanyPickerList(),
+    getCompanyPickerList().catch((error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`[app-layout] company picker fallback: ${message}`)
+      return []
+    }),
+    isAgnesAvailable(),
   ])
 
   const [counts, searchItems] = await Promise.all([
-    getNavCounts(scopeCompanyId),
-    getGlobalSearchItems(scopeCompanyId),
+    getNavCounts(scopeCompanyId).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`[app-layout] nav counts fallback: ${message}`)
+      return { finishedGoods: 0, rawMaterials: 0, suppliers: 0 }
+    }),
+    getGlobalSearchItems(scopeCompanyId).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`[app-layout] search items fallback: ${message}`)
+      return []
+    }),
   ])
 
   return (
@@ -40,6 +54,11 @@ export default async function AppLayout({
           <main className="app-main">
             <div className="app-main-scroll app-main-chrome-bg">
               <AppTopNav searchItems={searchItems} />
+              {!agnesAvailable ? (
+                <div className="app-data-source-banner" role="status">
+                  Agnes API offline. Showing fallback values until backend is reachable.
+                </div>
+              ) : null}
               <div className="app-main-inner">{children}</div>
             </div>
             <MapRightSidebar />

@@ -1,4 +1,4 @@
-import type { IngredientCategory } from '@/lib/ingredient-similarity-data'
+import type { IngredientCategory } from '@/components/similarity-map/similarity-map-categories'
 
 export type SimilarityPoint = {
   /** Unique id: "rm-{productId}-sup-{supplierId}" */

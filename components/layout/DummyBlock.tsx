@@ -8,7 +8,10 @@ interface DummyBlockProps {
 
 export default function DummyBlock({ title, hint, children }: DummyBlockProps) {
   return (
-    <section className="dummy-block">
+    <section
+      className="dummy-block hardcoded-zone"
+      data-hardcoded-label="HARDCODED PLACEHOLDER"
+    >
       <div className="dummy-block-header">
         <span className="dummy-block-title">{title}</span>
         {hint && <span className="dummy-block-hint">{hint}</span>}

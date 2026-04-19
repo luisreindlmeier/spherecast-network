@@ -79,6 +79,7 @@ export function buildFacilityNodes(
         name: formatFacilityLabel(facility, supplierId, fallbackSuppliers),
         kind: 'supplier',
         position: [facility.lng, facility.lat],
+        refId: supplierId,
       })
     }
 
