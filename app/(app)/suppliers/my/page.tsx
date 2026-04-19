@@ -3,7 +3,7 @@ import MapRightPanelSwitch from '@/components/network-map/MapRightPanelSwitch'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
 import SuppliersTable from '@/components/sourcing/SuppliersTable'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { getSuppliers } from '@/lib/queries'
+import { getSuppliers } from '@/lib/agnes-queries'
 
 export default async function MySuppliersPage() {
   const scope = await resolveCompanyScopeFilter()

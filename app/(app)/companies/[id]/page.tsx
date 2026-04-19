@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PageHeader from '@/components/layout/PageHeader'
 import PlaceholderSection from '@/components/sourcing/PlaceholderSection'
-import { getCompanyDetail } from '@/lib/queries'
+import { getCompanyDetail } from '@/lib/agnes-queries'
 import { bomIngredientsLabel, skuListCount } from '@/lib/format-labels'
 import {
   ArrowLeft,

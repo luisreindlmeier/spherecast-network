@@ -3,7 +3,7 @@ import MapRightPanelSwitch from '@/components/network-map/MapRightPanelSwitch'
 import PageMapDrawer from '@/components/network-map/PageMapDrawer'
 import RawMaterialsTable from '@/components/sourcing/RawMaterialsTable'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { getRawMaterials } from '@/lib/queries'
+import { getRawMaterials } from '@/lib/agnes-queries'
 
 export default async function RawMaterialsPage() {
   const scope = await resolveCompanyScopeFilter()

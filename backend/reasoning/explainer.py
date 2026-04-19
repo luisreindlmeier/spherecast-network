@@ -18,7 +18,7 @@ def explain_substitution(original: dict, substitute: dict, violations: list[str]
             f"Original ingredient: {original['name']}. "
             f"Proposed substitute: {substitute['name']}. "
             f"Compliance issues: {'; '.join(violations)}. "
-            "Explain in 2 sentences in German why this substitution has compliance risks."
+            "Explain in 2 sentences in English why this substitution has compliance risks."
         )
     else:
         prompt = (
@@ -27,7 +27,7 @@ def explain_substitution(original: dict, substitute: dict, violations: list[str]
             f"Similarity score: {substitute.get('similarity', '?')}. "
             f"Allergens original: {original.get('allergens', [])}. "
             f"Allergens substitute: {substitute.get('allergens', [])}. "
-            "Explain in exactly 2 sentences in German why this substitution is functionally valid "
+            "Explain in exactly 2 sentences in English why this substitution is functionally valid "
             "and what the sourcing benefit is. Be specific and business-oriented."
         )
     try:
@@ -38,7 +38,7 @@ def explain_substitution(original: dict, substitute: dict, violations: list[str]
         )
         return resp.choices[0].message.content.strip()
     except Exception:
-        return "Keine Erklärung verfügbar."
+        return "No explanation available."
 
 
 def explain_consolidation(functional_class: str, top_supplier: dict, total: int) -> str:
@@ -46,7 +46,7 @@ def explain_consolidation(functional_class: str, top_supplier: dict, total: int)
         f"Functional class: {functional_class}. "
         f"Top supplier: {top_supplier['name']} covers {top_supplier['covers_n_ingredients']} "
         f"of {total} ingredients ({top_supplier['coverage_pct']}%). "
-        "Explain in 2 sentences in German why consolidating to this supplier makes business sense. "
+        "Explain in 2 sentences in English why consolidating to this supplier makes business sense. "
         "Focus on volume leverage and operational simplification."
     )
     try:
@@ -57,4 +57,4 @@ def explain_consolidation(functional_class: str, top_supplier: dict, total: int)
         )
         return resp.choices[0].message.content.strip()
     except Exception:
-        return "Keine Erklärung verfügbar."
+        return "No explanation available."

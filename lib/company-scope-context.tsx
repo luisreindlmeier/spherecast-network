@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { useRouter } from 'next/navigation'
 import { setCompanyScopeAction } from '@/app/actions/company-scope'
-import type { CompanyPickerRow } from '@/lib/queries'
+import type { CompanyPickerRow } from '@/lib/agnes-queries'
 
 interface CompanyScopeContextValue {
   companyId: number | null

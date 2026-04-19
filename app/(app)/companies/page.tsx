@@ -1,7 +1,7 @@
 import PageHeader from '@/components/layout/PageHeader'
 import CompaniesTable from '@/components/sourcing/CompaniesTable'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { getCompanies } from '@/lib/queries'
+import { getCompanies } from '@/lib/agnes-queries'
 
 export default async function CompaniesPage() {
   const scope = await resolveCompanyScopeFilter()

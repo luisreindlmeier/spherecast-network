@@ -8,7 +8,7 @@ import {
   getCompanyPickerList,
   getGlobalSearchItems,
   getNavCounts,
-} from '@/lib/queries'
+} from '@/lib/agnes-queries'
 export default async function AppLayout({
   children,
 }: {

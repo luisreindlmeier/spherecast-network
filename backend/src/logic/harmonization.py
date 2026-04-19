@@ -183,7 +183,14 @@ class DataHarmonizer:
                 )
                 parsed = json.loads(resp.choices[0].message.content)
                 # Attach raw supplier column if present
-                for col in ("supplier", "supplier_name", "lieferant"):
+                for col in (
+                    "supplier",
+                    "supplier_name",
+                    "vendor",
+                    "vendor_name",
+                    "manufacturer",
+                    "manufacturer_name",
+                ):
                     if col in raw_row:
                         parsed["_supplier"] = str(raw_row[col])
                         break

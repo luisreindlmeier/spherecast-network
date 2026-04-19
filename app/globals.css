@@ -580,7 +580,7 @@ textarea {
   text-decoration: none;
   color: inherit;
   outline-offset: 2px;
-  /* leicht links von der geometrischen Mitte (optisch ausgewogener zur Nav) */
+  /* Slightly left of the geometric center for better visual balance with nav */
   transform: translateX(-10px);
 }
 
