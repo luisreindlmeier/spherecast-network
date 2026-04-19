@@ -473,6 +473,7 @@ export default function IngredientSimilarityPlot({
   const router = useRouter()
   const [internalPoints, setInternalPoints] = useState<SimilarityPoint[]>([])
   const [internalLoading, setInternalLoading] = useState(true)
+  const [internalError, setInternalError] = useState<string | null>(null)
 
   const parentMode = plotData !== undefined
   const points: readonly SimilarityPoint[] = parentMode
@@ -496,16 +497,48 @@ export default function IngredientSimilarityPlot({
 
   useEffect(() => {
     if (parentMode) return
+    const abortController = new AbortController()
+    let timedOut = false
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true
+      abortController.abort()
+    }, 15000)
+
     void fetch('/api/similarity-map', {
       credentials: 'same-origin',
       cache: 'no-store',
+      signal: abortController.signal,
     })
-      .then((r) => r.json())
-      .then((json: { points?: SimilarityPoint[] }) => {
-        setInternalPoints(json.points ?? [])
+      .then(async (r) => {
+        if (!r.ok) {
+          const text = await r.text()
+          throw new Error(text || `HTTP ${r.status}`)
+        }
+        return r.json() as Promise<{ points?: SimilarityPoint[] }>
       })
-      .catch(console.error)
-      .finally(() => setInternalLoading(false))
+      .then((json) => {
+        setInternalPoints(json.points ?? [])
+        setInternalError(null)
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Error && error.name === 'AbortError') {
+          if (timedOut) {
+            setInternalError('Timed out while loading similarity map data.')
+          }
+          return
+        }
+        console.error(error)
+        setInternalError('Failed to load similarity map data.')
+      })
+      .finally(() => {
+        window.clearTimeout(timeoutId)
+        setInternalLoading(false)
+      })
+
+    return () => {
+      window.clearTimeout(timeoutId)
+      abortController.abort()
+    }
   }, [parentMode])
 
   useEffect(() => {
@@ -623,6 +656,14 @@ export default function IngredientSimilarityPlot({
         <div className="ingredient-similarity-plot-root ingredient-similarity-plot-loading">
           Loading 3D map…
         </div>
+      </div>
+    )
+  }
+
+  if (!parentMode && internalError) {
+    return (
+      <div className="similarity-map-shell similarity-map-shell--plot-only">
+        <div className="similarity-map-filter-empty">{internalError}</div>
       </div>
     )
   }

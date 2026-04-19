@@ -34,6 +34,7 @@ export default function SimilarityMapFullPage() {
 
   useEffect(() => {
     let cancelled = false
+    const abortController = new AbortController()
 
     async function loadPoints() {
       // Yield once so state updates happen asynchronously, not in effect body.
@@ -42,11 +43,15 @@ export default function SimilarityMapFullPage() {
 
       setLoading(true)
       setLoadError(null)
+      const timeoutId = window.setTimeout(() => {
+        abortController.abort()
+      }, 15000)
 
       try {
         const response = await fetch('/api/similarity-map', {
           credentials: 'same-origin',
           cache: 'no-store',
+          signal: abortController.signal,
         })
         if (!response.ok) {
           const text = await response.text()
@@ -60,9 +65,14 @@ export default function SimilarityMapFullPage() {
       } catch (error) {
         console.error(error)
         if (!cancelled) {
-          setLoadError('Failed to load similarity-map data.')
+          if (error instanceof Error && error.name === 'AbortError') {
+            setLoadError('Timed out while loading similarity-map data.')
+          } else {
+            setLoadError('Failed to load similarity-map data.')
+          }
         }
       } finally {
+        window.clearTimeout(timeoutId)
         if (!cancelled) {
           setLoading(false)
         }
@@ -73,6 +83,7 @@ export default function SimilarityMapFullPage() {
 
     return () => {
       cancelled = true
+      abortController.abort()
     }
   }, [companyId])
 

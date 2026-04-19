@@ -69,7 +69,12 @@ export default function SupplierNetworkMap({
 
   useEffect(() => {
     let cancelled = false
+    let timedOut = false
     const abortController = new AbortController()
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true
+      abortController.abort()
+    }, 15000)
 
     fetch('/api/network-map', {
       credentials: 'same-origin',
@@ -106,14 +111,25 @@ export default function SupplierNetworkMap({
       })
       .catch((error: unknown) => {
         if (cancelled) return
-        if (error instanceof Error && error.name === 'AbortError') return
+        if (error instanceof Error && error.name === 'AbortError') {
+          if (timedOut) {
+            setBundle(null)
+            setStatus('error')
+            setErrorDetail('Timed out while loading /api/network-map')
+          }
+          return
+        }
         setBundle(null)
         setStatus('error')
         setErrorDetail('API request failed for /api/network-map')
       })
+      .finally(() => {
+        window.clearTimeout(timeoutId)
+      })
 
     return () => {
       cancelled = true
+      window.clearTimeout(timeoutId)
       abortController.abort()
     }
   }, [companyId])
