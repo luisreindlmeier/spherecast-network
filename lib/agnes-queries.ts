@@ -14,6 +14,8 @@ import type {
   AgnesRawMaterialDetail,
   AgnesSupplier,
   AgnesSupplierDetail,
+  AgnesSupplierPerformance,
+  AgnesAuditLogEntry,
   AgnesSearchItem,
   AgnesRecommendationSubstitute,
   AgnesOpportunitiesResponse,
@@ -350,5 +352,60 @@ export async function getOpportunityDetail(
   } catch (error) {
     logFallback('getOpportunityDetail', error)
     return null
+  }
+}
+
+export async function getSupplierPerformance(
+  supplierId: number
+): Promise<AgnesSupplierPerformance | null> {
+  try {
+    const res = await agnesGet(`/suppliers/${supplierId}/performance`)
+    if (res.status === 404) return null
+    return await json(res)
+  } catch (error) {
+    logFallback('getSupplierPerformance', error)
+    return null
+  }
+}
+
+export type ConsolidationOpportunity = {
+  ingredient_name: string
+  total_skus: number
+  companies_involved: number
+  company_names: string[]
+  skus: string[]
+  supplier_names: string[]
+  unique_supplier_count: number
+  estimated_savings_pct: number
+}
+
+export async function getConsolidationPool(): Promise<
+  ConsolidationOpportunity[]
+> {
+  try {
+    const res = await agnesGet('/consolidation/direct')
+    if (!res.ok) return []
+    return await json(res)
+  } catch (error) {
+    logFallback('getConsolidationPool', error)
+    return []
+  }
+}
+
+export async function getAuditLog(
+  scopeCompanyId?: number | null,
+  entityType?: string,
+  limit = 50
+): Promise<AgnesAuditLogEntry[]> {
+  try {
+    const p = new URLSearchParams()
+    if (scopeCompanyId != null)
+      p.set('scope_company_id', String(scopeCompanyId))
+    if (entityType) p.set('entity_type', entityType)
+    p.set('limit', String(limit))
+    return await json(await agnesGet('/decisions', p))
+  } catch (error) {
+    logFallback('getAuditLog', error)
+    return []
   }
 }
