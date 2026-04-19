@@ -153,8 +153,8 @@ const config: Partial<Config> = {
 }
 
 /**
- * Hand-tuned default `scene.camera` (captured from Plotly debug). Eye offset
- * must stay proportional so `normalize(dir) * CAMERA_START_DISTANCE === eye−center`.
+ * Hand-tuned default `scene.camera` (paste from `[SimilarityMap camera] flat relayout keys`).
+ * Use center + eye + up exactly — Plotly’s `up` is not always (0,0,1) after orbit/roll.
  */
 const DEFAULT_SCENE_CAMERA_CENTER = {
   x: 0.3810515789473685,
@@ -163,32 +163,16 @@ const DEFAULT_SCENE_CAMERA_CENTER = {
 } as const
 
 const DEFAULT_SCENE_CAMERA_EYE = {
-  x: 1.1090362884299452,
-  y: 0.7595244985456134,
-  z: 0.7152200602114753,
+  x: -0.5212435171662714,
+  y: -0.10633712736845063,
+  z: 0.7869940070653132,
 } as const
 
-const DEFAULT_SCENE_EYE_OFFSET = {
-  x: DEFAULT_SCENE_CAMERA_EYE.x - DEFAULT_SCENE_CAMERA_CENTER.x,
-  y: DEFAULT_SCENE_CAMERA_EYE.y - DEFAULT_SCENE_CAMERA_CENTER.y,
-  z: DEFAULT_SCENE_CAMERA_EYE.z - DEFAULT_SCENE_CAMERA_CENTER.z,
+const DEFAULT_SCENE_CAMERA_UP = {
+  x: -0.3849968674540849,
+  y: -0.8463940134804687,
+  z: -0.36796003314893666,
 } as const
-
-/** Eye distance from orbit center in data units (= ‖eye − center‖ for default pose). */
-const CAMERA_START_DISTANCE = Math.hypot(
-  DEFAULT_SCENE_EYE_OFFSET.x,
-  DEFAULT_SCENE_EYE_OFFSET.y,
-  DEFAULT_SCENE_EYE_OFFSET.z
-)
-
-/** Unnormalized eye − center; `computeSceneCamera` normalizes and scales by `CAMERA_START_DISTANCE`. */
-function initialCameraViewDir(): { x: number; y: number; z: number } {
-  return {
-    x: DEFAULT_SCENE_EYE_OFFSET.x,
-    y: DEFAULT_SCENE_EYE_OFFSET.y,
-    z: DEFAULT_SCENE_EYE_OFFSET.z,
-  }
-}
 
 /** Arithmetic mean — used as zoom fallback when layout has no camera.center. */
 function meanUmapCenter(pts: readonly SimilarityPoint[]): {
@@ -231,17 +215,12 @@ function computeSceneCamera(points: readonly SimilarityPoint[]): SceneCamera {
     }
   }
   const c = DEFAULT_SCENE_CAMERA_CENTER
-  const dir = initialCameraViewDir()
-  const inv = 1 / Math.hypot(dir.x, dir.y, dir.z)
-  const step = CAMERA_START_DISTANCE * inv
+  const e = DEFAULT_SCENE_CAMERA_EYE
+  const u = DEFAULT_SCENE_CAMERA_UP
   return {
     center: { x: c.x, y: c.y, z: c.z },
-    eye: {
-      x: c.x + dir.x * step,
-      y: c.y + dir.y * step,
-      z: c.z + dir.z * step,
-    },
-    up: { x: 0, y: 0, z: 1 },
+    eye: { x: e.x, y: e.y, z: e.z },
+    up: { x: u.x, y: u.y, z: u.z },
   }
 }
 
@@ -424,11 +403,10 @@ function logSimilaritySceneCameraNow(gd: GraphDiv) {
   )
 
   console.log(
-    '[SimilarityMap camera] copy into IngredientSimilarityPlot (set CAMERA_START_DISTANCE to dist; return value = eye−center):\n' +
+    '[SimilarityMap camera] copy into code: prefer the "flat relayout keys" JSON below — it includes `up` after roll. Legacy eye−center hint:\n' +
       `const CAMERA_START_DISTANCE = ${dist.toFixed(6)}\n` +
       `return { x: ${vx.toFixed(6)}, y: ${vy.toFixed(6)}, z: ${vz.toFixed(6)} }\n` +
-      `// optional explicit center (DEFAULT_SCENE_CAMERA_CENTER):\n` +
-      `// { x: ${c.x.toFixed(6)}, y: ${c.y.toFixed(6)}, z: ${c.z.toFixed(6)} }`
+      `// center: { x: ${c.x.toFixed(6)}, y: ${c.y.toFixed(6)}, z: ${c.z.toFixed(6)} }`
   )
 
   const flat = {
