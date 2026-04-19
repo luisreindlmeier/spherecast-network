@@ -45,7 +45,7 @@ export default function CockpitPreviewMaps() {
         </div>
         <span className="cockpit-mini-map-hit" aria-hidden />
         <div className="cockpit-mini-map-overlay cockpit-mini-map-overlay--dual">
-          <span className="cockpit-preview-map-in-title">Network map</span>
+          <span className="cockpit-preview-map-in-title">Network Map</span>
           <span className="cockpit-mini-map-cta">Open full network map →</span>
         </div>
       </Link>
@@ -59,7 +59,7 @@ export default function CockpitPreviewMaps() {
         </div>
         <span className="cockpit-mini-map-hit" aria-hidden />
         <div className="cockpit-mini-map-overlay cockpit-mini-map-overlay--dual">
-          <span className="cockpit-preview-map-in-title">Similarity map</span>
+          <span className="cockpit-preview-map-in-title">Similarity Map</span>
           <span className="cockpit-mini-map-cta">Open similarity map →</span>
         </div>
       </Link>

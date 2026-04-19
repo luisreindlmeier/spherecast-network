@@ -13,6 +13,7 @@
 ## ⚙️ Features
 
 ### Layer 1 — Ingestion
+
 - Load all SQLite tables into Pandas
 - Parse human-readable names from SKUs
 - Join RM, Supplier, BOM, and Company into flat tables
@@ -22,6 +23,7 @@
 ---
 
 ### Layer 2 — Enrichment
+
 - OpenFoodFacts API integration
 - Web scraping fallback
 - LLM fallback when no structured data exists
@@ -29,6 +31,7 @@
 ---
 
 ### Layer 3 — LLM Extraction
+
 - Structured `IngredientProfile` (10 fields)
 - Synonym expansion (LLM + hardcoded mappings)
 - JSON schema extraction using o4-mini
@@ -38,6 +41,7 @@
 ---
 
 ### Layer 4 — Vector Search + Rules
+
 - Embeddings via all-MiniLM-L6-v2 (ONNX)
 - ChromaDB vector index
 - Semantic similarity search with synonym expansion
@@ -46,22 +50,22 @@
   - Allergen filtering
   - Vegan constraints
 - Scoring formula:
-score = similarity * 0.6 + confidence * 0.2 + compliance * 0.2
+  `score = similarity * 0.6 + confidence * 0.2 + compliance * 0.2`
 - Supplier consolidation detection
 
 ---
 
 ### Layer 5 — API
 
-| Endpoint | Method | Description |
-|----------|--------|------------|
-| `/` | GET | Health check + index status |
-| `/ingredients` | GET | Paginated ingredient list |
-| `/ingredients/{sku}` | GET | Full ingredient profile |
-| `/recommend` | POST | Substitutions + explanation |
-| `/consolidate` | GET | Functional classes |
-| `/consolidate/{class}` | GET | Supplier insights |
-| `/companies/{id}/sourcing` | GET | Company sourcing |
+| Endpoint                   | Method | Description                 |
+| -------------------------- | ------ | --------------------------- |
+| `/`                        | GET    | Health check + index status |
+| `/ingredients`             | GET    | Paginated ingredient list   |
+| `/ingredients/{sku}`       | GET    | Full ingredient profile     |
+| `/recommend`               | POST   | Substitutions + explanation |
+| `/consolidate`             | GET    | Functional classes          |
+| `/consolidate/{class}`     | GET    | Supplier insights           |
+| `/companies/{id}/sourcing` | GET    | Company sourcing            |
 
 ---
 
@@ -81,11 +85,13 @@ LLM is never used to generate facts at runtime — only to explain them.
 ## 🎨 Frontend (Recommended)
 
 ### Stack
+
 - Next.js 14
 - Tailwind CSS
 - shadcn/ui
 
 ### Why
+
 - Fast server-side rendering
 - No CORS issues (API proxy)
 - Type-safe API integration
@@ -96,27 +102,32 @@ LLM is never used to generate facts at runtime — only to explain them.
 ## 🖥️ Views
 
 ### Dashboard
+
 - Key metrics
 - Quick search
 - Top consolidation opportunities
 
 ### Ingredient Catalog
+
 - Searchable table
 - Filters: class, allergens, vegan
 
 ### Ingredient Detail
+
 - Full profile
 - Compliance badges
 - Confidence score
 - CTA to substitution
 
 ### Substitution Finder
+
 - Ranked alternatives
 - Score visualization
 - Compliance validation
 - LLM explanation
 
 ### Supplier Consolidation
+
 - Supplier coverage chart
 - Optimization insights
 
