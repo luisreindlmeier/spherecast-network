@@ -1,124 +1,112 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { CompanyWithCounts } from '@/lib/queries'
-import SourceViewToggle, {
-  type SourceViewMode,
-} from '@/components/sourcing/SourceViewToggle'
+import type { SourceViewMode } from '@/components/sourcing/SourceViewToggle'
+import SourcingTableShell from '@/components/sourcing/SourcingTableShell'
+import { useTableQuery } from '@/components/sourcing/useTableQuery'
 
 interface Props {
   companies: CompanyWithCounts[]
 }
 
 export default function CompaniesTable({ companies }: Props) {
-  const [query, setQuery] = useState('')
   const [view, setView] = useState<SourceViewMode>('row')
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim()
-    if (!q) return companies
-    return companies.filter((c) => c.name.toLowerCase().includes(q))
-  }, [companies, query])
+  const matchCompany = useCallback(
+    (company: CompanyWithCounts, normalizedQuery: string) =>
+      company.name.toLowerCase().includes(normalizedQuery),
+    []
+  )
+
+  const { query, setQuery, filtered, countLabel } = useTableQuery(
+    companies,
+    matchCompany
+  )
 
   return (
-    <div className="data-table-card">
-      <div className="data-table-toolbar">
-        <input
-          className="data-search"
-          type="search"
-          placeholder="Search brands…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        <SourceViewToggle value={view} onChange={setView} />
-        <span className="data-count">
-          {filtered.length !== companies.length
-            ? `${filtered.length} of ${companies.length}`
-            : `${companies.length} brands`}
-        </span>
-      </div>
-
-      {view === 'row' && (
+    <SourcingTableShell
+      ariaLabel="Companies table"
+      query={query}
+      onQueryChange={setQuery}
+      queryPlaceholder="Search brands…"
+      view={view}
+      onViewChange={setView}
+      countLabel={countLabel}
+      countSuffix="brands"
+      head={
         <div className="data-table-head data-grid-companies">
           <span>Brand</span>
           <span className="data-col-right">Finished Goods</span>
           <span className="data-col-right">Raw Materials</span>
         </div>
-      )}
-
-      <div
-        className={
-          view === 'tiles'
-            ? 'data-table-body data-table-body--tiles'
-            : 'data-table-body'
-        }
-      >
-        {filtered.length === 0 ? (
-          <div className="data-empty">
-            No brands match &ldquo;{query}&rdquo;
-          </div>
-        ) : view === 'row' ? (
-          filtered.map((c, i) => (
+      }
+      isEmpty={filtered.length === 0}
+      emptyMessage={`No brands match "${query}"`}
+      rowContent={
+        <>
+          {filtered.map((company, index) => (
             <Link
-              key={c.id}
-              href={`/companies/${c.id}`}
+              key={company.id}
+              href={`/companies/${company.id}`}
               className="data-row data-grid-companies"
               style={{
-                borderTop: i === 0 ? 'none' : undefined,
+                borderTop: index === 0 ? 'none' : undefined,
                 textDecoration: 'none',
               }}
             >
-              <span className="data-name">{c.name}</span>
+              <span className="data-name">{company.name}</span>
               <span className="data-col-right">
-                {c.finishedGoods > 0 ? (
-                  <span className="data-cell-num">{c.finishedGoods}</span>
+                {company.finishedGoods > 0 ? (
+                  <span className="data-cell-num">{company.finishedGoods}</span>
                 ) : (
                   <span className="data-cell-num data-cell-num-muted">—</span>
                 )}
               </span>
               <span className="data-col-right">
-                {c.rawMaterials > 0 ? (
-                  <span className="data-cell-num">{c.rawMaterials}</span>
+                {company.rawMaterials > 0 ? (
+                  <span className="data-cell-num">{company.rawMaterials}</span>
                 ) : (
                   <span className="data-cell-num data-cell-num-muted">—</span>
                 )}
               </span>
             </Link>
-          ))
-        ) : (
-          filtered.map((c) => (
+          ))}
+        </>
+      }
+      tileContent={
+        <>
+          {filtered.map((company) => (
             <Link
-              key={c.id}
-              href={`/companies/${c.id}`}
+              key={company.id}
+              href={`/companies/${company.id}`}
               className="data-source-tile"
             >
               <span className="data-source-tile-label">Brand</span>
-              <span className="data-source-tile-title">{c.name}</span>
+              <span className="data-source-tile-title">{company.name}</span>
               <div className="data-source-tile-meta">
                 <span>
                   <span className="data-source-tile-meta-k">FG</span>{' '}
-                  {c.finishedGoods > 0 ? (
-                    <span className="data-cell-num">{c.finishedGoods}</span>
+                  {company.finishedGoods > 0 ? (
+                    <span className="data-cell-num">{company.finishedGoods}</span>
                   ) : (
                     <span className="data-cell-num data-cell-num-muted">—</span>
                   )}
                 </span>
                 <span>
                   <span className="data-source-tile-meta-k">RM</span>{' '}
-                  {c.rawMaterials > 0 ? (
-                    <span className="data-cell-num">{c.rawMaterials}</span>
+                  {company.rawMaterials > 0 ? (
+                    <span className="data-cell-num">{company.rawMaterials}</span>
                   ) : (
                     <span className="data-cell-num data-cell-num-muted">—</span>
                   )}
                 </span>
               </div>
             </Link>
-          ))
-        )}
-      </div>
-    </div>
+          ))}
+        </>
+      }
+    />
   )
 }
