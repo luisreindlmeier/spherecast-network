@@ -2964,6 +2964,60 @@ textarea {
   color: var(--text-muted);
 }
 
+/* ── Ingredient profile badges ───────────────────────────── */
+.ingredient-profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.ingredient-profile-badge-mono {
+  font-family: var(--font-secondary);
+}
+
+.ingredient-confidence-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ingredient-confidence-track {
+  height: 4px;
+  width: 80px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.ingredient-confidence-fill {
+  height: 100%;
+  width: var(--fill-width);
+  border-radius: 999px;
+}
+
+.ingredient-profile-cell {
+  min-height: 24px;
+}
+
+.ingredient-confidence-fill--high {
+  background: var(--accent-green);
+}
+
+.ingredient-confidence-fill--mid {
+  background: var(--accent-yellow);
+}
+
+.ingredient-confidence-fill--low {
+  background: var(--accent-red);
+}
+
+.ingredient-confidence-pct {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;

@@ -110,10 +110,7 @@ export default function RawMaterialsTable({ rows }: Props) {
             >
               <span className="data-sku">{row.sku}</span>
               <span className="data-name">{row.companyName}</span>
-              <div
-                className="text-xs overflow-hidden"
-                style={{ minHeight: '24px' }}
-              >
+              <div className="text-xs overflow-hidden ingredient-profile-cell">
                 {row.profile ? (
                   <IngredientProfileBadges profile={row.profile} compact />
                 ) : (

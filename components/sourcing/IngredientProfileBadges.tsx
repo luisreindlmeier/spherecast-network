@@ -2,61 +2,27 @@
 
 import type { IngredientProfile } from '@/lib/agnes-client'
 
-const ALLERGEN_LABELS: Record<string, string> = {
-  milk: 'Milk',
-  eggs: 'Eggs',
-  fish: 'Fish',
-  shellfish: 'Shellfish',
-  'tree-nuts': 'Tree Nuts',
-  peanuts: 'Peanuts',
-  wheat: 'Wheat',
-  soybeans: 'Soy',
-  sesame: 'Sesame',
-}
-
-const FUNCTIONAL_CLASS_COLORS: Record<string, string> = {
-  vitamin: 'bg-yellow-100 text-yellow-800',
-  mineral: 'bg-orange-100 text-orange-800',
-  protein: 'bg-blue-100 text-blue-800',
-  emulsifier: 'bg-purple-100 text-purple-800',
-  sweetener: 'bg-pink-100 text-pink-800',
-  preservative: 'bg-red-100 text-red-800',
-  antioxidant: 'bg-green-100 text-green-800',
-  thickener: 'bg-teal-100 text-teal-800',
-  flavor: 'bg-indigo-100 text-indigo-800',
-  colorant: 'bg-rose-100 text-rose-800',
-  enzyme: 'bg-cyan-100 text-cyan-800',
-  fat: 'bg-amber-100 text-amber-800',
-  carbohydrate: 'bg-lime-100 text-lime-800',
-  fiber: 'bg-emerald-100 text-emerald-800',
-  other: 'bg-gray-100 text-gray-700',
-}
-
-function Badge({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className: string
-}) {
-  return (
-    <span
-      className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${className}`}
-    >
-      {children}
-    </span>
-  )
+const FUNCTIONAL_CLASS_BADGE: Record<string, string> = {
+  vitamin: 'data-badge data-badge-yellow',
+  mineral: 'data-badge data-badge-yellow',
+  protein: 'data-badge data-badge-blue',
+  emulsifier: 'data-badge data-badge-muted',
+  sweetener: 'data-badge data-badge-muted',
+  preservative: 'data-badge data-badge-red',
+  antioxidant: 'data-badge data-badge-green',
+  thickener: 'data-badge data-badge-muted',
+  flavor: 'data-badge data-badge-muted',
+  colorant: 'data-badge data-badge-muted',
+  enzyme: 'data-badge data-badge-blue',
+  fat: 'data-badge data-badge-yellow',
+  carbohydrate: 'data-badge data-badge-muted',
+  fiber: 'data-badge data-badge-green',
+  other: 'data-badge data-badge-muted',
 }
 
 function CertBadge({ value, label }: { value: boolean | null; label: string }) {
-  if (value === null) return null
-  return value ? (
-    <Badge className="bg-green-100 text-green-800">{label}</Badge>
-  ) : (
-    <Badge className="bg-gray-100 text-gray-500 line-through opacity-60">
-      {label}
-    </Badge>
-  )
+  if (value !== true) return null
+  return <span className="data-badge data-badge-green">{label} ✓</span>
 }
 
 interface Props {
@@ -74,28 +40,26 @@ export function IngredientProfileBadges({ profile, compact = false }: Props) {
     profile.nonGmo !== null
 
   if (!hasAnyData) {
-    return (
-      <span className="text-xs text-gray-400 italic">Not yet enriched</span>
-    )
+    return <span className="data-cell-num data-cell-num-muted">—</span>
   }
 
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="ingredient-profile-badges">
       {profile.functionalClass && (
-        <Badge
+        <span
           className={
-            FUNCTIONAL_CLASS_COLORS[profile.functionalClass] ??
-            FUNCTIONAL_CLASS_COLORS.other
+            FUNCTIONAL_CLASS_BADGE[profile.functionalClass] ??
+            'data-badge data-badge-muted'
           }
         >
           {profile.functionalClass}
-        </Badge>
+        </span>
       )}
 
       {profile.eNumber && (
-        <Badge className="bg-slate-100 text-slate-700 font-mono">
+        <span className="data-badge data-badge-muted ingredient-profile-badge-mono">
           {profile.eNumber}
-        </Badge>
+        </span>
       )}
 
       <CertBadge value={profile.vegan} label="Vegan" />
@@ -105,19 +69,15 @@ export function IngredientProfileBadges({ profile, compact = false }: Props) {
 
       {!compact &&
         profile.allergens.map((a) => (
-          <Badge
-            key={a}
-            className="bg-red-50 text-red-700 border border-red-200"
-          >
-            ⚠ {ALLERGEN_LABELS[a] ?? a}
-          </Badge>
+          <span key={a} className="data-badge data-badge-red">
+            ⚠ {a}
+          </span>
         ))}
 
       {compact && profile.allergens.length > 0 && (
-        <Badge className="bg-red-50 text-red-700 border border-red-200">
-          ⚠ {profile.allergens.length} allergen
-          {profile.allergens.length > 1 ? 's' : ''}
-        </Badge>
+        <span className="data-badge data-badge-red">
+          ⚠ {profile.allergens.length}
+        </span>
       )}
     </div>
   )
@@ -130,17 +90,21 @@ export function IngredientConfidenceBar({
 }) {
   if (confidence === null) return null
   const pct = Math.round(confidence * 100)
-  const color =
-    pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-400' : 'bg-red-400'
+  const fillClass =
+    pct >= 80
+      ? 'ingredient-confidence-fill--high'
+      : pct >= 50
+        ? 'ingredient-confidence-fill--mid'
+        : 'ingredient-confidence-fill--low'
   return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 w-24 rounded-full bg-gray-200 overflow-hidden">
+    <div className="ingredient-confidence-bar">
+      <div className="ingredient-confidence-track">
         <div
-          className={`h-full rounded-full ${color}`}
-          style={{ width: `${pct}%` }}
+          className={`ingredient-confidence-fill ${fillClass}`}
+          style={{ '--fill-width': `${pct}%` } as React.CSSProperties}
         />
       </div>
-      <span className="text-xs text-gray-500">{pct}% confidence</span>
+      <span className="ingredient-confidence-pct">{pct}%</span>
     </div>
   )
 }
