@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { resolveCompanyScopeFilter } from '@/lib/company-scope-server'
-import { createServerClient } from '@/lib/supabase-server'
-import { dbErrorResponse } from '@/lib/api-errors'
+import { agnesGet } from '@/lib/agnes-server'
 import {
   computeSimilarityUmap,
   inferIngredientCategory,
@@ -21,43 +20,23 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const scopeCompanyId = await resolveCompanyScopeFilter()
-  const db = createServerClient()
-
-  const [
-    { data: products, error: pErr },
-    { data: supplierLinks, error: slErr },
-    { data: supplierRows, error: sErr },
-    { data: bomRows, error: bErr },
-    { data: bomComponents, error: bcErr },
-    { data: finishedGoods, error: fgErr },
-  ] = await Promise.all([
-    db
-      .from('product')
-      .select('id, sku, company_id')
-      .eq('type', 'raw-material')
-      .limit(10000),
-    db.from('supplier_product').select('supplier_id, product_id').limit(10000),
-    db.from('supplier').select('id, name').limit(10000),
-    db.from('bom').select('id, produced_product_id').limit(10000),
-    db.from('bom_component').select('bom_id, consumed_product_id').limit(10000),
-    db
-      .from('product')
-      .select('id, company_id')
-      .eq('type', 'finished-good')
-      .limit(10000),
-  ])
-
-  if (pErr || slErr || sErr || bErr || bcErr || fgErr) {
-    return dbErrorResponse('similarity-map', pErr, slErr, sErr, bErr, bcErr, fgErr)
+  
+  const p = new URLSearchParams()
+  if (scopeCompanyId != null) p.set('scope_company_id', String(scopeCompanyId))
+  
+  const res = await agnesGet('/similarity-map', p)
+  if (!res.ok) {
+    return NextResponse.json({ error: 'Failed to fetch similarity map data from Agnes' }, { status: 500 })
   }
+  
+  const rawData = await res.json()
 
-  const rawMaterials =
-    (products ?? []) as SimilarityRawMaterialProductRow[]
-  const links = (supplierLinks ?? []) as SimilaritySupplierLinkRow[]
-  const suppliers = (supplierRows ?? []) as SimilaritySupplierRow[]
-  const boms = (bomRows ?? []) as SimilarityBomRow[]
-  const comps = (bomComponents ?? []) as SimilarityBomComponentRow[]
-  const fgs = (finishedGoods ?? []) as SimilarityFinishedGoodRow[]
+  const rawMaterials = (rawData.products ?? []) as SimilarityRawMaterialProductRow[]
+  const links = (rawData.supplier_links ?? []) as SimilaritySupplierLinkRow[]
+  const suppliers = (rawData.suppliers ?? []) as SimilaritySupplierRow[]
+  const boms = (rawData.boms ?? []) as SimilarityBomRow[]
+  const comps = (rawData.bom_components ?? []) as SimilarityBomComponentRow[]
+  const fgs = (rawData.finished_goods ?? []) as SimilarityFinishedGoodRow[]
 
   const supplierMap = new Map(suppliers.map((s) => [s.id, s.name]))
 

@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server'
-import type { PostgrestError } from '@supabase/supabase-js'
 
 export function dbErrorResponse(
   routeName: string,
-  ...errors: Array<PostgrestError | null>
+  ...errors: Array<Error | null | undefined | any>
 ) {
   const messages = errors
-    .filter((error): error is PostgrestError => error !== null)
-    .map((error) => error.message)
+    .filter((error) => error !== null && error !== undefined)
+    .map((error) => error.message || String(error))
 
-  console.error(`${routeName}: database query failed`, messages)
+  console.error(`${routeName}: query failed`, messages)
 
   return NextResponse.json(
-    { error: 'DB error', route: routeName },
+    { error: 'API/DB error', route: routeName },
     { status: 500 }
   )
 }

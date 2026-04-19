@@ -44,7 +44,7 @@ export type AgnesSupplierDetail = {
   companies: { id: number; name: string; productCount: number }[]
 }
 export type AgnesStats = { finishedGoods: number; rawMaterials: number; suppliers: number; companies: number }
-export type AgnesSearchItem = { kind: string; id: number; label: string; subtitle: string; href: string }
+export type AgnesSearchItem = { kind: "company" | "supplier" | "finished-good" | "raw-material"; id: number; label: string; subtitle: string; href: string }
 
 export const getStats = (scopeCompanyId?: number) =>
   get<AgnesStats>('/stats', { scope_company_id: scopeCompanyId })

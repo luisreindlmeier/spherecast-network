@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
-import type { CompanyWithCounts } from '@/lib/queries'
+import type { CompanyWithCounts } from '@/lib/agnes-queries'
 import type { SourceViewMode } from '@/components/sourcing/SourceViewToggle'
 import SourcingTableShell from '@/components/sourcing/SourcingTableShell'
 import { useTableQuery } from '@/components/sourcing/useTableQuery'
