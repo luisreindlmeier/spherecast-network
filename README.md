@@ -4,58 +4,29 @@
 
 # Spherecast Network
 
-Monorepo for the **Spherecast Network** sourcing and network dashboard.
+> Sourcing intelligence that finds the opportunities — before anyone asks.
 
 <img width="1700" height="884" alt="github-readme" src="https://github.com/user-attachments/assets/e3f16848-6b29-4c7a-88c3-8ac7f323d3a0" />
 
+Spherecast customers buy the same ingredients from the same suppliers — without knowing it. **Agnes Network** runs continuously across all BOMs, identifies substitution and consolidation opportunities, scores them for compliance and supplier risk, and surfaces the best ones directly to the right teams.
 
-| Area                    | Stack                                                                                                                                                                                                                               |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Web app (repo root)** | **Next.js 16** (App Router) · **React 19** · **TypeScript (strict)** · **Tailwind CSS 4** · **shadcn/ui (Radix)** · **pnpm** · typically deployed on **Vercel**                                                                     |
-| **Backend**             | Python service under **`backend/`** (historically the [optily](https://github.com/philipprosanka/optily) repo, merged with history preserved). See **`backend/README.md`** for architecture, endpoints, and local run instructions. |
+No manual analysis. No spreadsheets. Recommendations arrive — customers act.
 
-| Concern            | Notes                                                                                                         |
-| ------------------ | ------------------------------------------------------------------------------------------------------------- |
-| UI & data          | Server Components by default; `use client` only where needed. Validate inputs with **Zod**.                   |
-| Shell & tables     | Layout (`Sidebar`, `AppTopNav`), feature components under `components/`.                                      |
-| **Network map**    | **Deck.gl** + **react-map-gl** / **MapLibre** (`SupplierNetworkMap`, `app/api/network-map`).                  |
-| **Similarity map** | **Plotly** gl3d (`plotly.js/dist/plotly-gl3d` + `react-plotly.js/factory`), `app/api/similarity-map`.         |
-| Data               | **Supabase** (`lib/supabase*.ts`, `lib/queries.ts`); demo or fixture data where there is no live backend yet. |
-| Scope              | Company filter via cookie and **Server Actions** (`app/actions/company-scope.ts`, `lib/company-scope-*.ts`).  |
+When deeper questions come up, the **Agnes MCP server** gives direct, structured access to the full intelligence layer: ingredient profiles, substitution candidates, supplier fingerprints, and evidence trails — queryable from Claude, Cursor, or any MCP-compatible tool.
 
-## Repository layout
+Built initially as a **Spherecast-internal tool**, designed to extend to customers.
 
-**Frontend (Next.js)** — project root:
+---
 
-````
-app/
-  layout.tsx, page.tsx, globals.css
-  (app)/layout.tsx          # App shell, navigation, CompanyScopeProvider
-  (app)/*/page.tsx          # Routes: cockpit, network-map, similarity-map, suppliers, …
-  api/*/route.ts            # JSON APIs for maps (dynamic / no-store where needed)
-  actions/                  # Server actions (e.g. company scope)
-components/
-  ui/                       # shadcn — do not hand-edit; extend via CLI
-  layout/, cockpit/, network-map/, similarity-map/, sourcing/, opportunities/
-lib/                        # Queries, Supabase, map/plot helpers, utils (`cn`)
-types/                      # e.g. Plotly gl3d ambient types
+## Stack
 
-**Backend** — self-contained under `backend/` (API, data, caches, Python dependencies). It is not wired into the Next.js build; run and deploy it separately until integration work is done.
-
-## Commands (frontend)
-
-```bash
-pnpm install
-cp .env.example .env.local   # set values
-pnpm dev                     # may run predev to clear stale dev locks
-pnpm build && pnpm start
-pnpm tsc --noEmit
-````
-
-## Backend
-
-See **`backend/README.md`** for the supply-chain intelligence stack (ingestion, enrichment, LLM extraction, vector search, API routes) and how to run it locally.
+| | |
+|---|---|
+| **Frontend** | Next.js 16 · React 19 · TypeScript · Tailwind 4 · shadcn/ui · Vercel |
+| **Backend** | Python · FastAPI · ChromaDB · OpenAI o4-mini · See [`backend/README.md`](./backend/README.md) |
+| **Data** | Supabase (Postgres + pgvector) · Deck.gl · Plotly gl3d · MapLibre |
+| **MCP** | Agnes MCP server — direct access to sourcing intelligence · See [`backend/MCP.md`](./backend/MCP.md) |
 
 ## Conventions
 
-Additional notes for agents and Git/PR workflow: **`CLAUDE.md`** and **`AGENTS.md`**.
+Agent and Git/PR workflow notes: **`CLAUDE.md`** · **`AGENTS.md`**
