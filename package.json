@@ -42,7 +42,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "^20",
+    "@types/node": "^26",
     "@types/plotly.js": "^3.0.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
