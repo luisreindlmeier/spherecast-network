@@ -1,0 +1,15 @@
+title = "gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documentation placeholders, not real secrets"
+regexes = [
+  '''sk_(live|test)_xxx''',
+  '''whsec_xxx''',
+]
+paths = [
+  '''package-lock\.json''',
+  '''pnpm-lock\.yaml''',
+]
