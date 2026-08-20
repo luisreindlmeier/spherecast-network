@@ -47,7 +47,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-plotly.js": "^2.6.4",
-    "better-sqlite3": "^12.9.0",
+    "better-sqlite3": "^13.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "prettier": "^3.8.3",
